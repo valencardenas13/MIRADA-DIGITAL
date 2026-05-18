@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mirada Digital — Agencia de Performance</title>
+  <meta name="description" content="Invertís en digital. Te mostramos qué pasa con cada peso. Paid Ads, SEO, Social Media y Auditoría Express en 72 horas.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:  #0D1B2A;
+      --cyan:  #00D4FF;
+      --green: #00E676;
+      --gray:  #8892A4;
+      --white: #FFFFFF;
+      --navy2: #111f30;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Space Grotesk', Arial, sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      line-height: 1.6;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 5vw;
+      background: rgba(13, 27, 42, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0,212,255,0.08);
+    }
+
+    .logo {
+      display: flex; align-items: center; gap: 12px;
+      text-decoration: none; color: var(--white);
+    }
+
+    .logo svg { width: 36px; height: 36px; }
+
+    .logo-text { display: flex; flex-direction: column; line-height: 1; }
+    .logo-text span:first-child { font-weight: 700; font-size: 15px; letter-spacing: 2px; }
+    .logo-text span:last-child  { font-size: 9px; letter-spacing: 3px; color: var(--gray); }
+
+    .nav-cta {
+      background: var(--cyan); color: var(--navy);
+      padding: 10px 22px; border-radius: 4px;
+      font-weight: 700; font-size: 14px; text-decoration: none;
+      letter-spacing: 0.5px; transition: opacity 0.2s;
+    }
+    .nav-cta:hover { opacity: 0.85; }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 120px 5vw 80px;
+      position: relative; overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(ellipse 60% 60% at 80% 50%, rgba(0,212,255,0.05) 0%, transparent 70%);
+    }
+
+    .hero-content { max-width: 760px; position: relative; z-index: 1; }
+
+    .eyebrow {
+      display: inline-block;
+      font-size: 12px; font-weight: 500; letter-spacing: 4px;
+      color: var(--cyan); text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+
+    h1 {
+      font-size: clamp(44px, 7vw, 88px);
+      font-weight: 700; line-height: 1.05;
+      margin-bottom: 28px;
+    }
+
+    h1 em { color: var(--cyan); font-style: normal; }
+
+    .hero-sub {
+      font-size: clamp(18px, 2.5vw, 22px);
+      color: var(--gray); max-width: 520px;
+      margin-bottom: 48px; line-height: 1.5;
+    }
+
+    .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+
+    .btn-primary {
+      background: var(--green); color: var(--navy);
+      padding: 16px 32px; border-radius: 4px;
+      font-weight: 700; font-size: 16px; text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+
+    .btn-secondary {
+      background: transparent; color: var(--white);
+      padding: 16px 32px; border-radius: 4px;
+      font-weight: 500; font-size: 16px; text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.15);
+      transition: border-color 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--cyan); color: var(--cyan); }
+
+    /* ── DIVIDER ── */
+    .divider {
+      height: 1px; background: rgba(0,212,255,0.1);
+      margin: 0 5vw;
+    }
+
+    /* ── SECTION BASE ── */
+    section { padding: 100px 5vw; }
+
+    .section-label {
+      font-size: 11px; font-weight: 500; letter-spacing: 4px;
+      color: var(--cyan); text-transform: uppercase;
+      margin-bottom: 20px; display: block;
+    }
+
+    h2 {
+      font-size: clamp(32px, 5vw, 56px);
+      font-weight: 700; line-height: 1.1;
+      margin-bottom: 20px;
+    }
+
+    h2 em { color: var(--cyan); font-style: normal; }
+
+    .sub { color: var(--gray); font-size: 18px; max-width: 520px; line-height: 1.6; }
+
+    /* ── PROBLEMA ── */
+    #problema { background: var(--navy2); }
+
+    .compare {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 2px; margin-top: 60px; border-radius: 8px; overflow: hidden;
+    }
+
+    .compare-col {
+      padding: 48px 40px;
+      background: rgba(255,255,255,0.02);
+    }
+
+    .compare-col h3 {
+      font-size: 13px; letter-spacing: 3px; font-weight: 700;
+      margin-bottom: 32px;
+    }
+
+    .compare-col.bad  h3 { color: var(--gray); }
+    .compare-col.good h3 { color: var(--green); }
+
+    .compare-item {
+      display: flex; align-items: flex-start; gap: 14px;
+      margin-bottom: 20px; font-size: 17px;
+    }
+
+    .compare-item .icon {
+      width: 22px; flex-shrink: 0; font-size: 15px; margin-top: 2px;
+    }
+
+    .compare-col.bad  .icon { color: #ff4444; }
+    .compare-col.good .icon { color: var(--green); }
+
+    /* ── SERVICIOS ── */
+    .services-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2px; margin-top: 60px;
+    }
+
+    .service-card {
+      background: var(--navy2);
+      padding: 48px 36px; border-radius: 4px;
+      position: relative; overflow: hidden;
+      transition: transform 0.2s;
+    }
+    .service-card:hover { transform: translateY(-4px); }
+    .service-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 2px; background: var(--cyan); opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .service-card:hover::before { opacity: 1; }
+
+    .service-icon {
+      width: 44px; height: 44px; margin-bottom: 28px;
+      color: var(--cyan);
+    }
+
+    .service-card h3 {
+      font-size: 22px; font-weight: 700; margin-bottom: 12px;
+    }
+
+    .service-card p {
+      color: var(--gray); font-size: 15px; line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .service-tag {
+      display: inline-block;
+      font-size: 11px; letter-spacing: 2px; font-weight: 700;
+      color: var(--navy); background: var(--cyan);
+      padding: 4px 10px; border-radius: 2px;
+    }
+
+    .service-card.highlight { border: 1px solid rgba(0,230,118,0.3); }
+    .service-card.highlight::before { background: var(--green); opacity: 1; }
+    .service-card.highlight .service-tag { background: var(--green); }
+
+    /* ── COMO TRABAJAMOS ── */
+    #proceso { background: var(--navy2); }
+
+    .steps {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 40px; margin-top: 60px;
+    }
+
+    .step { position: relative; padding-left: 0; }
+
+    .step-num {
+      font-size: 72px; font-weight: 700; line-height: 1;
+      color: var(--cyan); opacity: 0.08;
+      position: absolute; top: -12px; left: -8px;
+      pointer-events: none;
+    }
+
+    .step-content { position: relative; z-index: 1; padding-top: 24px; }
+
+    .step-content h3 {
+      font-size: 20px; font-weight: 700;
+      letter-spacing: 2px; color: var(--cyan);
+      margin-bottom: 14px;
+    }
+
+    .step-content p { color: var(--gray); font-size: 16px; line-height: 1.6; }
+
+    /* ── CTA ── */
+    #cta {
+      text-align: center;
+      background: linear-gradient(160deg, var(--navy) 0%, #0a2237 100%);
+      position: relative; overflow: hidden;
+    }
+
+    #cta::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 50% 60% at 50% 100%, rgba(0,212,255,0.07) 0%, transparent 70%);
+    }
+
+    #cta > * { position: relative; z-index: 1; }
+
+    #cta h2 { margin: 0 auto 20px; max-width: 680px; }
+
+    #cta .sub { margin: 0 auto 48px; }
+
+    .cta-box {
+      display: inline-flex; flex-direction: column; align-items: center;
+      background: rgba(0,212,255,0.05);
+      border: 1px solid rgba(0,212,255,0.2);
+      border-radius: 8px; padding: 48px 56px; gap: 16px;
+      max-width: 480px; width: 100%;
+    }
+
+    .cta-box .badge {
+      background: var(--green); color: var(--navy);
+      font-size: 12px; font-weight: 700; letter-spacing: 2px;
+      padding: 6px 14px; border-radius: 2px;
+    }
+
+    .cta-box .title { font-size: 28px; font-weight: 700; }
+
+    .cta-box .detail { color: var(--gray); font-size: 15px; text-align: center; }
+
+    .btn-whatsapp {
+      display: flex; align-items: center; gap: 10px;
+      background: #25D366; color: var(--white);
+      padding: 16px 32px; border-radius: 4px;
+      font-weight: 700; font-size: 16px; text-decoration: none;
+      transition: opacity 0.2s; width: 100%; justify-content: center;
+    }
+    .btn-whatsapp:hover { opacity: 0.88; }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 40px 5vw;
+      border-top: 1px solid rgba(0,212,255,0.08);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px;
+    }
+
+    footer .copy { color: var(--gray); font-size: 14px; }
+
+    footer .handle {
+      color: var(--cyan); font-size: 14px; text-decoration: none;
+      font-weight: 500;
+    }
+    footer .handle:hover { text-decoration: underline; }
+
+    /* ── FLOATING WA ── */
+    .wa-float {
+      position: fixed; bottom: 28px; right: 28px; z-index: 200;
+      width: 56px; height: 56px; border-radius: 50%;
+      background: #25D366; color: white;
+      display: flex; align-items: center; justify-content: center;
+      text-decoration: none; box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .wa-float:hover {
+      transform: scale(1.08);
+      box-shadow: 0 6px 28px rgba(37,211,102,0.55);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 700px) {
+      .compare { grid-template-columns: 1fr; }
+      .compare-col { padding: 36px 24px; }
+      .cta-box { padding: 36px 24px; }
+      nav { padding: 16px 5vw; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="logo" aria-label="Mirada Digital">
+      <svg viewBox="0 0 80 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 5,28 A 42,42 0 0,1 75,28 A 60,60 0 0,0 5,28 Z" fill="#00D4FF" opacity="0.9"/>
+        <circle cx="40" cy="24" r="11" fill="#0D1B2A" stroke="#00D4FF" stroke-width="1.5"/>
+        <polyline points="33,29 37,24 41,19 47,15" fill="none" stroke="#00E676" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="logo-text">
+        <span>MIRADA DIGITAL</span>
+        <span>AGENCIA DE PERFORMANCE</span>
+      </div>
+    </a>
+    <a href="#cta" class="nav-cta">Auditoría gratis</a>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <span class="eyebrow">Agencia de performance</span>
+      <h1>Invertís en digital.<br><em>Te mostramos</em><br>qué pasa con<br>cada peso.</h1>
+      <p class="hero-sub">Sin reportes que no se entienden. Sin desaparecer después de cobrar. Con números reales, cada semana.</p>
+      <div class="hero-actions">
+        <a href="#cta" class="btn-primary">Auditoría gratuita →</a>
+        <a href="#servicios" class="btn-secondary">Ver servicios</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- PROBLEMA -->
+  <section id="problema">
+    <span class="section-label">El problema</span>
+    <h2>La mayoría de agencias<br><em>ejecutan y no explican.</em></h2>
+    <p class="sub">Sabemos que ya lo viviste. Por eso somos diferentes desde el día uno.</p>
+
+    <div class="compare">
+      <div class="compare-col bad">
+        <h3>LA MAYORÍA DE AGENCIAS</h3>
+        <div class="compare-item"><span class="icon">✗</span><span>Ejecutan campañas sin explicar qué hacen</span></div>
+        <div class="compare-item"><span class="icon">✗</span><span>Mandan reportes que no se entienden</span></div>
+        <div class="compare-item"><span class="icon">✗</span><span>Te muestran likes, no ventas</span></div>
+        <div class="compare-item"><span class="icon">✗</span><span>Desaparecen después de cobrar</span></div>
+        <div class="compare-item"><span class="icon">✗</span><span>No te dejan acceder a tu propia cuenta</span></div>
+      </div>
+      <div class="compare-col good">
+        <h3>NOSOTROS</h3>
+        <div class="compare-item"><span class="icon">✓</span><span>Cada decisión tiene su explicación</span></div>
+        <div class="compare-item"><span class="icon">✓</span><span>Reporte semanal claro y accionable</span></div>
+        <div class="compare-item"><span class="icon">✓</span><span>Métricas que importan: leads, ventas, ROAS</span></div>
+        <div class="compare-item"><span class="icon">✓</span><span>Reunión mensual de resultados incluida</span></div>
+        <div class="compare-item"><span class="icon">✓</span><span>Tu cuenta es tuya. Siempre.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- SERVICIOS -->
+  <section id="servicios">
+    <span class="section-label">Lo que hacemos</span>
+    <h2>Todo lo que tu negocio<br><em>necesita para crecer</em><br>en digital.</h2>
+
+    <div class="services-grid">
+
+      <div class="service-card">
+        <svg class="service-icon" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.8">
+          <polyline points="6,34 16,22 24,28 38,10"/>
+          <polyline points="28,10 38,10 38,20"/>
+        </svg>
+        <h3>Paid Ads</h3>
+        <p>Google Ads + Meta Ads gestionados con estrategia real. Campañas de búsqueda, display y remarketing con reporte semanal incluido.</p>
+        <span class="service-tag">GOOGLE · META</span>
+      </div>
+
+      <div class="service-card">
+        <svg class="service-icon" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="20" cy="20" r="10"/>
+          <line x1="28" y1="28" x2="38" y2="38"/>
+          <line x1="20" y1="10" x2="20" y2="6"/>
+          <line x1="20" y1="30" x2="20" y2="34"/>
+          <line x1="10" y1="20" x2="6" y2="20"/>
+          <line x1="30" y1="20" x2="34" y2="20"/>
+        </svg>
+        <h3>SEO + Web</h3>
+        <p>Que te encuentren cuando buscan lo que vos ofrecés. Web profesional optimizada para velocidad, mobile y conversión.</p>
+        <span class="service-tag">SEO · WEB</span>
+      </div>
+
+      <div class="service-card">
+        <svg class="service-icon" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="6" y="6" width="13" height="13" rx="2"/>
+          <rect x="25" y="6" width="13" height="13" rx="2"/>
+          <rect x="6" y="25" width="13" height="13" rx="2"/>
+          <rect x="25" y="25" width="13" height="13" rx="2"/>
+        </svg>
+        <h3>Social Media</h3>
+        <p>Contenido con objetivo. Calendario editorial estratégico, piezas alineadas a ventas y reporte mensual de métricas reales.</p>
+        <span class="service-tag">INSTAGRAM · META</span>
+      </div>
+
+      <div class="service-card highlight">
+        <svg class="service-icon" viewBox="0 0 44 44" fill="none" stroke="#00E676" stroke-width="1.8">
+          <polygon points="22,4 28,16 42,18 32,28 34,42 22,36 10,42 12,28 2,18 16,16"/>
+        </svg>
+        <h3>Auditoría Express</h3>
+        <p>¿Ya invertís en digital y no ves resultados? En 72 horas te decimos qué falla, dónde perdés plata y qué cambiar primero.</p>
+        <span class="service-tag">GRATIS · 72HS</span>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- PROCESO -->
+  <section id="proceso">
+    <span class="section-label">Cómo trabajamos</span>
+    <h2>Simple, transparente<br><em>y sin sorpresas.</em></h2>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <h3>DIAGNÓSTICO</h3>
+          <p>Entendemos tu negocio y auditamos lo que ya tenés: campañas activas, web, redes. Sin costo y en 72 horas.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <h3>ESTRATEGIA</h3>
+          <p>Definimos qué canales usar, qué presupuesto es real para tu negocio y qué objetivos son alcanzables. Sin paquetes genéricos.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <h3>RESULTADOS</h3>
+          <p>Ejecutamos, optimizamos cada semana y te mostramos todo. Cada peso invertido tiene su reporte.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- CTA -->
+  <section id="cta">
+    <span class="section-label">Empezá hoy</span>
+    <h2>¿Querés saber exactamente<br><em>en qué se va tu plata?</em></h2>
+    <p class="sub">Pedí tu auditoría gratuita. Sin compromiso. Con resultados en 72 horas.</p>
+
+    <div style="display:flex; justify-content:center; margin-top: 48px;">
+      <div class="cta-box">
+        <span class="badge">SIN COSTO · SIN COMPROMISO</span>
+        <span class="title">Auditoría Express</span>
+        <span class="detail">Analizamos tus campañas, web y redes.<br>Te decimos qué está fallando y qué cambiar.</span>
+        <a href="https://wa.me/5491100000000?text=Hola!%20Quiero%20la%20auditor%C3%ADa%20gratuita%20de%20Mirada%20Digital" class="btn-whatsapp" target="_blank" rel="noopener">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Escribinos por WhatsApp
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span class="copy">© 2025 Mirada Digital. Todos los derechos reservados.</span>
+    <a href="https://instagram.com/somosmiradadigital" class="handle" target="_blank" rel="noopener">@somosmiradadigital</a>
+  </footer>
+
+  <!-- FLOATING WA BUTTON -->
+  <a href="https://wa.me/5491100000000?text=Hola!%20Quiero%20la%20auditor%C3%ADa%20gratuita%20de%20Mirada%20Digital"
+     class="wa-float" target="_blank" rel="noopener" aria-label="WhatsApp">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  </a>
+
+</body>
+</html>
