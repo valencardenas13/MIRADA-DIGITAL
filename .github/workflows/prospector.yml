@@ -28,22 +28,7 @@ jobs:
         env:
           TELEGRAM_TOKEN:   ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: |
-          echo "Token primeros 10 chars: ${TELEGRAM_TOKEN:0:10}"
-          echo "Chat ID length: ${#TELEGRAM_CHAT_ID}"
-          python3 -c "
-import os, urllib.request, json
-token = os.environ['TELEGRAM_TOKEN'].strip()
-chat  = os.environ['TELEGRAM_CHAT_ID'].strip()
-url   = f'https://api.telegram.org/bot{token}/sendMessage'
-data  = json.dumps({'chat_id': chat, 'text': 'Mirada Digital - GitHub Actions conectado!'}).encode()
-req   = urllib.request.Request(url, data=data, headers={'Content-Type': 'application/json'})
-try:
-    r = urllib.request.urlopen(req, timeout=10)
-    print('OK:', r.status)
-except Exception as e:
-    print('ERROR:', e)
-"
+        run: python3 agente-prospector/test_telegram.py
 
       - name: Correr prospector
         env:
@@ -51,18 +36,16 @@ except Exception as e:
           TELEGRAM_TOKEN:    ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID:  ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          # Determinar el turno según la hora UTC actual
           HORA=$(date -u +"%H:%M")
           case "$HORA" in
             10:*) RUBRO="coaches y consultores de negocios"   ; UBICACION="Argentina"         ; TIPO="high-ticket" ;;
             12:*) RUBRO="tiendas online"                      ; UBICACION="Argentina"         ; TIPO="ecommerce"   ;;
-            13:*) RUBRO="clínicas estéticas y odontológicas"  ; UBICACION="CABA"              ; TIPO="high-ticket" ;;
+            13:*) RUBRO="clinicas esteticas y odontologicas"  ; UBICACION="CABA"              ; TIPO="high-ticket" ;;
             15:*) RUBRO="inmobiliarias"                       ; UBICACION="Buenos Aires"      ; TIPO="high-ticket" ;;
             16:*) RUBRO="gimnasios y estudios de yoga pilates"; UBICACION="Buenos Aires"      ; TIPO="auto"        ;;
-            18:*) RUBRO="restaurantes y cafeterías"           ; UBICACION="Palermo Buenos Aires"; TIPO="auto"      ;;
+            18:*) RUBRO="restaurantes y cafeterias"           ; UBICACION="Palermo Buenos Aires"; TIPO="auto"      ;;
             *)    RUBRO="negocios locales"                    ; UBICACION="Buenos Aires"      ; TIPO="auto"        ;;
           esac
-
           echo "Turno: $RUBRO | $UBICACION | $TIPO"
           cd agente-prospector
           python prospector.py --rubro "$RUBRO" --ubicacion "$UBICACION" --tipo "$TIPO" --cantidad 20
