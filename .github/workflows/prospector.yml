@@ -24,6 +24,19 @@ jobs:
       - name: Instalar dependencias
         run: pip install -r agente-prospector/requirements.txt
 
+      - name: Test Telegram
+        env:
+          TELEGRAM_TOKEN:   ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          echo "Token primeros 10 chars: ${TELEGRAM_TOKEN:0:10}"
+          echo "Chat ID: $TELEGRAM_CHAT_ID"
+          curl -s -o /tmp/tg_resp.json -w "%{http_code}" \
+            -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
+            -F "chat_id=${TELEGRAM_CHAT_ID}" \
+            -F "text=✅ GitHub Actions conectado — Mirada Digital prospector listo" \
+          && echo "" && cat /tmp/tg_resp.json
+
       - name: Correr prospector
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
