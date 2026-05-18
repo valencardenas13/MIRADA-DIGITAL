@@ -1,0 +1,161 @@
+{
+  "agency": {
+    "name": "Mirada Digital",
+    "handle": "@agenciamiradadigital",
+    "tagline": "Invertís. Nosotros te mostramos qué pasa con cada peso.",
+    "tagline_alt": [
+      "Claridad total sobre tu inversión digital.",
+      "La agencia que te da resultados y te explica por qué.",
+      "Resultados con transparencia. Eso es Mirada Digital."
+    ],
+    "positioning_statement": "Mirada Digital es la agencia de performance para negocios y empresas que quieren invertir en digital y saber exactamente qué están obteniendo. No prometemos magia, mostramos datos reales y los convertimos en decisiones que venden."
+  },
+
+  "brand_essence": {
+    "core_value": "Transparencia radical en la inversión digital",
+    "personality": ["Directa", "Confiable", "Estratégica", "Humana", "Orientada a resultados"],
+    "tone_of_voice": {
+      "style": "Claro, directo, sin tecnicismos innecesarios. Habla de igual a igual con el empresario/dueño.",
+      "avoid": ["Promesas vacías ('¡Explotá tus ventas!')", "Tecnicismos sin contexto", "Tono corporativo frío"],
+      "use": ["Lenguaje concreto con números", "Ejemplos reales o hipotéticos cercanos", "Preguntas que hacen reflexionar"]
+    }
+  },
+
+  "visual_identity": {
+    "palette": {
+      "primary": {
+        "name": "Azul Noche",
+        "hex": "#0D1B2A",
+        "use": "Fondo principal, headers, profundidad y seriedad"
+      },
+      "secondary": {
+        "name": "Eléctrico",
+        "hex": "#00D4FF",
+        "use": "Acentos, CTAs, elementos de datos/gráficos, energía digital"
+      },
+      "accent": {
+        "name": "Blanco Puro",
+        "hex": "#FFFFFF",
+        "use": "Texto principal sobre oscuro, limpieza visual"
+      },
+      "support": {
+        "name": "Gris Datos",
+        "hex": "#8892A4",
+        "use": "Texto secundario, iconos de fondo, capas"
+      },
+      "highlight": {
+        "name": "Verde ROI",
+        "hex": "#00E676",
+        "use": "Métricas positivas, resultados, gráficos de crecimiento"
+      }
+    },
+    "typography": {
+      "heading": "Space Grotesk (Google Fonts - gratis) — moderno, técnico, memorable",
+      "body": "Inter (Google Fonts - gratis) — legible, profesional, versátil",
+      "accent": "Fira Code o JetBrains Mono — para mostrar datos, métricas, números"
+    },
+    "visual_style": {
+      "concept": "Data-driven pero humano. Dashboard meets street.",
+      "elements": [
+        "Gráficos de barras/líneas como elementos decorativos",
+        "Números grandes y llamativos en las piezas",
+        "Fondos oscuros con acentos eléctricos (neón sutil)",
+        "Flechas hacia arriba como motivo visual recurrente",
+        "Retículas y grids que evoquen pantallas de analytics"
+      ],
+      "avoid": [
+        "Fondos blancos genéricos",
+        "Stock photos de personas señalando pantallas",
+        "Paletas rosa/dorado (saturado en el nicho)",
+        "Logos con bombillas o cohetes"
+      ],
+      "logo_direction": "Logotipo tipográfico. 'MIRADA' en Space Grotesk Bold + 'DIGITAL' en versión más delgada o monoespaciada. Posible elemento: un ojo simplificado o un cursor/indicador que evoca un gráfico."
+    }
+  },
+
+  "positioning": {
+    "category": "Agencia de Performance y Transparencia Digital",
+    "differentiator": "Somos la única agencia que combina ejecución de campañas con reportería profesional incluida — el cliente siempre sabe en qué se está gastando su presupuesto y por qué.",
+    "proof_points": [
+      "Reportes claros y periódicos incluidos en todos los servicios",
+      "Explicamos cada decisión estratégica en lenguaje simple",
+      "Trabajamos con presupuestos reales, no prometemos resultados mágicos",
+      "Especialistas en Paid Ads + SEO + Social + Web (ecosistema completo)"
+    ],
+    "competitors_gap": "La mayoría de agencias habla de resultados pero no muestra el proceso. Mirada Digital hace exactamente lo contrario: el proceso ES el producto."
+  },
+
+  "services": {
+    "core_offer": [
+      {
+        "name": "Performance 360°",
+        "description": "Gestión completa de campañas pagas (Google + Meta) + reporte mensual ejecutivo con análisis y recomendaciones",
+        "differentiator": "Incluye reunión mensual de revisión y dashboard en tiempo real"
+      },
+      {
+        "name": "Social Estratégico",
+        "description": "Gestión de redes sociales alineada a objetivos de negocio, no solo contenido",
+        "differentiator": "Cada pieza tiene un objetivo medible. Nada por llenar el feed."
+      },
+      {
+        "name": "Presencia Digital",
+        "description": "Web + SEO local/nacional para que te encuentren cuando buscan lo que ofrecés",
+        "differentiator": "Resultados en 90 días o te decimos exactamente por qué no"
+      },
+      {
+        "name": "Auditoría de Campañas",
+        "description": "Revisión completa de cuentas publicitarias existentes: qué está bien, qué está mal, qué estás perdiendo",
+        "differentiator": "Entrega un informe accionable en 72hs. Ideal para empresas que ya invierten pero no ven resultados"
+      }
+    ]
+  },
+
+  "target_audience": {
+    "primary": {
+      "profile": "Dueño o gerente de empresa/negocio de entre 5 y 50 empleados",
+      "pain_points": [
+        "Ya gastó en digital y no vio resultados claros",
+        "No entiende los reportes de su agencia actual (o no recibe ninguno)",
+        "Siente que está 'tirando plata' sin saber si funciona",
+        "Quiere crecer pero no sabe qué canal priorizar"
+      ],
+      "desires": [
+        "Saber exactamente en qué se gasta cada peso",
+        "Una agencia que hable claro y cumpla lo que dice",
+        "Ver crecimiento medible en 60-90 días"
+      ]
+    },
+    "secondary": {
+      "profile": "Empresa mediana que ya tiene marketing interno pero quiere una segunda mirada externa (auditorías)"
+    }
+  },
+
+  "content_strategy": {
+    "pillars": [
+      {
+        "pillar": "Educación sin humo",
+        "description": "Enseñar cómo funciona el mundo digital en términos simples",
+        "examples": ["'Esto significa un CTR de 2% (y si es bueno o malo)'", "'Por qué tu campaña gasta sin convertir'", "'5 cosas que tu agencia te debería explicar y no te explica'"]
+      },
+      {
+        "pillar": "Transparencia en acción",
+        "description": "Mostrar el proceso real de trabajo, resultados (anonimizados), reportes",
+        "examples": ["'Así se ve un reporte de campaña bien hecho'", "'Caso real: pasamos de $X a $Y con estos 3 cambios'", "'Antes/después de optimizar esta cuenta de Google Ads'"]
+      },
+      {
+        "pillar": "POV del empresario",
+        "description": "Contenido que hable directamente al dueño/gerente, no al marketinero",
+        "examples": ["'Si tu agencia no te da estos 3 datos, algo está mal'", "'Cuándo tiene sentido invertir en Google vs Meta'", "'El error más caro que cometen las empresas en digital'"]
+      },
+      {
+        "pillar": "Prueba social",
+        "description": "Resultados, testimonios, procesos internos",
+        "examples": ["Capturas de dashboards con resultados", "Testimonios en video o texto", "BTS del trabajo del equipo"]
+      }
+    ],
+    "formats": {
+      "instagram": ["Carruseles educativos (máximo rendimiento orgánico)", "Reels con tips de 30-60s", "Stories con encuestas y preguntas", "Posts de resultados con números grandes"],
+      "posting_frequency": "4-5 veces por semana en el arranque"
+    }
+  }
+}
