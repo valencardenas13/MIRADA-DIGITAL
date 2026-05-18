@@ -13,6 +13,7 @@ import argparse
 import json
 import os
 import sys
+import time
 
 import anthropic
 import httpx
@@ -506,14 +507,24 @@ def run_agent(rubro: str, ubicacion: str, tipo: str = "auto", cantidad: int = 10
     ]
 
     while True:
-        response = client.messages.create(
-            model="claude-sonnet-4-6",
-            max_tokens=16000,
-            thinking={"type": "adaptive"},
-            system=SYSTEM_PROMPT,
-            tools=TOOLS,
-            messages=messages,
-        )
+        # Reintento automático si hay rate limit
+        for intento in range(4):
+            try:
+                response = client.messages.create(
+                    model="claude-sonnet-4-6",
+                    max_tokens=8000,
+                    system=SYSTEM_PROMPT,
+                    tools=TOOLS,
+                    messages=messages,
+                )
+                break
+            except anthropic.RateLimitError:
+                espera = 30 * (intento + 1)
+                print(f"⏳ Rate limit — esperando {espera}s...", flush=True)
+                time.sleep(espera)
+        else:
+            print("❌ Rate limit persistente, abortando.", flush=True)
+            break
 
         tool_uses = []
         text_blocks = []
@@ -540,6 +551,13 @@ def run_agent(rubro: str, ubicacion: str, tipo: str = "auto", cantidad: int = 10
             print(f"\n⚙️  {tool_name}({json.dumps(tool_input, ensure_ascii=False, separators=(',',':'))})")
 
             result = ejecutar_herramienta(tool_name, tool_input)
+
+            # Recortar resultados grandes para no exceder rate limit de tokens
+            if tool_name == "buscar_empresas" and isinstance(result, list):
+                result = result[:8]
+                for r in result:
+                    if "descripcion" in r:
+                        r["descripcion"] = r["descripcion"][:100]
 
             if tool_name == "buscar_empresas":
                 count = len(result) if isinstance(result, list) else 0
