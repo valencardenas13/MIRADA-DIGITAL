@@ -70,7 +70,7 @@ Usar **Linktree** o **Beacons** (ambos gratis) con estas opciones:
 
 **Texto del link en la bio:**
 ```
-linktr.ee/agenciamiradadigital
+linktr.ee/somosmiradadigital
 ```
 o
 ```
