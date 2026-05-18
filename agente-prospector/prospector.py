@@ -281,7 +281,7 @@ Paso 2 — Análisis de sitios:
   Analizá todos los candidatos que tengan URL válida.
 
 Paso 3 — Scoring y selección:
-  Seleccioná las 10 mejores oportunidades usando esta lógica:
+  Seleccioná la cantidad de prospectos que te pidieron (indicado en el mensaje del usuario) usando esta lógica:
 
   Score base (suma):
   +3 → es ecommerce activo
@@ -293,7 +293,7 @@ Paso 3 — Scoring y selección:
   -1 → tiene todos los píxeles (ya está bien configurado, baja oportunidad)
 
 Paso 4 — Output por prospecto:
-  Para cada uno de los 10 prospectos:
+  Para cada prospecto de la lista final:
 
   ┌─────────────────────────────────────────────────┐
   │ #N  NOMBRE DEL NEGOCIO                          │
@@ -333,10 +333,15 @@ Al final mostrá una tabla con los 10 prospectos ordenados por score:
 
 # ── Agent loop ─────────────────────────────────────────────────────────────────
 
-def run_agent(rubro: str, ubicacion: str, tipo: str = "auto"):
-    print(f"\n🔍  Prospectando: {rubro}  |  {ubicacion}  |  modo: {tipo}\n")
+def run_agent(rubro: str, ubicacion: str, tipo: str = "auto", cantidad: int = 10):
+    print(f"\n🔍  Prospectando: {rubro}  |  {ubicacion}  |  modo: {tipo}  |  cantidad: {cantidad}\n")
     print("─" * 60)
-    telegram_send(f"🔍 *Mirada Digital — Agente Prospector*\nBuscando: *{rubro}* en *{ubicacion}* (modo: {tipo})\n_Esto puede tardar 2-3 minutos..._")
+    telegram_send(
+        f"🔍 *Mirada Digital — Agente Prospector*\n"
+        f"Buscando: *{rubro}* en *{ubicacion}*\n"
+        f"Modo: {tipo} | Prospectos: {cantidad}\n"
+        f"_Esto puede tardar {2 + cantidad // 10}-{4 + cantidad // 10} minutos..._"
+    )
 
     tipo_hint = ""
     if tipo == "ecommerce":
@@ -349,8 +354,8 @@ def run_agent(rubro: str, ubicacion: str, tipo: str = "auto"):
             "role": "user",
             "content": (
                 f"Prospectá el rubro '{rubro}' en '{ubicacion}'.{tipo_hint} "
-                "Usá al menos 2 estrategias de búsqueda distintas, analizá todos los sitios que puedas "
-                "y entregame los 10 mejores prospectos con su mensaje de outreach personalizado."
+                f"Usá al menos 3 estrategias de búsqueda distintas, analizá todos los sitios que puedas "
+                f"y entregame los {cantidad} mejores prospectos con su mensaje de outreach personalizado."
             ),
         }
     ]
@@ -358,7 +363,7 @@ def run_agent(rubro: str, ubicacion: str, tipo: str = "auto"):
     while True:
         response = client.messages.create(
             model="claude-opus-4-7",
-            max_tokens=10000,
+            max_tokens=16000,
             thinking={"type": "adaptive"},
             system=SYSTEM_PROMPT,
             tools=TOOLS,
@@ -439,13 +444,19 @@ Ejemplos:
         default="auto",
         help="Foco de prospección (default: auto)",
     )
+    parser.add_argument(
+        "--cantidad",
+        type=int,
+        default=10,
+        help="Cantidad de prospectos a generar (default: 10)",
+    )
     args = parser.parse_args()
 
     if not os.environ.get("ANTHROPIC_API_KEY"):
         print("❌ Falta la variable de entorno ANTHROPIC_API_KEY")
         sys.exit(1)
 
-    run_agent(args.rubro, args.ubicacion, args.tipo)
+    run_agent(args.rubro, args.ubicacion, args.tipo, args.cantidad)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,36 @@
+{
+  "ubicacion_default": "Argentina",
+  "prospectos_por_corrida": 20,
+  "turnos": [
+    {
+      "hora": "08:00",
+      "rubro": "coaches de negocios",
+      "ubicacion": "Argentina",
+      "tipo": "high-ticket"
+    },
+    {
+      "hora": "11:00",
+      "rubro": "tiendas de ropa",
+      "ubicacion": "Buenos Aires",
+      "tipo": "ecommerce"
+    },
+    {
+      "hora": "14:00",
+      "rubro": "clínicas estéticas",
+      "ubicacion": "CABA",
+      "tipo": "high-ticket"
+    },
+    {
+      "hora": "17:00",
+      "rubro": "restaurantes y gastronomía",
+      "ubicacion": "Palermo Buenos Aires",
+      "tipo": "auto"
+    },
+    {
+      "hora": "20:00",
+      "rubro": "inmobiliarias",
+      "ubicacion": "Buenos Aires",
+      "tipo": "high-ticket"
+    }
+  ]
+}
