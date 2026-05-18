@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Background square (crop to circle for Instagram) -->
+  <rect width="512" height="512" fill="#0D1B2A"/>
+
+  <!-- Eye icon — scaled 3.33x, centered at (256, 256) -->
+  <g transform="translate(256, 256)">
+    <!-- Eye outline -->
+    <path d="M-150,0 C-100,-100 100,-100 150,0 C100,60 -100,60 -150,0 Z"
+          fill="none" stroke="#00D4FF" stroke-width="8" stroke-linecap="round"/>
+
+    <!-- Outer glow ring (subtle) -->
+    <circle cx="0" cy="-13" r="56" fill="none" stroke="#00D4FF" stroke-width="1.5" opacity="0.15"/>
+
+    <!-- Iris -->
+    <circle cx="0" cy="-13" r="50" fill="#0D1B2A" stroke="#00D4FF" stroke-width="7"/>
+
+    <!-- Trend line (scaled 3.33x from logo version) -->
+    <!-- Original: -9,5  -3,0  3,-6  9,-11  →  scaled: -30,17  -10,0  10,-20  30,-37 -->
+    <polyline points="-30,17 -10,0 10,-20 30,-37"
+              fill="none" stroke="#00E676" stroke-width="7"
+              stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- Data points -->
+    <circle cx="-10" cy="0"   r="7" fill="#00E676"/>
+    <circle cx="10"  cy="-20" r="7" fill="#00E676"/>
+    <circle cx="30"  cy="-37" r="7" fill="#00E676"/>
+
+    <!-- Pupil -->
+    <circle cx="0" cy="-13" r="11" fill="#00D4FF" opacity="0.3"/>
+  </g>
+</svg>

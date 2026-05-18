@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mirada Digital — Logo Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #F0F2F5;
+      padding: 48px 32px;
+      color: #0D1B2A;
+    }
+
+    h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: #8892A4;
+      margin-bottom: 48px;
+    }
+
+    .section {
+      margin-bottom: 56px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #8892A4;
+      margin-bottom: 16px;
+    }
+
+    /* ── Dark version ─────────────────────────────── */
+    .bg-dark {
+      background: #0D1B2A;
+      border-radius: 12px;
+      padding: 40px 48px;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    /* ── Light version ────────────────────────────── */
+    .bg-light {
+      background: #FFFFFF;
+      border-radius: 12px;
+      padding: 40px 48px;
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid #E4E8EE;
+    }
+
+    /* ── Icon versions ────────────────────────────── */
+    .icons-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .icon-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .icon-wrap span {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #8892A4;
+    }
+
+    /* ── Palette ──────────────────────────────────── */
+    .palette {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .swatch {
+      width: 80px;
+    }
+
+    .swatch-color {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      border: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .swatch-name {
+      font-size: 11px;
+      font-weight: 500;
+      color: #0D1B2A;
+      display: block;
+    }
+
+    .swatch-hex {
+      font-family: 'Space Grotesk', monospace;
+      font-size: 10px;
+      color: #8892A4;
+      display: block;
+      margin-top: 2px;
+    }
+
+    /* ── Instagram profile circle ─────────────────── */
+    .profile-circle {
+      border-radius: 50%;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Mirada Digital — Brand Identity Preview</h1>
+
+  <!-- DARK LOGO -->
+  <div class="section">
+    <p class="section-label">Versión oscura — uso principal</p>
+    <div class="bg-dark">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 170" width="540" height="170">
+        <g transform="translate(82, 85)">
+          <path d="M-45,0 C-30,-30 30,-30 45,0 C30,18 -30,18 -45,0 Z"
+                fill="none" stroke="#00D4FF" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="0" cy="-4" r="15" fill="#0D1B2A" stroke="#00D4FF" stroke-width="2"/>
+          <polyline points="-9,5 -3,0 3,-6 9,-11"
+                    fill="none" stroke="#00E676" stroke-width="2.2"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="-3" cy="0"   r="2.2" fill="#00E676"/>
+          <circle cx="3"  cy="-6"  r="2.2" fill="#00E676"/>
+          <circle cx="9"  cy="-11" r="2.2" fill="#00E676"/>
+          <circle cx="0" cy="-4" r="3.5" fill="#00D4FF" opacity="0.25"/>
+        </g>
+        <line x1="150" y1="45" x2="150" y2="125" stroke="#8892A4" stroke-width="1" opacity="0.4"/>
+        <text x="170" y="83"
+              font-family="'Space Grotesk', 'Helvetica Neue', Arial, sans-serif"
+              font-weight="700" font-size="36" fill="#FFFFFF" letter-spacing="1">MIRADA DIGITAL</text>
+        <text x="171" y="112"
+              font-family="'Space Grotesk', 'Helvetica Neue', Arial, sans-serif"
+              font-weight="400" font-size="11" fill="#00D4FF" letter-spacing="6">AGENCIA DE PERFORMANCE</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- LIGHT LOGO -->
+  <div class="section">
+    <p class="section-label">Versión clara — documentos, presentaciones</p>
+    <div class="bg-light">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 170" width="540" height="170">
+        <g transform="translate(82, 85)">
+          <path d="M-45,0 C-30,-30 30,-30 45,0 C30,18 -30,18 -45,0 Z"
+                fill="none" stroke="#0D1B2A" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="0" cy="-4" r="15" fill="#0D1B2A" stroke="#0D1B2A" stroke-width="2"/>
+          <polyline points="-9,5 -3,0 3,-6 9,-11"
+                    fill="none" stroke="#00E676" stroke-width="2.2"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="-3" cy="0"   r="2.2" fill="#00E676"/>
+          <circle cx="3"  cy="-6"  r="2.2" fill="#00E676"/>
+          <circle cx="9"  cy="-11" r="2.2" fill="#00E676"/>
+          <circle cx="0" cy="-4" r="3.5" fill="#00D4FF" opacity="0.5"/>
+        </g>
+        <line x1="150" y1="45" x2="150" y2="125" stroke="#8892A4" stroke-width="1" opacity="0.4"/>
+        <text x="170" y="83"
+              font-family="'Space Grotesk', 'Helvetica Neue', Arial, sans-serif"
+              font-weight="700" font-size="36" fill="#0D1B2A" letter-spacing="1">MIRADA DIGITAL</text>
+        <text x="171" y="112"
+              font-family="'Space Grotesk', 'Helvetica Neue', Arial, sans-serif"
+              font-weight="400" font-size="11" fill="#0088AA" letter-spacing="6">AGENCIA DE PERFORMANCE</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ICON VERSIONS -->
+  <div class="section">
+    <p class="section-label">Ícono — perfil de Instagram y favicon</p>
+    <div class="icons-row">
+
+      <!-- 512px -->
+      <div class="icon-wrap">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="160" height="160" style="border-radius:8px;">
+          <rect width="512" height="512" fill="#0D1B2A"/>
+          <g transform="translate(256, 256)">
+            <path d="M-150,0 C-100,-100 100,-100 150,0 C100,60 -100,60 -150,0 Z"
+                  fill="none" stroke="#00D4FF" stroke-width="8" stroke-linecap="round"/>
+            <circle cx="0" cy="-13" r="56" fill="none" stroke="#00D4FF" stroke-width="1.5" opacity="0.15"/>
+            <circle cx="0" cy="-13" r="50" fill="#0D1B2A" stroke="#00D4FF" stroke-width="7"/>
+            <polyline points="-30,17 -10,0 10,-20 30,-37"
+                      fill="none" stroke="#00E676" stroke-width="7"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="-10" cy="0"   r="7" fill="#00E676"/>
+            <circle cx="10"  cy="-20" r="7" fill="#00E676"/>
+            <circle cx="30"  cy="-37" r="7" fill="#00E676"/>
+            <circle cx="0" cy="-13" r="11" fill="#00D4FF" opacity="0.3"/>
+          </g>
+        </svg>
+        <span>Square</span>
+      </div>
+
+      <!-- Instagram circle simulation -->
+      <div class="icon-wrap">
+        <div class="profile-circle" style="width:160px;height:160px;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="160" height="160">
+            <rect width="512" height="512" fill="#0D1B2A"/>
+            <g transform="translate(256, 256)">
+              <path d="M-150,0 C-100,-100 100,-100 150,0 C100,60 -100,60 -150,0 Z"
+                    fill="none" stroke="#00D4FF" stroke-width="8" stroke-linecap="round"/>
+              <circle cx="0" cy="-13" r="56" fill="none" stroke="#00D4FF" stroke-width="1.5" opacity="0.15"/>
+              <circle cx="0" cy="-13" r="50" fill="#0D1B2A" stroke="#00D4FF" stroke-width="7"/>
+              <polyline points="-30,17 -10,0 10,-20 30,-37"
+                        fill="none" stroke="#00E676" stroke-width="7"
+                        stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="-10" cy="0"   r="7" fill="#00E676"/>
+              <circle cx="10"  cy="-20" r="7" fill="#00E676"/>
+              <circle cx="30"  cy="-37" r="7" fill="#00E676"/>
+              <circle cx="0" cy="-13" r="11" fill="#00D4FF" opacity="0.3"/>
+            </g>
+          </svg>
+        </div>
+        <span>Instagram</span>
+      </div>
+
+      <!-- Small 48px favicon simulation -->
+      <div class="icon-wrap">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="48" height="48" style="border-radius:4px;">
+          <rect width="512" height="512" fill="#0D1B2A"/>
+          <g transform="translate(256, 256)">
+            <path d="M-150,0 C-100,-100 100,-100 150,0 C100,60 -100,60 -150,0 Z"
+                  fill="none" stroke="#00D4FF" stroke-width="8" stroke-linecap="round"/>
+            <circle cx="0" cy="-13" r="50" fill="#0D1B2A" stroke="#00D4FF" stroke-width="7"/>
+            <polyline points="-30,17 -10,0 10,-20 30,-37"
+                      fill="none" stroke="#00E676" stroke-width="7"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="-10" cy="0"   r="7" fill="#00E676"/>
+            <circle cx="10"  cy="-20" r="7" fill="#00E676"/>
+            <circle cx="30"  cy="-37" r="7" fill="#00E676"/>
+          </g>
+        </svg>
+        <span>Favicon</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PALETTE -->
+  <div class="section">
+    <p class="section-label">Paleta de colores</p>
+    <div class="palette">
+      <div class="swatch">
+        <div class="swatch-color" style="background:#0D1B2A;"></div>
+        <span class="swatch-name">Azul Noche</span>
+        <span class="swatch-hex">#0D1B2A</span>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#00D4FF;"></div>
+        <span class="swatch-name">Eléctrico</span>
+        <span class="swatch-hex">#00D4FF</span>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#00E676;"></div>
+        <span class="swatch-name">Verde ROI</span>
+        <span class="swatch-hex">#00E676</span>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#8892A4;"></div>
+        <span class="swatch-name">Gris Datos</span>
+        <span class="swatch-hex">#8892A4</span>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#FFFFFF; border:1px solid #E4E8EE;"></div>
+        <span class="swatch-name">Blanco</span>
+        <span class="swatch-hex">#FFFFFF</span>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
