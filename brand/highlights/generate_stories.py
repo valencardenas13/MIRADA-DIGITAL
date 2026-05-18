@@ -62,8 +62,7 @@ def num_step(x, y, n, title, *desc_lines):
     return "\n".join(parts)
 
 def hdr(label, cur, tot):
-    return "\n".join([hr(118, op=0.12), t(80, 174, label, 26, GRAY, 400, ls=5),
-                      t(1000, 174, f"{cur} / {tot}", 26, GRAY, 400, "end")])
+    return ""  # counter removed
 
 def ftr():
     return "\n".join([hr(1796, op=0.12),
