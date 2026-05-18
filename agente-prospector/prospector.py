@@ -284,13 +284,17 @@ Paso 3 — Scoring y selección:
   Seleccioná la cantidad de prospectos que te pidieron (indicado en el mensaje del usuario) usando esta lógica:
 
   Score base (suma):
-  +3 → es ecommerce activo
+  +3 → es ecommerce activo (plataforma detectada)
   +2 → servicios high-ticket detectados
-  +2 → NO tiene Meta Pixel (máxima brecha en Argentina)
-  +2 → NO tiene Google Ads
-  +1 → NO tiene GTM
-  +1 → NO tiene formulario ni WhatsApp (sin captación de leads)
-  -1 → tiene todos los píxeles (ya está bien configurado, baja oportunidad)
+  +2 → NO tiene Meta Pixel → oportunidad: arrancar pauta desde cero
+  +2 → NO tiene Google Ads → oportunidad: captura de búsquedas sin competencia
+  +1 → NO tiene GTM → tracking deficiente aunque tenga anuncios
+  +1 → NO tiene formulario ni WhatsApp → sin captación de leads
+  +2 → tiene Meta Pixel O Google Ads pero NO ambos → ya invierte, falta escalar
+  +1 → tiene todos los píxeles pero sin GTM → mal configurado, oportunidad de auditoría
+
+  Nota: un ecommerce CON anuncios corriendo NO baja el score. Al contrario:
+  ya sabe que los anuncios funcionan y tiene presupuesto — solo necesita una agencia mejor.
 
 Paso 4 — Output por prospecto:
   Para cada prospecto de la lista final:
@@ -316,7 +320,10 @@ CÓMO ESCRIBIR EL MENSAJE DE OUTREACH
 - Máximo 3 párrafos
 - Tono: cercano, argentino, directo. NO corporativo.
 - Primer párrafo: mostrá que investigaste su negocio (mencioná algo concreto)
-- Segundo párrafo: señalá UNA brecha específica que detectaste (usar los datos reales del análisis)
+- Segundo párrafo: señalá UNA brecha específica basada en el análisis real:
+    → Sin pixel ni anuncios: "estás vendiendo sin saber qué funciona"
+    → Tiene anuncios pero mal tracking: "estás invirtiendo plata sin poder medir el resultado real"
+    → Tiene pixel y anuncios: "con una auditoría te mostramos dónde se está escapando el presupuesto"
 - Tercer párrafo: propuesta de auditoría gratuita sin compromiso
 - NO uses plantillas genéricas. Cada mensaje tiene que sonar escrito a mano.
 - NO menciones que sos un bot o que usás IA.
@@ -346,11 +353,12 @@ def run_agent(rubro: str, ubicacion: str, tipo: str = "auto", cantidad: int = 10
     tipo_hint = ""
     if tipo == "ecommerce":
         tipo_hint = (
-            " Modo ECOMMERCE: el rubro es secundario, lo que importa es el ESTADO DIGITAL."
-            " Buscá tiendas online de cualquier categoría: indumentaria, calzado, cosmética, mascotas,"
+            " Modo ECOMMERCE: el rubro es secundario, lo que importa es que tenga tienda online activa."
+            " Buscá tiendas de cualquier categoría: indumentaria, calzado, cosmética, mascotas,"
             " hogar, deportes, electrónica, alimentos, juguetes, librería — lo que sea."
-            " El criterio de selección es: tiene tienda online activa (Shopify, TiendaNube, WooCommerce, etc.)"
-            " pero le faltan píxeles de tracking o publicidad paga. Eso es todo lo que necesitás para priorizarlo."
+            " CUALQUIER ecommerce activo es prospecto válido, con o sin píxeles, con o sin anuncios corriendo."
+            " Si no tiene píxeles: oportunidad de arrancar desde cero."
+            " Si ya tiene anuncios: oportunidad de mejorar performance y tomar la cuenta."
             " Usá estrategias de búsqueda variadas: 'ecommerce', 'general', 'decision-maker'."
         )
     elif tipo == "high-ticket":
