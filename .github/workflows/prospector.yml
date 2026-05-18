@@ -30,12 +30,20 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           echo "Token primeros 10 chars: ${TELEGRAM_TOKEN:0:10}"
-          echo "Chat ID: $TELEGRAM_CHAT_ID"
-          curl -s -o /tmp/tg_resp.json -w "%{http_code}" \
-            -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
-            -F "chat_id=${TELEGRAM_CHAT_ID}" \
-            -F "text=✅ GitHub Actions conectado — Mirada Digital prospector listo" \
-          && echo "" && cat /tmp/tg_resp.json
+          echo "Chat ID length: ${#TELEGRAM_CHAT_ID}"
+          python3 -c "
+import os, urllib.request, json
+token = os.environ['TELEGRAM_TOKEN'].strip()
+chat  = os.environ['TELEGRAM_CHAT_ID'].strip()
+url   = f'https://api.telegram.org/bot{token}/sendMessage'
+data  = json.dumps({'chat_id': chat, 'text': 'Mirada Digital - GitHub Actions conectado!'}).encode()
+req   = urllib.request.Request(url, data=data, headers={'Content-Type': 'application/json'})
+try:
+    r = urllib.request.urlopen(req, timeout=10)
+    print('OK:', r.status)
+except Exception as e:
+    print('ERROR:', e)
+"
 
       - name: Correr prospector
         env:
