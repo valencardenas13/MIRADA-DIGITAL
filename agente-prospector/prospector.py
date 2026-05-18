@@ -24,6 +24,25 @@ except ImportError:
 
 client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 
+TELEGRAM_TOKEN   = os.environ.get("TELEGRAM_TOKEN", "")
+TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
+
+
+def telegram_send(text: str) -> None:
+    """Manda un mensaje a Telegram. Silencioso si no hay credenciales."""
+    if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID:
+        return
+    try:
+        # Telegram limita a 4096 chars por mensaje; cortamos si hace falta
+        for chunk in [text[i:i+4000] for i in range(0, len(text), 4000)]:
+            httpx.post(
+                f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage",
+                json={"chat_id": TELEGRAM_CHAT_ID, "text": chunk, "parse_mode": "Markdown"},
+                timeout=10,
+            )
+    except Exception:
+        pass  # Telegram es best-effort, no corta el agente si falla
+
 # ── Señales de ecommerce y high-ticket ────────────────────────────────────────
 
 ECOMMERCE_SIGNALS = {
@@ -317,6 +336,7 @@ Al final mostrá una tabla con los 10 prospectos ordenados por score:
 def run_agent(rubro: str, ubicacion: str, tipo: str = "auto"):
     print(f"\n🔍  Prospectando: {rubro}  |  {ubicacion}  |  modo: {tipo}\n")
     print("─" * 60)
+    telegram_send(f"🔍 *Mirada Digital — Agente Prospector*\nBuscando: *{rubro}* en *{ubicacion}* (modo: {tipo})\n_Esto puede tardar 2-3 minutos..._")
 
     tipo_hint = ""
     if tipo == "ecommerce":
@@ -356,6 +376,7 @@ def run_agent(rubro: str, ubicacion: str, tipo: str = "auto"):
         for text in text_blocks:
             if text.strip():
                 print(text)
+                telegram_send(text)
 
         if response.stop_reason == "end_turn" or not tool_uses:
             break
@@ -393,6 +414,7 @@ def run_agent(rubro: str, ubicacion: str, tipo: str = "auto"):
 
     print("\n" + "─" * 60)
     print("✅ Prospección completada\n")
+    telegram_send("✅ *Prospección completada.* Copiá el mensaje del prospecto que más te guste y mandáselo.")
 
 
 # ── Entry point ────────────────────────────────────────────────────────────────
