@@ -44,13 +44,13 @@ render("slide-01.png",
     t(80,  460, "te esta",    130, WHITE, 700),
     t(80,  610, "mintiendo?", 130, CYAN,  700),
     hr(700),
-    t(80,  790, "5 senales que no te va a mostrar.", 52, GRAY, 400),
+    t(80,  790, "5 señales que no te va a mostrar.", 52, GRAY, 400),
 )
 
-# ── 02 — SENAL 1 ─────────────────────────────────────────────────
+# ── 02 — SEÑAL 1 ─────────────────────────────────────────────────
 render("slide-02.png",
     ftr(), swipe(), num("1"),
-    t(80, 200, "SENAL 1", 34, CYAN, 400, ls=8),
+    t(80, 200, "SEÑAL 1", 34, CYAN, 400, ls=8),
     t(80, 440, "No recibes",  120, WHITE, 700),
     t(80, 580, "reportes.",   120, CYAN,  700),
     hr(670),
@@ -58,10 +58,10 @@ render("slide-02.png",
     t(80, 828, "no tienen nada bueno que mostrar.", 52, WHITE, 400),
 )
 
-# ── 03 — SENAL 2 ─────────────────────────────────────────────────
+# ── 03 — SEÑAL 2 ─────────────────────────────────────────────────
 render("slide-03.png",
     ftr(), swipe(), num("2"),
-    t(80, 200, "SENAL 2", 34, CYAN, 400, ls=8),
+    t(80, 200, "SEÑAL 2", 34, CYAN, 400, ls=8),
     t(80, 430, "Solo hablan", 118, WHITE, 700),
     t(80, 566, "de likes.",   118, CYAN,  700),
     hr(658),
@@ -69,10 +69,10 @@ render("slide-03.png",
     t(80, 816, "Pedi conversiones, leads, ventas.", 52, GRAY, 400),
 )
 
-# ── 04 — SENAL 3 ─────────────────────────────────────────────────
+# ── 04 — SEÑAL 3 ─────────────────────────────────────────────────
 render("slide-04.png",
     ftr(), swipe(), num("3"),
-    t(80, 200, "SENAL 3", 34, CYAN, 400, ls=8),
+    t(80, 200, "SEÑAL 3", 34, CYAN, 400, ls=8),
     t(80, 410, "No podes",    118, WHITE, 700),
     t(80, 546, "entrar a tu", 118, WHITE, 700),
     t(80, 682, "cuenta.",     118, CYAN,  700),
@@ -80,14 +80,14 @@ render("slide-04.png",
     t(80, 850, "Tu cuenta es TUYA. Siempre.", 52, WHITE, 700),
 )
 
-# ── 05 — SENAL 4+5 ───────────────────────────────────────────────
+# ── 05 — SEÑAL 4+5 ───────────────────────────────────────────────
 render("slide-05.png",
     ftr(), swipe(),
-    t(80, 160, "SENAL 4", 34, CYAN, 400, ls=8),
+    t(80, 160, "SEÑAL 4", 34, CYAN, 400, ls=8),
     t(80, 280, '"Los resultados', 86, WHITE, 700),
     t(80, 380,  'estan por venir."', 86, CYAN, 700),
     hr(450, op=0.12),
-    t(80, 540, "SENAL 5", 34, CYAN, 400, ls=8),
+    t(80, 540, "SEÑAL 5", 34, CYAN, 400, ls=8),
     t(80, 660, "No explican", 86, WHITE, 700),
     t(80, 760, "nada de lo que hacen.", 86, CYAN, 700),
     hr(840, CYAN, 0.3),
