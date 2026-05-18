@@ -345,7 +345,14 @@ def run_agent(rubro: str, ubicacion: str, tipo: str = "auto", cantidad: int = 10
 
     tipo_hint = ""
     if tipo == "ecommerce":
-        tipo_hint = " Enfocate principalmente en tiendas online y ecommerce."
+        tipo_hint = (
+            " Modo ECOMMERCE: el rubro es secundario, lo que importa es el ESTADO DIGITAL."
+            " Buscá tiendas online de cualquier categoría: indumentaria, calzado, cosmética, mascotas,"
+            " hogar, deportes, electrónica, alimentos, juguetes, librería — lo que sea."
+            " El criterio de selección es: tiene tienda online activa (Shopify, TiendaNube, WooCommerce, etc.)"
+            " pero le faltan píxeles de tracking o publicidad paga. Eso es todo lo que necesitás para priorizarlo."
+            " Usá estrategias de búsqueda variadas: 'ecommerce', 'general', 'decision-maker'."
+        )
     elif tipo == "high-ticket":
         tipo_hint = " Enfocate en servicios de alto valor: coaches, consultores, clínicas, inmobiliarias."
 
