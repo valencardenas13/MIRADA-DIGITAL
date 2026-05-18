@@ -29,19 +29,29 @@ TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
 
 
 def telegram_send(text: str) -> None:
-    """Manda un mensaje a Telegram. Silencioso si no hay credenciales."""
+    """Manda un mensaje a Telegram. Loguea errores en vez de ignorarlos."""
     if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID:
+        print("[Telegram] Sin credenciales — mensaje no enviado", flush=True)
         return
     try:
-        # Telegram limita a 4096 chars por mensaje; cortamos si hace falta
         for chunk in [text[i:i+4000] for i in range(0, len(text), 4000)]:
-            httpx.post(
-                f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage",
-                json={"chat_id": TELEGRAM_CHAT_ID, "text": chunk, "parse_mode": "Markdown"},
-                timeout=10,
-            )
-    except Exception:
-        pass  # Telegram es best-effort, no corta el agente si falla
+            # Markdown puede romper si el texto tiene caracteres especiales — fallback a texto plano
+            for parse_mode in ["Markdown", None]:
+                payload = {"chat_id": TELEGRAM_CHAT_ID, "text": chunk}
+                if parse_mode:
+                    payload["parse_mode"] = parse_mode
+                r = httpx.post(
+                    f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage",
+                    json=payload,
+                    timeout=15,
+                )
+                if r.status_code == 200:
+                    break
+                if parse_mode:
+                    continue  # reintentar sin Markdown
+                print(f"[Telegram] Error {r.status_code}: {r.text[:200]}", flush=True)
+    except Exception as e:
+        print(f"[Telegram] Excepción: {e}", flush=True)
 
 # ── Señales de ecommerce y high-ticket ────────────────────────────────────────
 
