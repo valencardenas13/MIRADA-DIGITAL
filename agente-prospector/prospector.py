@@ -192,6 +192,70 @@ def analizar_sitio(url: str) -> dict:
         return {"url": url, "error": str(e)}
 
 
+def buscar_responsable(nombre_empresa: str, url: str = "") -> dict:
+    """
+    Busca el dueño, fundador o director de una empresa.
+    Intenta encontrar su Instagram personal y/o LinkedIn.
+    """
+    dominio = url.replace("https://", "").replace("http://", "").split("/")[0] if url else ""
+    queries = [
+        f'"{nombre_empresa}" dueño OR fundador OR founder OR CEO site:instagram.com',
+        f'"{nombre_empresa}" dueño OR fundador instagram Argentina',
+        f'fundador "{nombre_empresa}" linkedin.com/in',
+        f'"{dominio}" dueño OR fundador OR CEO' if dominio else None,
+    ]
+
+    candidatos = []
+    try:
+        with DDGS() as ddgs:
+            for query in queries:
+                if not query:
+                    continue
+                for r in ddgs.text(query, max_results=4):
+                    href = r.get("href", "")
+                    body = r.get("body", "")
+                    title = r.get("title", "")
+
+                    es_ig = "instagram.com" in href
+                    es_li = "linkedin.com/in" in href
+
+                    if not (es_ig or es_li):
+                        continue
+
+                    # Extraer handle de Instagram
+                    handle_ig = ""
+                    if es_ig:
+                        partes = href.rstrip("/").split("/")
+                        handle = partes[-1] if partes else ""
+                        if handle and handle not in ("instagram.com", "p", "reel", "stories", "explore"):
+                            handle_ig = f"@{handle}"
+
+                    candidatos.append({
+                        "fuente": "instagram" if es_ig else "linkedin",
+                        "url": href,
+                        "handle_ig": handle_ig,
+                        "titulo": title[:80],
+                        "descripcion": body[:120],
+                    })
+
+                if len(candidatos) >= 3:
+                    break
+    except Exception as e:
+        return {"error": str(e), "candidatos": []}
+
+    # Priorizar Instagram personal (no la cuenta de la empresa)
+    ig_personales = [c for c in candidatos if c["fuente"] == "instagram" and c["handle_ig"]]
+    linkedin = [c for c in candidatos if c["fuente"] == "linkedin"]
+
+    return {
+        "empresa": nombre_empresa,
+        "instagram_responsable": ig_personales[0] if ig_personales else None,
+        "linkedin_responsable": linkedin[0] if linkedin else None,
+        "confianza": "alta" if ig_personales else ("media" if linkedin else "baja"),
+        "todos_los_candidatos": candidatos[:5],
+    }
+
+
 # ── Tool definitions ───────────────────────────────────────────────────────────
 
 TOOLS = [
@@ -232,6 +296,23 @@ TOOLS = [
             "required": ["url"],
         },
     },
+    {
+        "name": "buscar_responsable",
+        "description": (
+            "Busca al dueño, fundador o director de una empresa. "
+            "Devuelve su Instagram personal y/o LinkedIn si los encuentra. "
+            "Usá esta herramienta para cada prospecto seleccionado — el outreach va al responsable, "
+            "no a la cuenta del negocio."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "nombre_empresa": {"type": "string", "description": "Nombre del negocio"},
+                "url": {"type": "string", "description": "URL del sitio (ayuda a afinar la búsqueda)"},
+            },
+            "required": ["nombre_empresa"],
+        },
+    },
 ]
 
 
@@ -240,6 +321,8 @@ def ejecutar_herramienta(nombre: str, inputs: dict):
         return buscar_empresas(**inputs)
     elif nombre == "analizar_sitio":
         return analizar_sitio(**inputs)
+    elif nombre == "buscar_responsable":
+        return buscar_responsable(**inputs)
     return {"error": f"Herramienta desconocida: {nombre}"}
 
 
@@ -280,7 +363,13 @@ Paso 1 — Búsqueda múltiple:
 Paso 2 — Análisis de sitios:
   Analizá todos los candidatos que tengan URL válida.
 
-Paso 3 — Scoring y selección:
+Paso 3 — Buscar responsable (OBLIGATORIO para cada prospecto seleccionado):
+  Llamá buscar_responsable con el nombre y URL de cada prospecto que vayas a incluir.
+  El outreach NUNCA va a la cuenta del negocio — siempre al dueño o fundador directamente.
+  Si no encontrás responsable con confianza "alta" o "media", descartá ese prospecto
+  y tomá el siguiente de la lista.
+
+Paso 4 — Scoring y selección:
   Seleccioná la cantidad de prospectos que te pidieron (indicado en el mensaje del usuario) usando esta lógica:
 
   Score base (suma):
@@ -301,16 +390,21 @@ Paso 4 — Output por prospecto:
 
   ┌─────────────────────────────────────────────────┐
   │ #N  NOMBRE DEL NEGOCIO                          │
-  │ URL: https://...                                │
-  │ Tipo: Ecommerce (TiendaNube) / High-ticket / ... │
+  │ Web: https://...                                │
+  │ Tipo: Ecommerce (TiendaNube) / High-ticket / ...│
   │ Score: X/10                                     │
+  │                                                 │
+  │ CONTACTO DIRECTO:                               │
+  │ Nombre: [nombre del responsable si se encontró] │
+  │ Instagram personal: @handle                     │
+  │ LinkedIn: linkedin.com/in/...  (si aplica)      │
   │                                                 │
   │ DIAGNÓSTICO (2 líneas):                         │
   │ Tiene/No tiene: [lista de píxeles]              │
   │ Brecha principal: [1 línea]                     │
   │                                                 │
-  │ MENSAJE DE OUTREACH:                            │
-  │ [Texto listo para copiar a WhatsApp o IG DM]    │
+  │ MENSAJE DE OUTREACH (listo para copiar):        │
+  │ [Dirigido al responsable por nombre si lo tenés]│
   └─────────────────────────────────────────────────┘
 
 ═══════════════════════════════════════════════════════
@@ -319,6 +413,7 @@ CÓMO ESCRIBIR EL MENSAJE DE OUTREACH
 
 - Máximo 3 párrafos
 - Tono: cercano, argentino, directo. NO corporativo.
+- Si tenés el nombre del responsable, arrancá con "Hola [nombre]!" — nunca "Hola [nombre del negocio]!"
 - Primer párrafo: mostrá que investigaste su negocio (mencioná algo concreto)
 - Segundo párrafo: señalá UNA brecha específica basada en el análisis real:
     → Sin pixel ni anuncios: "estás vendiendo sin saber qué funciona"
@@ -423,6 +518,18 @@ def run_agent(rubro: str, ubicacion: str, tipo: str = "auto", cantidad: int = 10
                     print(f"   → {tipo_tag}  gaps: {', '.join(gaps) if gaps else 'ninguno'}")
                 elif isinstance(result, dict) and "error" in result:
                     print(f"   → ⚠ {result['error'][:60]}")
+            elif tool_name == "buscar_responsable":
+                if isinstance(result, dict):
+                    confianza = result.get("confianza", "baja")
+                    ig = result.get("instagram_responsable")
+                    handle = ig.get("handle_ig", "") if ig else ""
+                    li = result.get("linkedin_responsable")
+                    if handle:
+                        print(f"   → 👤 {handle}  [{confianza}]")
+                    elif li:
+                        print(f"   → 👤 LinkedIn encontrado  [{confianza}]")
+                    else:
+                        print(f"   → ⚠ Responsable no encontrado  [{confianza}]")
 
             tool_results.append({
                 "type": "tool_result",
