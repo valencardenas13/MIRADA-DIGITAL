@@ -482,7 +482,7 @@ def run_agent(rubro: str, ubicacion: str, tipo: str = "auto", cantidad: int = 10
 
     while True:
         response = client.messages.create(
-            model="claude-opus-4-7",
+            model="claude-sonnet-4-6",
             max_tokens=16000,
             thinking={"type": "adaptive"},
             system=SYSTEM_PROMPT,
