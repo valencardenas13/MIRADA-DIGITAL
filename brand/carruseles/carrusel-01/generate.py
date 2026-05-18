@@ -37,7 +37,7 @@ def swipe():
     return t(1000, 1056, "desliza  >", 26, CYAN, 400, "end")
 
 # ── 01 — COVER ───────────────────────────────────────────────────
-# Hook: pregunta que duele. Sin más texto.
+# Hook: pregunta que duele. Sin mas texto.
 render("slide-01.png",
     ftr(), swipe(),
     t(80,  310, "Tu agencia", 130, WHITE, 700),
@@ -47,7 +47,7 @@ render("slide-01.png",
     t(80,  790, "5 senales que no te va a mostrar.", 52, GRAY, 400),
 )
 
-# ── 02 — SEÑAL 1 ─────────────────────────────────────────────────
+# ── 02 — SENAL 1 ─────────────────────────────────────────────────
 render("slide-02.png",
     ftr(), swipe(), num("1"),
     t(80, 200, "SENAL 1", 34, CYAN, 400, ls=8),
@@ -58,7 +58,7 @@ render("slide-02.png",
     t(80, 828, "no tienen nada bueno que mostrar.", 52, WHITE, 400),
 )
 
-# ── 03 — SEÑAL 2 ─────────────────────────────────────────────────
+# ── 03 — SENAL 2 ─────────────────────────────────────────────────
 render("slide-03.png",
     ftr(), swipe(), num("2"),
     t(80, 200, "SENAL 2", 34, CYAN, 400, ls=8),
@@ -69,7 +69,7 @@ render("slide-03.png",
     t(80, 816, "Pedi conversiones, leads, ventas.", 52, GRAY, 400),
 )
 
-# ── 04 — SEÑAL 3 ─────────────────────────────────────────────────
+# ── 04 — SENAL 3 ─────────────────────────────────────────────────
 render("slide-04.png",
     ftr(), swipe(), num("3"),
     t(80, 200, "SENAL 3", 34, CYAN, 400, ls=8),
@@ -80,7 +80,7 @@ render("slide-04.png",
     t(80, 850, "Tu cuenta es TUYA. Siempre.", 52, WHITE, 700),
 )
 
-# ── 05 — SEÑAL 4+5 ───────────────────────────────────────────────
+# ── 05 — SENAL 4+5 ───────────────────────────────────────────────
 render("slide-05.png",
     ftr(), swipe(),
     t(80, 160, "SENAL 4", 34, CYAN, 400, ls=8),
@@ -107,4 +107,4 @@ render("slide-06.png",
     t(80,  960, "Escribinos por WhatsApp  >>", 50, GREEN, 700),
 )
 
-print("\nCarrusel 01 — 6 slides.")
+print("\nCarrusel 01 - 6 slides.")
