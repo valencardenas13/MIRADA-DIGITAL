@@ -216,43 +216,177 @@ def analizar_sitio(url: str) -> dict:
         return {"url": url, "error": str(e)}
 
 
+def _extraer_nombre_responsable_del_sitio(url: str) -> str:
+    """
+    Intenta extraer el nombre real del dueño/fundador desde páginas internas del sitio
+    (about, equipo, nosotros, team, quienes-somos, blog author, etc.)
+    Devuelve el nombre si lo encuentra, string vacío si no.
+    """
+    if not url or not url.startswith("http"):
+        return ""
+    base = url.rstrip("/")
+    slugs = ["about", "nosotros", "quienes-somos", "quiénes-somos", "equipo",
+             "team", "sobre-nosotros", "sobre-mi", "sobre-mí", "founder", "acerca"]
+    keywords_nombre = ["fundad", "ceo", "director", "co-founder", "dueñ", "creado por",
+                       "founder", "propietari", "socio", "presidente"]
+    import re
+
+    def _buscar_en_html(html_orig: str) -> str:
+        soup2 = BeautifulSoup(html_orig, "html.parser")
+        # Buscar en meta og:title, author, schema.org Person
+        for meta in soup2.find_all("meta"):
+            name_attr = (meta.get("name") or meta.get("property") or "").lower()
+            if "author" in name_attr:
+                val = meta.get("content", "").strip()
+                if val and len(val.split()) <= 5:
+                    return val
+        # Buscar en JSON-LD schema.org
+        for script in soup2.find_all("script", type="application/ld+json"):
+            try:
+                data = json.loads(script.string or "")
+                if isinstance(data, list):
+                    data = data[0]
+                # Person schema
+                if data.get("@type") == "Person":
+                    return data.get("name", "")
+                # founder dentro de Organization
+                founder = data.get("founder") or data.get("author")
+                if isinstance(founder, dict):
+                    return founder.get("name", "")
+                if isinstance(founder, str):
+                    return founder
+            except Exception:
+                pass
+        # Buscar en headings y párrafos con keywords
+        for tag in soup2.find_all(["h1", "h2", "h3", "p", "span"])[:60]:
+            text = tag.get_text(strip=True)
+            if any(k in text.lower() for k in keywords_nombre) and len(text) < 150:
+                # Intentar extraer solo el nombre (primeras 2-4 palabras tipo nombre propio)
+                m = re.search(r'\b([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+){1,3})\b', text)
+                if m:
+                    return m.group(1)
+        return ""
+
+    # Primero intentar en la homepage
+    try:
+        resp = httpx.get(base, timeout=10, follow_redirects=True,
+                         headers={"User-Agent": "Mozilla/5.0 (compatible; Googlebot/2.1)"})
+        nombre = _buscar_en_html(resp.text)
+        if nombre:
+            return nombre
+    except Exception:
+        pass
+
+    # Luego intentar páginas internas
+    for slug in slugs:
+        try:
+            r = httpx.get(f"{base}/{slug}", timeout=8, follow_redirects=True,
+                          headers={"User-Agent": "Mozilla/5.0 (compatible; Googlebot/2.1)"})
+            if r.status_code == 200:
+                nombre = _buscar_en_html(r.text)
+                if nombre:
+                    return nombre
+        except Exception:
+            continue
+    return ""
+
+
+def _validar_candidato_ig(handle: str, titulo: str, descripcion: str,
+                           nombre_empresa: str, nombre_responsable: str) -> int:
+    """
+    Devuelve un score de validez (0-10) para un candidato de Instagram.
+    Filtra falsos positivos: perfiles extranjeros, cuentas de empresa, nombres sin match.
+    """
+    score = 0
+    texto = f"{titulo} {descripcion}".lower()
+    nombre_emp_lower = nombre_empresa.lower()
+    nombre_resp_lower = nombre_responsable.lower()
+
+    # Señales positivas
+    if nombre_resp_lower and any(p in texto for p in nombre_resp_lower.split()):
+        score += 4  # el nombre del responsable aparece en el perfil
+    if nombre_emp_lower[:8] in texto:
+        score += 2  # el nombre del negocio aparece en el perfil
+    if any(k in texto for k in ["argentina", "buenos aires", "caba", "arg", " ar "]):
+        score += 2  # perfil argentino
+    if any(k in texto for k in ["fundador", "founder", "ceo", "dueño", "director", "emprendedor"]):
+        score += 2  # el perfil se identifica como responsable
+
+    # Señales negativas (falsos positivos comunes)
+    if any(k in texto for k in ["official", "fanpage", "fan page", "página oficial"]):
+        score -= 3  # cuenta oficial/fanpage, no personal
+    if handle.lower() in nombre_emp_lower.replace(" ", ""):
+        score -= 2  # el handle coincide con el nombre del negocio → es la cuenta del negocio
+    if any(k in texto for k in ["españa", "mexico", "chile", "colombia", "peru", "miami", "usa", "madrid", "barcelona"]):
+        score -= 3  # perfil extranjero
+
+    return max(0, score)
+
+
 def buscar_responsable(nombre_empresa: str, url: str = "") -> dict:
     """
-    Busca el dueño, fundador o director de una empresa.
-    Intenta encontrar su Instagram personal y/o LinkedIn.
+    Busca el dueño, fundador o director de una empresa en dos pasos:
+    1. Extrae el nombre real desde el sitio web (about, schema.org, meta author)
+    2. Busca ese nombre en Instagram y LinkedIn con queries específicos
+    Filtra falsos positivos con scoring de validez.
     """
     dominio = url.replace("https://", "").replace("http://", "").split("/")[0] if url else ""
-    queries = [
-        f'"{nombre_empresa}" dueño OR fundador OR founder OR CEO site:instagram.com',
-        f'"{nombre_empresa}" dueño OR fundador instagram Argentina',
-        f'fundador "{nombre_empresa}" linkedin.com/in',
-        f'"{dominio}" dueño OR fundador OR CEO' if dominio else None,
+
+    # Paso 1: intentar extraer nombre desde el sitio
+    nombre_responsable = ""
+    if url:
+        nombre_responsable = _extraer_nombre_responsable_del_sitio(url)
+
+    # Paso 2: armar queries específicos según si tenemos nombre o no
+    queries = []
+    if nombre_responsable:
+        queries += [
+            f'"{nombre_responsable}" instagram.com Argentina',
+            f'"{nombre_responsable}" site:instagram.com',
+            f'"{nombre_responsable}" linkedin.com/in',
+        ]
+    # Queries genéricos como fallback
+    queries += [
+        f'"{nombre_empresa}" dueño OR fundador OR CEO site:instagram.com Argentina',
+        f'"{nombre_empresa}" fundador OR founder linkedin.com/in',
+        f'dueño "{nombre_empresa}" Argentina instagram',
     ]
+    if dominio:
+        queries.append(f'site:{dominio} fundador OR dueño OR CEO OR "sobre mí"')
 
     candidatos = []
     try:
         with DDGS() as ddgs:
             for query in queries:
-                if not query:
-                    continue
-                for r in ddgs.text(query, max_results=4):
+                for r in ddgs.text(query, max_results=5):
                     href = r.get("href", "")
                     body = r.get("body", "")
                     title = r.get("title", "")
 
                     es_ig = "instagram.com" in href
                     es_li = "linkedin.com/in" in href
-
                     if not (es_ig or es_li):
                         continue
 
-                    # Extraer handle de Instagram
                     handle_ig = ""
                     if es_ig:
                         partes = href.rstrip("/").split("/")
                         handle = partes[-1] if partes else ""
-                        if handle and handle not in ("instagram.com", "p", "reel", "stories", "explore"):
+                        invalidos = {"instagram.com", "p", "reel", "stories", "explore",
+                                     "accounts", "tv", "share", "reels"}
+                        if handle and handle not in invalidos and not handle.startswith("_"):
                             handle_ig = f"@{handle}"
+                        else:
+                            continue  # URL de IG sin handle válido, ignorar
+
+                    # Calcular score de validez
+                    validez = 0
+                    if es_ig and handle_ig:
+                        validez = _validar_candidato_ig(
+                            handle_ig, title, body, nombre_empresa, nombre_responsable
+                        )
+                        if validez < 1:
+                            continue  # falso positivo muy probable
 
                     candidatos.append({
                         "fuente": "instagram" if es_ig else "linkedin",
@@ -260,22 +394,39 @@ def buscar_responsable(nombre_empresa: str, url: str = "") -> dict:
                         "handle_ig": handle_ig,
                         "titulo": title[:80],
                         "descripcion": body[:120],
+                        "validez": validez,
                     })
 
-                if len(candidatos) >= 3:
+                if len(candidatos) >= 5:
                     break
     except Exception as e:
-        return {"error": str(e), "candidatos": []}
+        return {"error": str(e), "nombre_encontrado_en_sitio": nombre_responsable, "candidatos": []}
 
-    # Priorizar Instagram personal (no la cuenta de la empresa)
+    # Ordenar por validez descendente
+    candidatos.sort(key=lambda c: c.get("validez", 0), reverse=True)
+
     ig_personales = [c for c in candidatos if c["fuente"] == "instagram" and c["handle_ig"]]
     linkedin = [c for c in candidatos if c["fuente"] == "linkedin"]
 
+    # Determinar confianza
+    mejor_ig = ig_personales[0] if ig_personales else None
+    mejor_li = linkedin[0] if linkedin else None
+
+    if mejor_ig and mejor_ig.get("validez", 0) >= 4:
+        confianza = "alta"
+    elif mejor_ig and mejor_ig.get("validez", 0) >= 2:
+        confianza = "media"
+    elif mejor_li or nombre_responsable:
+        confianza = "media"
+    else:
+        confianza = "baja"
+
     return {
         "empresa": nombre_empresa,
-        "instagram_responsable": ig_personales[0] if ig_personales else None,
-        "linkedin_responsable": linkedin[0] if linkedin else None,
-        "confianza": "alta" if ig_personales else ("media" if linkedin else "baja"),
+        "nombre_encontrado_en_sitio": nombre_responsable,
+        "instagram_responsable": mejor_ig,
+        "linkedin_responsable": mejor_li,
+        "confianza": confianza,
         "todos_los_candidatos": candidatos[:5],
     }
 
