@@ -3,24 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mockup — Posteo Mirada Digital</title>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;800&display=swap" rel="stylesheet">
+  <title>Mockup — Mirada Digital</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;800;900&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      background: #0a0a0a;
+      background: #080808;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
       font-family: 'Space Grotesk', sans-serif;
-      padding: 24px;
-      gap: 12px;
+      padding: 20px;
+      gap: 10px;
     }
     .label {
-      color: #444;
-      font-size: 11px;
+      color: #333;
+      font-size: 10px;
       letter-spacing: 2px;
       text-transform: uppercase;
     }
@@ -29,121 +29,190 @@
       width: 100%;
       max-width: 420px;
       aspect-ratio: 1 / 1;
-      border-radius: 3px;
+      border-radius: 2px;
       overflow: hidden;
-      box-shadow: 0 20px 80px rgba(0,0,0,0.9);
+      box-shadow: 0 30px 100px rgba(0,0,0,0.95);
     }
 
-    /* Foto real de fondo */
+    /* Foto autopista de noche */
     .photo {
       position: absolute;
       inset: 0;
-      background-image: url('https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=800&q=80');
+      background-image: url('https://images.unsplash.com/photo-1489824904134-891ab64532f1?w=900&q=85');
       background-size: cover;
-      background-position: center;
-      filter: brightness(0.45) contrast(1.1) saturate(0.7);
+      background-position: center 60%;
+      filter: brightness(0.5) contrast(1.15) saturate(0.6);
     }
 
-    /* Overlay degradado direccional */
+    /* Overlay para oscurecer arriba donde va el cartel */
     .overlay {
       position: absolute;
       inset: 0;
       background: linear-gradient(
         to bottom,
-        rgba(0,0,0,0.2) 0%,
-        rgba(0,0,0,0.1) 30%,
-        rgba(0,0,0,0.65) 70%,
+        rgba(0,0,0,0.3) 0%,
+        rgba(0,0,0,0.1) 35%,
+        rgba(0,0,0,0.5) 75%,
         rgba(0,0,0,0.85) 100%
       );
     }
 
-    /* Línea de acento lateral */
-    .accent-line {
+    /* El cartel — tipo valla publicitaria */
+    .billboard {
       position: absolute;
-      left: 9%;
-      top: 18%;
-      bottom: 18%;
-      width: 2px;
-      background: linear-gradient(to bottom, transparent, #00D4FF 30%, #00E676 70%, transparent);
-      opacity: 0.7;
+      top: 8%;
+      left: 6%;
+      right: 6%;
+      background: #f5f0e8;
+      border-radius: 2px;
+      padding: 6% 7% 5%;
+      box-shadow:
+        0 8px 30px rgba(0,0,0,0.7),
+        inset 0 0 0 3px rgba(0,0,0,0.08);
+      /* Leve perspectiva para que se vea como cartel real */
+      transform: perspective(800px) rotateX(2deg);
     }
 
-    /* Contenido */
-    .content {
+    /* Soporte del cartel */
+    .post::before {
+      content: '';
+      position: absolute;
+      top: calc(8% + 0px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 4px;
+      height: 20%;
+      background: #555;
+      z-index: 5;
+      top: auto;
+      bottom: 38%;
+    }
+
+    /* Textura de papel en el cartel */
+    .billboard::before {
+      content: '';
       position: absolute;
       inset: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      padding: 8% 9% 10%;
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 28px,
+          rgba(0,0,0,0.03) 28px,
+          rgba(0,0,0,0.03) 29px
+        );
+      border-radius: 2px;
     }
 
-    .tag {
-      font-size: clamp(9px, 2.2vw, 12px);
+    .billboard-inner {
+      position: relative;
+    }
+
+    .billboard-tag {
+      font-size: clamp(7px, 1.8vw, 10px);
       letter-spacing: 3px;
       text-transform: uppercase;
-      color: #00D4FF;
-      margin-bottom: 4%;
+      color: #999;
+      margin-bottom: 10px;
       font-weight: 500;
     }
 
-    .headline {
-      font-size: clamp(17px, 5.2vw, 26px);
-      font-weight: 800;
-      color: #fff;
-      line-height: 1.25;
-      margin-bottom: 5%;
-      text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+    .billboard-text {
+      font-size: clamp(14px, 4.5vw, 22px);
+      font-weight: 900;
+      color: #111;
+      line-height: 1.2;
+      text-transform: uppercase;
+      letter-spacing: -0.5px;
     }
 
-    .headline .highlight {
-      color: #00D4FF;
+    .billboard-text .highlight {
+      color: #0066FF;
+      font-style: italic;
     }
 
-    .subtext {
-      font-size: clamp(10px, 2.8vw, 14px);
+    .billboard-divider {
+      width: 40px;
+      height: 3px;
+      background: #111;
+      margin: 12px 0;
+    }
+
+    .billboard-sub {
+      font-size: clamp(9px, 2.5vw, 12px);
+      color: #444;
+      line-height: 1.5;
       font-weight: 400;
-      color: rgba(255,255,255,0.6);
-      line-height: 1.6;
-      margin-bottom: 6%;
     }
 
+    .billboard-cta {
+      display: inline-block;
+      margin-top: 12px;
+      background: #111;
+      color: #fff;
+      font-size: clamp(7px, 2vw, 10px);
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 6px 12px;
+      border-radius: 1px;
+    }
+
+    /* Handle abajo */
     .handle {
+      position: absolute;
+      bottom: 5%;
+      left: 7%;
       font-size: clamp(9px, 2vw, 11px);
       letter-spacing: 1px;
-      color: rgba(255,255,255,0.35);
+      color: rgba(255,255,255,0.3);
       font-weight: 500;
+      z-index: 10;
     }
+    .handle span { color: rgba(255,255,255,0.55); }
 
-    .handle span {
-      color: #00D4FF;
-      opacity: 0.7;
+    /* Soporte del cartel visual */
+    .pole {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 5px;
+      height: 40%;
+      background: linear-gradient(to bottom, #666, #333);
+      z-index: 1;
     }
   </style>
 </head>
 <body>
 
-  <p class="label">Feed Instagram — 1080×1080</p>
+  <p class="label">Feed Instagram — Estética Cartel</p>
 
   <div class="post">
     <div class="photo"></div>
     <div class="overlay"></div>
-    <div class="accent-line"></div>
-    <div class="content">
-      <p class="tag">Mirada Digital</p>
-      <h1 class="headline">
-        La mayoría de las agencias<br>
-        cobran por hacer clic<br>
-        en "publicar".<br><br>
-        Nosotros cobramos<br>
-        por <span class="highlight">resultados</span>.
-      </h1>
-      <p class="subtext">
-        Si no crecés, hay algo que no está funcionando<br>
-        — y te lo decimos de frente.
-      </p>
-      <p class="handle"><span>@</span>somosmiradadigital</p>
+    <div class="pole"></div>
+
+    <div class="billboard">
+      <div class="billboard-inner">
+        <p class="billboard-tag">Mirada Digital</p>
+        <h1 class="billboard-text">
+          La mayoría<br>
+          de las agencias<br>
+          cobran por<br>
+          hacer clic.<br>
+          Nosotros cobramos<br>
+          por <span class="highlight">resultados</span>.
+        </h1>
+        <div class="billboard-divider"></div>
+        <p class="billboard-sub">
+          Si no crecés, te lo decimos de frente.
+        </p>
+        <span class="billboard-cta">Auditoría gratis →</span>
+      </div>
     </div>
+
+    <div class="handle"><span>@</span>somosmiradadigital</div>
   </div>
 
   <p class="label" style="margin-top:6px;">tomá captura para compartir</p>
