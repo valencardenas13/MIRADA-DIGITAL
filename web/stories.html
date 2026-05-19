@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stories — Mirada Digital</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #060d14;
+      font-family: 'Space Grotesk', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      padding: 20px 16px 40px;
+    }
+    .nav-label {
+      color: #333;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-top: 10px;
+    }
+    .story {
+      position: relative;
+      width: 100%;
+      max-width: 360px;
+      aspect-ratio: 9 / 16;
+      background: #0D1B2A;
+      border-radius: 6px;
+      overflow: hidden;
+      padding: 9% 8%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    /* Número de fondo decorativo */
+    .bg-number {
+      position: absolute;
+      right: -2%;
+      top: 18%;
+      font-size: clamp(100px, 40vw, 160px);
+      font-weight: 900;
+      color: rgba(0, 212, 255, 0.07);
+      line-height: 1;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .badge {
+      display: inline-block;
+      border: 1.5px solid #00D4FF;
+      color: #00D4FF;
+      font-size: clamp(8px, 2.2vw, 10px);
+      font-weight: 600;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 20px;
+      margin-bottom: 5%;
+      width: fit-content;
+    }
+
+    h1 {
+      font-size: clamp(26px, 8.5vw, 38px);
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: 6%;
+    }
+    h1 .cyan { color: #00D4FF; }
+    h1 .green { color: #00E676; }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: rgba(255,255,255,0.1);
+      margin-bottom: 5%;
+    }
+
+    .body-block {
+      margin-bottom: 5%;
+    }
+    .body-block p {
+      font-size: clamp(12px, 3.8vw, 16px);
+      color: rgba(255,255,255,0.55);
+      line-height: 1.6;
+      font-weight: 400;
+    }
+    .body-block p.emphasis {
+      color: #00E676;
+      font-weight: 700;
+      font-size: clamp(13px, 4vw, 17px);
+    }
+    .body-block p.white {
+      color: rgba(255,255,255,0.75);
+      font-weight: 500;
+    }
+
+    .cta-btn {
+      display: inline-block;
+      border: 1.5px solid #00D4FF;
+      color: #00D4FF;
+      font-size: clamp(9px, 2.5vw, 11px);
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 8px 16px;
+      border-radius: 20px;
+      margin-top: 4%;
+      width: fit-content;
+    }
+
+    .handle {
+      position: absolute;
+      bottom: 4%;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: clamp(9px, 2.5vw, 11px);
+      color: rgba(255,255,255,0.25);
+      letter-spacing: 0.5px;
+    }
+
+    .slide-num {
+      color: #222;
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-align: center;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <p class="nav-label">Stories — Mirada Digital</p>
+  <p class="nav-label" style="color:#1a2a3a; margin-top:-12px;">tomá captura de cada una</p>
+
+  <!-- SLIDE 1: Auditoría Express -->
+  <div class="story">
+    <div class="bg-number">72</div>
+    <div class="badge">Auditoría Express</div>
+    <h1>Ya invertís<br>y no ves<br><span class="cyan">resultados?</span></h1>
+    <div class="divider"></div>
+    <div class="body-block">
+      <p class="white">En 72hs te decimos:</p>
+    </div>
+    <div class="body-block">
+      <p>qué falla en tus campañas</p>
+      <p>dónde perdés plata hoy</p>
+      <p>qué cambiar primero</p>
+    </div>
+    <div class="divider"></div>
+    <div class="body-block">
+      <p class="emphasis">GRATIS</p>
+      <p class="white">para nuevos clientes.</p>
+    </div>
+    <div class="handle">@somosmiradadigital</div>
+  </div>
+  <p class="slide-num">1 / 5</p>
+
+  <!-- SLIDE 2: SEO + Web -->
+  <div class="story">
+    <div class="badge">SEO + Web</div>
+    <h1>Que te<br><span class="cyan">encuentren</span></h1>
+    <div class="divider"></div>
+    <div class="body-block">
+      <p>Posicionamiento local<br>y nacional.</p>
+    </div>
+    <div class="divider"></div>
+    <div class="body-block">
+      <p>Web profesional,<br>rápida y que convierte.</p>
+    </div>
+    <div class="divider"></div>
+    <div class="body-block">
+      <p class="emphasis">Resultados en 90 días<br>o te explicamos por qué.</p>
+    </div>
+    <div class="divider"></div>
+    <div class="body-block">
+      <p>Ideal para negocios que<br>no aparecen cuando los buscan.</p>
+    </div>
+    <div class="handle">@somosmiradadigital</div>
+  </div>
+  <p class="slide-num">2 / 5</p>
+
+  <!-- SLIDE 3: Social Media -->
+  <div class="story">
+    <div class="badge">Social Media</div>
+    <h1>Contenido<br><span class="cyan">con objetivo</span></h1>
+    <div class="divider"></div>
+    <div class="body-block">
+      <p>No solo posteos<br>para llenar el feed.</p>
+    </div>
+    <div class="divider"></div>
+    <div class="body-block">
+      <p>Calendario editorial<br>orientado a ventas.</p>
+    </div>
+    <div class="divider"></div>
+    <div class="body-block">
+      <p class="emphasis">Cada pieza tiene<br>un objetivo medible.</p>
+    </div>
+    <div class="divider"></div>
+    <div class="body-block">
+      <p>Ideal para marcas que quieren<br>comunidad y autoridad.</p>
+    </div>
+    <div class="handle">@somosmiradadigital</div>
+  </div>
+  <p class="slide-num">3 / 5</p>
+
+  <!-- SLIDE 4: Paid Ads -->
+  <div class="story">
+    <div class="badge">Paid Ads</div>
+    <h1>Vos invertís.<br>Nosotros<br><span class="cyan">ejecutamos.</span></h1>
+    <div class="divider"></div>
+    <div class="body-block">
+      <p>Campañas en Meta, Google<br>y TikTok Ads.</p>
+    </div>
+    <div class="divider"></div>
+    <div class="body-block">
+      <p>Optimizamos y te mostramos<br>qué pasa con cada peso.</p>
+    </div>
+    <div class="divider"></div>
+    <div class="body-block">
+      <p class="emphasis">Los resultados son reales.<br>Los números también.</p>
+    </div>
+    <div class="divider"></div>
+    <div class="body-block">
+      <p>Ideal para negocios que<br>quieren escalar con datos.</p>
+    </div>
+    <div class="handle">@somosmiradadigital</div>
+  </div>
+  <p class="slide-num">4 / 5</p>
+
+  <!-- SLIDE 5: CTA -->
+  <div class="story">
+    <h1 style="margin-top: 10%;">No sabés<br>por dónde<br><span class="cyan">empezar?</span></h1>
+    <div class="divider"></div>
+    <div class="body-block">
+      <p class="white">Empezá por la auditoría.<br>Sin costo. Sin compromiso.</p>
+    </div>
+    <div class="body-block" style="margin-top: 4%;">
+      <p class="white">Con resultados en 72hs.</p>
+    </div>
+    <div class="divider" style="margin-top: 6%;"></div>
+    <span class="cta-btn">Escribinos ahora &gt;&gt;&gt;</span>
+    <div class="handle">@somosmiradadigital</div>
+  </div>
+  <p class="slide-num">5 / 5</p>
+
+</body>
+</html>
