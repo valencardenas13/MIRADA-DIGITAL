@@ -162,7 +162,19 @@ def analizar_sitio(url: str) -> dict:
 
         # Captación
         tiene_formulario = bool(soup.find("form"))
-        tiene_whatsapp = "wa.me" in html or "api.whatsapp" in html
+        # Extraer link real de WhatsApp si existe
+        whatsapp_link = ""
+        for a in soup.find_all("a", href=True):
+            href = a["href"]
+            if "wa.me" in href or "api.whatsapp.com" in href:
+                whatsapp_link = href.split("?")[0]  # sin el mensaje pre-cargado
+                break
+        if not whatsapp_link and ("wa.me" in html or "api.whatsapp" in html):
+            import re
+            m = re.search(r'(https?://(?:wa\.me|api\.whatsapp\.com/send)[^\s"\'&>]+)', html_original)
+            if m:
+                whatsapp_link = m.group(1).split("?")[0]
+        tiene_whatsapp = bool(whatsapp_link)
         tiene_chatbot = any(k in html for k in ["tawk.to", "tidio", "crisp.chat", "intercom"])
         tiene_calendario = any(k in html for k in ["calendly", "cal.com", "tidycal", "acuityscheduling"])
 
@@ -194,6 +206,7 @@ def analizar_sitio(url: str) -> dict:
             "captacion": {
                 "formulario": tiene_formulario,
                 "whatsapp": tiene_whatsapp,
+                "whatsapp_link": whatsapp_link,
                 "chatbot": tiene_chatbot,
                 "calendario": tiene_calendario,
             },
@@ -402,8 +415,10 @@ Paso 2 — Análisis de sitios:
 Paso 3 — Buscar responsable (OBLIGATORIO para cada prospecto seleccionado):
   Llamá buscar_responsable con el nombre y URL de cada prospecto que vayas a incluir.
   El outreach NUNCA va a la cuenta del negocio — siempre al dueño o fundador directamente.
-  Si no encontrás responsable con confianza "alta" o "media", descartá ese prospecto
-  y tomá el siguiente de la lista.
+  Si no encontrás responsable con confianza "alta" o "media":
+    → Revisá si analizar_sitio devolvió un whatsapp_link — usalo como contacto alternativo.
+    → El WhatsApp de un negocio pequeño casi siempre es el del dueño.
+    → Si no hay WhatsApp ni responsable verificable, descartá ese prospecto.
 
 Paso 4 — Scoring y selección:
   Seleccioná la cantidad de prospectos que te pidieron (indicado en el mensaje del usuario) usando esta lógica:
@@ -432,8 +447,10 @@ Paso 4 — Output por prospecto:
   │                                                 │
   │ CONTACTO DIRECTO:                               │
   │ Nombre: [nombre del responsable si se encontró] │
-  │ Instagram personal: @handle                     │
+  │ Instagram personal: @handle  (si se encontró)  │
   │ LinkedIn: linkedin.com/in/...  (si aplica)      │
+  │ WhatsApp: wa.me/... (si no hay contacto personal│
+  │           pero el sitio tiene WhatsApp)          │
   │                                                 │
   │ DIAGNÓSTICO (2 líneas):                         │
   │ Tiene/No tiene: [lista de píxeles]              │
