@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Creativo Tablet — Mirada Digital</title>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      background: #030303;
+      background: #020202;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -17,352 +17,329 @@
       gap: 10px;
     }
     .label {
-      color: #222;
+      color: #1c1c1c;
       font-size: 9px;
       letter-spacing: 3px;
       text-transform: uppercase;
-      text-align: center;
     }
 
-    /* ── Marco del post cuadrado ── */
+    /* ── El post cuadrado ── */
     .post {
       position: relative;
       width: 100%;
       max-width: 440px;
       aspect-ratio: 1 / 1;
-      border-radius: 2px;
       overflow: hidden;
       box-shadow: 0 40px 120px rgba(0,0,0,0.99);
     }
 
-    /* ── Foto de persona con tablet ── */
+    /* ── Foto de fondo: persona leyendo tablet ── */
+    /* Ángulo desde arriba, persona concentrada, café o espacio urbano */
     .photo {
       position: absolute;
       inset: 0;
-      background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=900&q=85');
+      background-image: url('https://images.unsplash.com/photo-1563986768609-322da13575f3?w=900&q=90');
       background-size: cover;
-      background-position: center 30%;
-      filter: brightness(0.38) contrast(1.2) saturate(0.5);
+      background-position: center 20%;
+      filter: brightness(0.55) contrast(1.1) saturate(0.6);
     }
 
-    /* ── Viñeta dramática ── */
+    /* Overlay que oscurece los bordes, deja el centro visible */
     .vignette {
       position: absolute;
       inset: 0;
       background: radial-gradient(
-        ellipse at 50% 60%,
-        rgba(0,0,0,0) 20%,
-        rgba(0,0,0,0.65) 100%
+        ellipse at 50% 55%,
+        rgba(0,0,0,0)   25%,
+        rgba(0,0,0,0.5) 100%
       );
     }
 
-    /* ── Handle marca ── */
+    /* ── Handle ── */
     .handle {
       position: absolute;
       bottom: 4%;
-      left: 6%;
-      font-size: clamp(9px, 2vw, 11px);
+      right: 6%;
+      font-size: clamp(8px, 1.8vw, 10px);
       letter-spacing: 1px;
-      color: rgba(255,255,255,0.25);
+      color: rgba(255,255,255,0.2);
       font-weight: 500;
       z-index: 10;
     }
-    .handle span { color: rgba(255,255,255,0.45); }
+    .handle span { color: rgba(255,255,255,0.38); }
 
-    /* ═══════════════════════════════
-       TABLET / iPAD — el elemento central
-    ═══════════════════════════════ */
-    .tablet-wrap {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -52%);
-      width: 62%;
-      z-index: 5;
-    }
-
-    /* Cuerpo físico del tablet */
-    .tablet-body {
-      position: relative;
-      background: #1a1a1c;
-      border-radius: 10px;
-      padding: 5px;
-      box-shadow:
-        0 0 0 1.5px #2a2a2c,
-        0 20px 60px rgba(0,0,0,0.9),
-        0 0 40px rgba(0,212,255,0.08);
-    }
-
-    /* Botón lateral del tablet */
-    .tablet-body::after {
-      content: '';
-      position: absolute;
-      right: -3px;
-      top: 18%;
-      width: 3px;
-      height: 12%;
-      background: #222;
-      border-radius: 0 2px 2px 0;
-    }
-
-    /* Pantalla del tablet */
+    /* ══════════════════════════════════════════
+       LA PANTALLA DE LA TABLET
+       Posicionada como si fuera la pantalla real
+       que la persona está leyendo en la foto
+    ══════════════════════════════════════════ */
     .tablet-screen {
-      background: #0D1B2A;
-      border-radius: 7px;
+      position: absolute;
+      /* Centrada, ocupando aprox. el área donde estaría la tablet en la foto */
+      top: 14%;
+      left: 14%;
+      right: 14%;
+      bottom: 26%;
+
+      background: #0a1520;
+      border-radius: 6px;
       overflow: hidden;
-      aspect-ratio: 4 / 3;
-      position: relative;
-      /* Brillo de pantalla encendida */
-      box-shadow: 0 0 30px rgba(0,212,255,0.12), inset 0 0 0 1px rgba(0,212,255,0.05);
+      z-index: 5;
+
+      /* Pantalla encendida: brillo cian suave */
+      box-shadow:
+        0 0 0 1px rgba(0,212,255,0.12),
+        0 0 50px rgba(0,212,255,0.1),
+        0 0 100px rgba(0,212,255,0.05);
+
+      /* Leve perspectiva como si tuviéramos ángulo sobre la tablet */
+      transform: perspective(900px) rotateX(3deg);
     }
 
-    /* Reflejo sutil en la pantalla */
+    /* Reflejo de pantalla */
     .tablet-screen::before {
       content: '';
       position: absolute;
       inset: 0;
       background: linear-gradient(
-        135deg,
-        rgba(255,255,255,0.04) 0%,
-        transparent 40%
+        145deg,
+        rgba(255,255,255,0.06) 0%,
+        transparent 35%,
+        rgba(0,0,0,0.1) 100%
       );
-      z-index: 10;
+      z-index: 20;
       pointer-events: none;
-      border-radius: 7px;
+    }
+
+    /* Scanline sutil para que se vea como pantalla real */
+    .tablet-screen::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(0,0,0,0.03) 3px,
+        rgba(0,0,0,0.03) 4px
+      );
+      z-index: 21;
+      pointer-events: none;
     }
 
     /* Contenido dentro de la pantalla */
-    .screen-content {
+    .screen-inner {
       position: relative;
-      z-index: 2;
-      padding: 7% 8%;
+      z-index: 10;
+      padding: 8% 9%;
       height: 100%;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
     }
 
-    /* Barra superior tipo app */
-    .screen-topbar {
+    /* Barra de status tipo OS */
+    .status-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 6%;
+      margin-bottom: 5%;
+      opacity: 0.5;
     }
-    .screen-logo {
+    .status-brand {
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
     }
-    .screen-brand {
-      font-size: clamp(5px, 1.4vw, 8px);
+    .status-text {
+      font-size: clamp(5px, 1.3vw, 8px);
       color: #00D4FF;
       letter-spacing: 2px;
       text-transform: uppercase;
       font-weight: 700;
     }
-    .screen-time {
+    .status-right {
       font-family: 'JetBrains Mono', monospace;
-      font-size: clamp(4px, 1.2vw, 7px);
-      color: rgba(255,255,255,0.3);
+      font-size: clamp(4px, 1vw, 6px);
+      color: rgba(255,255,255,0.4);
     }
 
-    /* Título principal en pantalla */
+    /* Titular en pantalla — lo que la persona está leyendo */
     .screen-headline {
-      font-size: clamp(9px, 2.8vw, 16px);
+      font-size: clamp(11px, 3.2vw, 19px);
       font-weight: 900;
       color: #fff;
-      line-height: 1.2;
+      line-height: 1.18;
       text-transform: uppercase;
       margin-bottom: 4%;
     }
-    .screen-headline .cyan { color: #00D4FF; }
+    .screen-headline .cyan  { color: #00D4FF; }
     .screen-headline .green { color: #00E676; }
 
-    /* Separador */
-    .screen-divider {
+    .screen-rule {
       width: 100%;
       height: 1px;
-      background: rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.07);
       margin-bottom: 4%;
     }
 
-    /* Métricas tipo dashboard */
-    .screen-metrics {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 3%;
-      margin-bottom: 4%;
+    /* Párrafo cuerpo */
+    .screen-body {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(5px, 1.4vw, 8px);
+      color: rgba(255,255,255,0.45);
+      line-height: 1.65;
+      margin-bottom: 5%;
     }
-    .metric-card {
-      background: rgba(0,212,255,0.06);
-      border: 1px solid rgba(0,212,255,0.15);
-      border-radius: 4px;
+    .screen-body strong { color: rgba(255,255,255,0.75); font-weight: 600; }
+
+    /* Bloque de métricas */
+    .metrics-row {
+      display: flex;
+      gap: 4%;
+      margin-bottom: 5%;
+    }
+    .m {
+      flex: 1;
+      background: rgba(0,212,255,0.05);
+      border: 1px solid rgba(0,212,255,0.13);
+      border-radius: 3px;
       padding: 4% 5%;
     }
-    .metric-label {
-      font-family: 'Inter', sans-serif;
-      font-size: clamp(3px, 0.9vw, 6px);
-      color: rgba(255,255,255,0.35);
+    .m-lbl {
+      font-size: clamp(3px, 0.8vw, 5px);
+      color: rgba(255,255,255,0.3);
       text-transform: uppercase;
       letter-spacing: 1px;
-      margin-bottom: 2px;
+      margin-bottom: 3px;
     }
-    .metric-value {
+    .m-val {
       font-family: 'JetBrains Mono', monospace;
-      font-size: clamp(7px, 2vw, 12px);
+      font-size: clamp(8px, 2.2vw, 13px);
       font-weight: 600;
       color: #00E676;
     }
-    .metric-value.cyan { color: #00D4FF; }
-    .metric-value.white { color: #fff; }
-
-    /* Texto cuerpo en pantalla */
-    .screen-body {
-      font-family: 'Inter', sans-serif;
-      font-size: clamp(4px, 1.2vw, 7px);
-      color: rgba(255,255,255,0.45);
-      line-height: 1.6;
-      margin-bottom: 4%;
-    }
+    .m-val.c { color: #00D4FF; }
+    .m-val.w { color: #fff; }
 
     /* CTA en pantalla */
-    .screen-cta {
-      display: inline-block;
-      border: 1px solid #00D4FF;
+    .screen-link {
+      font-size: clamp(4px, 1.1vw, 7px);
       color: #00D4FF;
-      font-size: clamp(4px, 1vw, 6px);
-      font-weight: 700;
       letter-spacing: 1.5px;
       text-transform: uppercase;
-      padding: 3px 7px;
-      border-radius: 2px;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(0,212,255,0.3);
+      display: inline-block;
+      padding-bottom: 2px;
     }
 
-    /* ── LUZ que proyecta la pantalla en la escena ── */
-    .screen-glow {
+    /* ── Luz ambiental que la pantalla proyecta hacia abajo ── */
+    .screen-light {
       position: absolute;
-      top: 18%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 55%;
-      height: 35%;
+      bottom: 18%;
+      left: 20%;
+      right: 20%;
+      height: 20%;
       background: radial-gradient(
-        ellipse at center,
-        rgba(0,212,255,0.07) 0%,
-        transparent 70%
+        ellipse at center top,
+        rgba(0,212,255,0.06) 0%,
+        transparent 80%
       );
-      z-index: 3;
+      z-index: 4;
       pointer-events: none;
     }
 
-    /* ── Copy flotante abajo ── */
-    .copy-block {
+    /* ── Copy de contexto abajo — pequeño, discreto ── */
+    .footer-copy {
       position: absolute;
-      bottom: 10%;
+      bottom: 5%;
       left: 6%;
-      right: 6%;
       z-index: 8;
     }
-    .copy-main {
-      font-size: clamp(10px, 3vw, 16px);
-      font-weight: 800;
-      color: #fff;
-      line-height: 1.25;
-      text-transform: uppercase;
-    }
-    .copy-main .cyan { color: #00D4FF; }
-    .copy-sub {
-      font-family: 'Inter', sans-serif;
-      font-size: clamp(7px, 2vw, 10px);
-      color: rgba(255,255,255,0.4);
-      margin-top: 4px;
+    .footer-copy p {
+      font-size: clamp(7px, 1.8vw, 10px);
+      color: rgba(255,255,255,0.28);
       font-weight: 400;
+      letter-spacing: 0.3px;
+      line-height: 1.5;
+    }
+    .footer-copy p strong {
+      color: rgba(255,255,255,0.5);
+      font-weight: 600;
     }
   </style>
 </head>
 <body>
 
-  <p class="label">Creativo Tablet — tomá captura</p>
+  <p class="label">creativo tablet — somosmiradadigital — tomá captura</p>
 
   <div class="post">
     <div class="photo"></div>
     <div class="vignette"></div>
+    <div class="screen-light"></div>
 
-    <!-- Luz proyectada por la pantalla -->
-    <div class="screen-glow"></div>
+    <!-- LA PANTALLA — lo que la persona está leyendo -->
+    <div class="tablet-screen">
+      <div class="screen-inner">
 
-    <!-- TABLET -->
-    <div class="tablet-wrap">
-      <div class="tablet-body">
-        <div class="tablet-screen">
-          <div class="screen-content">
-
-            <!-- Barra superior -->
-            <div class="screen-topbar">
-              <div class="screen-logo">
-                <svg width="14" height="8" viewBox="0 0 90 52" fill="none">
-                  <path d="M5 26 C20 6,70 6,85 26 C70 46,20 46,5 26Z" stroke="#00D4FF" stroke-width="6" fill="none"/>
-                  <circle cx="45" cy="26" r="10" stroke="#00D4FF" stroke-width="6" fill="none"/>
-                </svg>
-                <span class="screen-brand">Mirada Digital</span>
-              </div>
-              <span class="screen-time">REPORTE MAY 2025</span>
-            </div>
-
-            <!-- Titular -->
-            <div class="screen-headline">
-              Esto es lo que<br>
-              pasó con tu<br>
-              <span class="cyan">inversión.</span>
-            </div>
-
-            <div class="screen-divider"></div>
-
-            <!-- Métricas -->
-            <div class="screen-metrics">
-              <div class="metric-card">
-                <p class="metric-label">ROAS</p>
-                <p class="metric-value">4.7×</p>
-              </div>
-              <div class="metric-card">
-                <p class="metric-label">CPA</p>
-                <p class="metric-value cyan">$812</p>
-              </div>
-              <div class="metric-card">
-                <p class="metric-label">Invertido</p>
-                <p class="metric-value white">$48K</p>
-              </div>
-              <div class="metric-card">
-                <p class="metric-label">Generado</p>
-                <p class="metric-value">$226K</p>
-              </div>
-            </div>
-
-            <!-- Cuerpo -->
-            <p class="screen-body">
-              Cada número tiene contexto.<br>
-              Te explicamos qué cambió y por qué.
-            </p>
-
-            <!-- CTA -->
-            <span class="screen-cta">Ver reporte completo →</span>
-
+        <div class="status-bar">
+          <div class="status-brand">
+            <svg width="12" height="7" viewBox="0 0 90 52" fill="none">
+              <path d="M5 26 C20 6,70 6,85 26 C70 46,20 46,5 26Z" stroke="#00D4FF" stroke-width="7" fill="none"/>
+              <circle cx="45" cy="26" r="10" stroke="#00D4FF" stroke-width="7" fill="none"/>
+            </svg>
+            <span class="status-text">Mirada Digital</span>
           </div>
+          <span class="status-right">MAYO 2025</span>
         </div>
+
+        <div>
+          <div class="screen-headline">
+            ¿Sabés en qué<br>
+            se gastó<br>
+            <span class="cyan">cada peso</span><br>
+            este mes?
+          </div>
+
+          <div class="screen-rule"></div>
+
+          <p class="screen-body">
+            Tu inversión en digital generó esto.<br>
+            <strong>Cada número tiene una explicación.</strong>
+          </p>
+
+          <div class="metrics-row">
+            <div class="m">
+              <p class="m-lbl">Invertido</p>
+              <p class="m-val w">$48K</p>
+            </div>
+            <div class="m">
+              <p class="m-lbl">Retorno</p>
+              <p class="m-val">$226K</p>
+            </div>
+            <div class="m">
+              <p class="m-lbl">ROAS</p>
+              <p class="m-val c">4.7×</p>
+            </div>
+          </div>
+
+          <span class="screen-link">Ver desglose completo →</span>
+        </div>
+
       </div>
     </div>
 
-    <!-- Copy flotante abajo -->
-    <div class="copy-block">
-      <p class="copy-main">¿Tu agencia<br>te manda <span class="cyan">algo así</span>?</p>
-      <p class="copy-sub">Si la respuesta es no, tenemos que hablar.</p>
+    <!-- Pie de foto discreto -->
+    <div class="footer-copy">
+      <p>Así se ve un reporte de verdad.</p>
+      <p><strong>¿El tuyo se parece a esto?</strong></p>
     </div>
 
     <div class="handle"><span>@</span>somosmiradadigital</div>
   </div>
 
-  <p class="label" style="margin-top:6px;">somosmiradadigital</p>
+  <p class="label" style="margin-top:6px;">somosmiradadigital.com.ar</p>
 
 </body>
 </html>
