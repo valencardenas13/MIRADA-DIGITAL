@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Creativo Tablet — Mirada Digital</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #030303;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: 'Space Grotesk', sans-serif;
+      padding: 30px 20px 60px;
+      gap: 10px;
+    }
+    .label {
+      color: #222;
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    /* ── Marco del post cuadrado ── */
+    .post {
+      position: relative;
+      width: 100%;
+      max-width: 440px;
+      aspect-ratio: 1 / 1;
+      border-radius: 2px;
+      overflow: hidden;
+      box-shadow: 0 40px 120px rgba(0,0,0,0.99);
+    }
+
+    /* ── Foto de persona con tablet ── */
+    .photo {
+      position: absolute;
+      inset: 0;
+      background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=900&q=85');
+      background-size: cover;
+      background-position: center 30%;
+      filter: brightness(0.38) contrast(1.2) saturate(0.5);
+    }
+
+    /* ── Viñeta dramática ── */
+    .vignette {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        ellipse at 50% 60%,
+        rgba(0,0,0,0) 20%,
+        rgba(0,0,0,0.65) 100%
+      );
+    }
+
+    /* ── Handle marca ── */
+    .handle {
+      position: absolute;
+      bottom: 4%;
+      left: 6%;
+      font-size: clamp(9px, 2vw, 11px);
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.25);
+      font-weight: 500;
+      z-index: 10;
+    }
+    .handle span { color: rgba(255,255,255,0.45); }
+
+    /* ═══════════════════════════════
+       TABLET / iPAD — el elemento central
+    ═══════════════════════════════ */
+    .tablet-wrap {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -52%);
+      width: 62%;
+      z-index: 5;
+    }
+
+    /* Cuerpo físico del tablet */
+    .tablet-body {
+      position: relative;
+      background: #1a1a1c;
+      border-radius: 10px;
+      padding: 5px;
+      box-shadow:
+        0 0 0 1.5px #2a2a2c,
+        0 20px 60px rgba(0,0,0,0.9),
+        0 0 40px rgba(0,212,255,0.08);
+    }
+
+    /* Botón lateral del tablet */
+    .tablet-body::after {
+      content: '';
+      position: absolute;
+      right: -3px;
+      top: 18%;
+      width: 3px;
+      height: 12%;
+      background: #222;
+      border-radius: 0 2px 2px 0;
+    }
+
+    /* Pantalla del tablet */
+    .tablet-screen {
+      background: #0D1B2A;
+      border-radius: 7px;
+      overflow: hidden;
+      aspect-ratio: 4 / 3;
+      position: relative;
+      /* Brillo de pantalla encendida */
+      box-shadow: 0 0 30px rgba(0,212,255,0.12), inset 0 0 0 1px rgba(0,212,255,0.05);
+    }
+
+    /* Reflejo sutil en la pantalla */
+    .tablet-screen::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(255,255,255,0.04) 0%,
+        transparent 40%
+      );
+      z-index: 10;
+      pointer-events: none;
+      border-radius: 7px;
+    }
+
+    /* Contenido dentro de la pantalla */
+    .screen-content {
+      position: relative;
+      z-index: 2;
+      padding: 7% 8%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* Barra superior tipo app */
+    .screen-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6%;
+    }
+    .screen-logo {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .screen-brand {
+      font-size: clamp(5px, 1.4vw, 8px);
+      color: #00D4FF;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .screen-time {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(4px, 1.2vw, 7px);
+      color: rgba(255,255,255,0.3);
+    }
+
+    /* Título principal en pantalla */
+    .screen-headline {
+      font-size: clamp(9px, 2.8vw, 16px);
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.2;
+      text-transform: uppercase;
+      margin-bottom: 4%;
+    }
+    .screen-headline .cyan { color: #00D4FF; }
+    .screen-headline .green { color: #00E676; }
+
+    /* Separador */
+    .screen-divider {
+      width: 100%;
+      height: 1px;
+      background: rgba(255,255,255,0.08);
+      margin-bottom: 4%;
+    }
+
+    /* Métricas tipo dashboard */
+    .screen-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3%;
+      margin-bottom: 4%;
+    }
+    .metric-card {
+      background: rgba(0,212,255,0.06);
+      border: 1px solid rgba(0,212,255,0.15);
+      border-radius: 4px;
+      padding: 4% 5%;
+    }
+    .metric-label {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(3px, 0.9vw, 6px);
+      color: rgba(255,255,255,0.35);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 2px;
+    }
+    .metric-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(7px, 2vw, 12px);
+      font-weight: 600;
+      color: #00E676;
+    }
+    .metric-value.cyan { color: #00D4FF; }
+    .metric-value.white { color: #fff; }
+
+    /* Texto cuerpo en pantalla */
+    .screen-body {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(4px, 1.2vw, 7px);
+      color: rgba(255,255,255,0.45);
+      line-height: 1.6;
+      margin-bottom: 4%;
+    }
+
+    /* CTA en pantalla */
+    .screen-cta {
+      display: inline-block;
+      border: 1px solid #00D4FF;
+      color: #00D4FF;
+      font-size: clamp(4px, 1vw, 6px);
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 3px 7px;
+      border-radius: 2px;
+    }
+
+    /* ── LUZ que proyecta la pantalla en la escena ── */
+    .screen-glow {
+      position: absolute;
+      top: 18%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 55%;
+      height: 35%;
+      background: radial-gradient(
+        ellipse at center,
+        rgba(0,212,255,0.07) 0%,
+        transparent 70%
+      );
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    /* ── Copy flotante abajo ── */
+    .copy-block {
+      position: absolute;
+      bottom: 10%;
+      left: 6%;
+      right: 6%;
+      z-index: 8;
+    }
+    .copy-main {
+      font-size: clamp(10px, 3vw, 16px);
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.25;
+      text-transform: uppercase;
+    }
+    .copy-main .cyan { color: #00D4FF; }
+    .copy-sub {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(7px, 2vw, 10px);
+      color: rgba(255,255,255,0.4);
+      margin-top: 4px;
+      font-weight: 400;
+    }
+  </style>
+</head>
+<body>
+
+  <p class="label">Creativo Tablet — tomá captura</p>
+
+  <div class="post">
+    <div class="photo"></div>
+    <div class="vignette"></div>
+
+    <!-- Luz proyectada por la pantalla -->
+    <div class="screen-glow"></div>
+
+    <!-- TABLET -->
+    <div class="tablet-wrap">
+      <div class="tablet-body">
+        <div class="tablet-screen">
+          <div class="screen-content">
+
+            <!-- Barra superior -->
+            <div class="screen-topbar">
+              <div class="screen-logo">
+                <svg width="14" height="8" viewBox="0 0 90 52" fill="none">
+                  <path d="M5 26 C20 6,70 6,85 26 C70 46,20 46,5 26Z" stroke="#00D4FF" stroke-width="6" fill="none"/>
+                  <circle cx="45" cy="26" r="10" stroke="#00D4FF" stroke-width="6" fill="none"/>
+                </svg>
+                <span class="screen-brand">Mirada Digital</span>
+              </div>
+              <span class="screen-time">REPORTE MAY 2025</span>
+            </div>
+
+            <!-- Titular -->
+            <div class="screen-headline">
+              Esto es lo que<br>
+              pasó con tu<br>
+              <span class="cyan">inversión.</span>
+            </div>
+
+            <div class="screen-divider"></div>
+
+            <!-- Métricas -->
+            <div class="screen-metrics">
+              <div class="metric-card">
+                <p class="metric-label">ROAS</p>
+                <p class="metric-value">4.7×</p>
+              </div>
+              <div class="metric-card">
+                <p class="metric-label">CPA</p>
+                <p class="metric-value cyan">$812</p>
+              </div>
+              <div class="metric-card">
+                <p class="metric-label">Invertido</p>
+                <p class="metric-value white">$48K</p>
+              </div>
+              <div class="metric-card">
+                <p class="metric-label">Generado</p>
+                <p class="metric-value">$226K</p>
+              </div>
+            </div>
+
+            <!-- Cuerpo -->
+            <p class="screen-body">
+              Cada número tiene contexto.<br>
+              Te explicamos qué cambió y por qué.
+            </p>
+
+            <!-- CTA -->
+            <span class="screen-cta">Ver reporte completo →</span>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Copy flotante abajo -->
+    <div class="copy-block">
+      <p class="copy-main">¿Tu agencia<br>te manda <span class="cyan">algo así</span>?</p>
+      <p class="copy-sub">Si la respuesta es no, tenemos que hablar.</p>
+    </div>
+
+    <div class="handle"><span>@</span>somosmiradadigital</div>
+  </div>
+
+  <p class="label" style="margin-top:6px;">somosmiradadigital</p>
+
+</body>
+</html>
