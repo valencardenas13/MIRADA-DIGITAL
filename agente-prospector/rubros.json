@@ -1,0 +1,42 @@
+{
+  "ubicacion_default": "Argentina",
+  "prospectos_por_corrida": 20,
+  "turnos": [
+    {
+      "hora": "07:30",
+      "rubro": "coaches y consultores de negocios",
+      "ubicacion": "Argentina",
+      "tipo": "high-ticket"
+    },
+    {
+      "hora": "09:00",
+      "rubro": "tiendas online",
+      "ubicacion": "Argentina",
+      "tipo": "ecommerce"
+    },
+    {
+      "hora": "10:30",
+      "rubro": "clínicas estéticas y odontológicas",
+      "ubicacion": "CABA",
+      "tipo": "high-ticket"
+    },
+    {
+      "hora": "12:00",
+      "rubro": "inmobiliarias",
+      "ubicacion": "Buenos Aires",
+      "tipo": "high-ticket"
+    },
+    {
+      "hora": "13:30",
+      "rubro": "gimnasios y estudios de yoga pilates",
+      "ubicacion": "Buenos Aires",
+      "tipo": "auto"
+    },
+    {
+      "hora": "15:00",
+      "rubro": "restaurantes y cafeterías",
+      "ubicacion": "Palermo Buenos Aires",
+      "tipo": "auto"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#0D1B2A"/>
+
+  <!-- Eye scaled 3.33× from logo version, centered at (256,256)       -->
+  <!-- ±45 → ±150 | r=55→183, r=80→267 | iris r=15→50 at cy≈−13      -->
+  <g transform="translate(256, 256)">
+    <path d="M -150,0 A 183,183 0 0,1 150,0 A 267,267 0 0,0 -150,0 Z"
+          fill="none" stroke="#00D4FF" stroke-width="8" stroke-linejoin="round"/>
+
+    <!-- Subtle outer glow -->
+    <circle cx="0" cy="-13" r="58" fill="none" stroke="#00D4FF" stroke-width="1" opacity="0.12"/>
+
+    <circle cx="0" cy="-13" r="50" fill="#0D1B2A" stroke="#00D4FF" stroke-width="7"/>
+
+    <!-- Trend line scaled 3.33× -->
+    <polyline points="-30,17 -10,0 10,-20 30,-37"
+              fill="none" stroke="#00E676" stroke-width="7"
+              stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="-10" cy="0"   r="7" fill="#00E676"/>
+    <circle cx="10"  cy="-20" r="7" fill="#00E676"/>
+    <circle cx="30"  cy="-37" r="7" fill="#00E676"/>
+
+    <circle cx="0" cy="-13" r="11" fill="#00D4FF" opacity="0.3"/>
+  </g>
+</svg>

@@ -1,0 +1,51 @@
+name: Agente Prospector — Mirada Digital
+
+on:
+  schedule:
+    # Todos los días, hora Argentina (UTC-3):
+    - cron: "30 10 * * *"   # 07:30 AR — coaches y consultores
+    - cron: "0  12 * * *"   # 09:00 AR — ecommerce
+    - cron: "30 13 * * *"   # 10:30 AR — clínicas
+    - cron: "0  15 * * *"   # 12:00 AR — inmobiliarias
+    - cron: "30 16 * * *"   # 13:30 AR — gimnasios
+    - cron: "0  18 * * *"   # 15:00 AR — restaurantes
+  workflow_dispatch:         # también se puede correr a mano desde GitHub
+
+jobs:
+  prospectar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias
+        run: pip install -r agente-prospector/requirements.txt
+
+      - name: Test Telegram
+        env:
+          TELEGRAM_TOKEN:   ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python3 agente-prospector/test_telegram.py
+
+      - name: Correr prospector
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TELEGRAM_TOKEN:    ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID:  ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          HORA=$(date -u +"%H:%M")
+          case "$HORA" in
+            10:*) RUBRO="coaches y consultores de negocios"   ; UBICACION="Argentina"         ; TIPO="high-ticket" ;;
+            12:*) RUBRO="tiendas online"                      ; UBICACION="Argentina"         ; TIPO="ecommerce"   ;;
+            13:*) RUBRO="clinicas esteticas y odontologicas"  ; UBICACION="CABA"              ; TIPO="high-ticket" ;;
+            15:*) RUBRO="inmobiliarias"                       ; UBICACION="Buenos Aires"      ; TIPO="high-ticket" ;;
+            16:*) RUBRO="gimnasios y estudios de yoga pilates"; UBICACION="Buenos Aires"      ; TIPO="auto"        ;;
+            18:*) RUBRO="restaurantes y cafeterias"           ; UBICACION="Palermo Buenos Aires"; TIPO="auto"      ;;
+            *)    RUBRO="negocios locales"                    ; UBICACION="Buenos Aires"      ; TIPO="auto"        ;;
+          esac
+          echo "Turno: $RUBRO | $UBICACION | $TIPO"
+          cd agente-prospector
+          python prospector.py --rubro "$RUBRO" --ubicacion "$UBICACION" --tipo "$TIPO" --cantidad 20

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mirada Digital</title>
+  <meta name="description" content="Agencia de performance digital. Invertís. Te mostramos qué pasa con cada peso.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Space Grotesk', Arial, sans-serif;
+      background: #0D1B2A;
+      color: #FFFFFF;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* LOGO */
+    .logo { margin-bottom: 8px; }
+    .logo svg { width: 52px; height: 52px; }
+
+    /* NAME */
+    .name {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-align: center;
+    }
+
+    .handle {
+      font-size: 14px;
+      color: #8892A4;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .tagline {
+      font-size: 14px;
+      color: #8892A4;
+      text-align: center;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      padding: 18px 24px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 15px;
+      transition: transform 0.15s, opacity 0.15s;
+      letter-spacing: 0.3px;
+    }
+    .btn:hover { transform: translateY(-2px); opacity: 0.9; }
+    .btn:active { transform: translateY(0); }
+
+    .btn-web {
+      background: rgba(0,212,255,0.08);
+      border: 1px solid rgba(0,212,255,0.25);
+      color: #FFFFFF;
+    }
+
+    .btn-wa {
+      background: #25D366;
+      color: #FFFFFF;
+    }
+
+    .btn-mail {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #FFFFFF;
+    }
+
+    .btn-ig {
+      background: linear-gradient(135deg, rgba(131,58,180,0.3), rgba(253,29,29,0.3), rgba(252,176,69,0.3));
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #FFFFFF;
+    }
+
+    .btn-icon { width: 22px; flex-shrink: 0; }
+
+    /* DIVIDER */
+    .sep {
+      width: 100%;
+      height: 1px;
+      background: rgba(0,212,255,0.08);
+      margin: 4px 0;
+    }
+
+    /* FOOTER */
+    .footer {
+      margin-top: 16px;
+      font-size: 12px;
+      color: rgba(136,146,164,0.5);
+      letter-spacing: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- LOGO -->
+    <div class="logo">
+      <svg viewBox="0 0 80 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 5,28 A 42,42 0 0,1 75,28 A 60,60 0 0,0 5,28 Z" fill="#00D4FF" opacity="0.9"/>
+        <circle cx="40" cy="24" r="11" fill="#0D1B2A" stroke="#00D4FF" stroke-width="1.5"/>
+        <polyline points="33,29 37,24 41,19 47,15" fill="none" stroke="#00E676" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <div class="name">MIRADA DIGITAL</div>
+    <div class="handle">@somosmiradadigital</div>
+    <div class="tagline">Invertís en digital.<br>Te mostramos qué pasa con cada peso.</div>
+
+    <!-- WEB -->
+    <a href="https://creative-torte-4f5e85.netlify.app/" class="btn btn-web" target="_blank" rel="noopener">
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="2" y1="12" x2="22" y2="12"/>
+        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+      </svg>
+      Conocé la agencia
+    </a>
+
+    <!-- WHATSAPP -->
+    <a href="https://wa.me/5491160335080?text=Hola!%20Quiero%20la%20auditor%C3%ADa%20gratuita%20de%20Mirada%20Digital" class="btn btn-wa" target="_blank" rel="noopener">
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+      </svg>
+      Auditoría gratuita — WhatsApp
+    </a>
+
+    <div class="sep"></div>
+
+    <!-- MAIL -->
+    <a href="mailto:agenciamiradadigital@gmail.com" class="btn btn-mail">
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <rect x="2" y="4" width="20" height="16" rx="2"/>
+        <polyline points="2,4 12,13 22,4"/>
+      </svg>
+      agenciamiradadigital@gmail.com
+    </a>
+
+    <!-- INSTAGRAM -->
+    <a href="https://instagram.com/somosmiradadigital" class="btn btn-ig" target="_blank" rel="noopener">
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <rect x="2" y="2" width="20" height="20" rx="5"/>
+        <circle cx="12" cy="12" r="4"/>
+        <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/>
+      </svg>
+      @somosmiradadigital
+    </a>
+
+    <div class="footer">MIRADA DIGITAL © 2025</div>
+
+  </div>
+</body>
+</html>
