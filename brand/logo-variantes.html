@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Logo — Mirada Digital</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #060d14;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px 60px;
+      gap: 10px;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .label {
+      color: #1a2a3a;
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-top: 24px;
+    }
+    .card {
+      width: 100%;
+      max-width: 500px;
+      padding: 40px 48px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+    .card.dark  { background: #0D1B2A; }
+    .card.dark2 { background: #111F30; }
+    .card.black { background: #000000; }
+    .card.light { background: #FFFFFF; }
+    .card.icon-only {
+      justify-content: center;
+      padding: 32px;
+      max-width: 160px;
+    }
+
+    .wordmark {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .wordmark .name {
+      font-size: 32px;
+      font-weight: 800;
+      color: #FFFFFF;
+      letter-spacing: -1px;
+      line-height: 1;
+    }
+    .wordmark .sub {
+      font-size: 13px;
+      font-weight: 400;
+      color: #8892A4;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+    }
+
+    /* Versión sobre fondo claro */
+    .card.light .wordmark .name { color: #0D1B2A; }
+    .card.light .wordmark .sub  { color: #8892A4; }
+  </style>
+</head>
+<body>
+
+  <p class="label">Logo Mirada Digital — todas las variantes</p>
+
+  <!-- VARIANTE 1: Logo completo sobre Azul Noche -->
+  <p class="label">versión principal — sobre azul noche</p>
+  <div class="card dark">
+    <svg width="70" height="40" viewBox="0 0 90 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M5 26 C20 6, 70 6, 85 26 C70 46, 20 46, 5 26Z"
+            stroke="#00D4FF" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <circle cx="45" cy="26" r="10"
+              stroke="#00D4FF" stroke-width="3" fill="none"/>
+    </svg>
+    <div class="wordmark">
+      <span class="name">Mirada</span>
+      <span class="sub">Digital</span>
+    </div>
+  </div>
+
+  <!-- VARIANTE 2: Logo completo sobre variante oscura -->
+  <p class="label">variante oscura — cards y secciones</p>
+  <div class="card dark2">
+    <svg width="70" height="40" viewBox="0 0 90 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M5 26 C20 6, 70 6, 85 26 C70 46, 20 46, 5 26Z"
+            stroke="#00D4FF" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <circle cx="45" cy="26" r="10"
+              stroke="#00D4FF" stroke-width="3" fill="none"/>
+    </svg>
+    <div class="wordmark">
+      <span class="name">Mirada</span>
+      <span class="sub">Digital</span>
+    </div>
+  </div>
+
+  <!-- VARIANTE 3: Sobre negro puro -->
+  <p class="label">sobre negro — para videos y reels</p>
+  <div class="card black">
+    <svg width="70" height="40" viewBox="0 0 90 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M5 26 C20 6, 70 6, 85 26 C70 46, 20 46, 5 26Z"
+            stroke="#00D4FF" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <circle cx="45" cy="26" r="10"
+              stroke="#00D4FF" stroke-width="3" fill="none"/>
+    </svg>
+    <div class="wordmark">
+      <span class="name">Mirada</span>
+      <span class="sub">Digital</span>
+    </div>
+  </div>
+
+  <!-- VARIANTE 4: Sobre blanco -->
+  <p class="label">versión light — sobre fondos claros</p>
+  <div class="card light">
+    <svg width="70" height="40" viewBox="0 0 90 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M5 26 C20 6, 70 6, 85 26 C70 46, 20 46, 5 26Z"
+            stroke="#00D4FF" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <circle cx="45" cy="26" r="10"
+              stroke="#00D4FF" stroke-width="3" fill="none"/>
+    </svg>
+    <div class="wordmark">
+      <span class="name">Mirada</span>
+      <span class="sub">Digital</span>
+    </div>
+  </div>
+
+  <!-- VARIANTE 5: Ícono solo — avatar / favicon -->
+  <p class="label">ícono solo — avatar e instagram</p>
+  <div class="card dark icon-only">
+    <svg width="80" height="48" viewBox="0 0 90 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M5 26 C20 6, 70 6, 85 26 C70 46, 20 46, 5 26Z"
+            stroke="#00D4FF" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <circle cx="45" cy="26" r="10"
+              stroke="#00D4FF" stroke-width="3.5" fill="none"/>
+    </svg>
+  </div>
+
+  <!-- VARIANTE 6: Ícono grande centrado para stories/avatar cuadrado -->
+  <p class="label">avatar cuadrado — perfil de instagram</p>
+  <div class="card dark" style="justify-content:center; padding: 50px; max-width:200px; aspect-ratio:1/1; border-radius:50%;">
+    <svg width="90" height="54" viewBox="0 0 90 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M5 26 C20 6, 70 6, 85 26 C70 46, 20 46, 5 26Z"
+            stroke="#00D4FF" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <circle cx="45" cy="26" r="10"
+              stroke="#00D4FF" stroke-width="3.5" fill="none"/>
+    </svg>
+  </div>
+
+  <p class="label" style="margin-top:20px;">@somosmiradadigital</p>
+
+</body>
+</html>
