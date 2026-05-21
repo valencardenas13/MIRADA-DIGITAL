@@ -2,576 +2,611 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mirada Digital — Video Animado</title>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Mirada Digital — Reel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700;800;900&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    body {
+    html, body {
+      width: 100%;
+      height: 100%;
       background: #000;
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
+      overflow: hidden;
       font-family: 'Space Grotesk', sans-serif;
     }
 
-    /* ── Marco 9:16 ── */
+    /* ── Frame 9:16 que se adapta a la pantalla ── */
     .frame {
       position: relative;
-      width: 390px;
-      height: 693px;
-      background: #0D1B2A;
+      height: 100vh;
+      width: calc(100vh * 9 / 16);
+      max-width: 100vw;
+      max-height: calc(100vw * 16 / 9);
+      background: #0a1520;
       overflow: hidden;
+      font-size: calc(100vh * 0.022);  /* base rem relativo */
     }
 
-    /* ── Partículas de fondo ── */
-    .particles {
+    /* ── Grain / ruido de película ── */
+    .grain {
       position: absolute;
-      inset: 0;
-      overflow: hidden;
-      z-index: 0;
+      inset: -50%;
+      width: 200%;
+      height: 200%;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.035;
+      z-index: 80;
+      pointer-events: none;
+      animation: grainShift 0.15s steps(1) infinite;
     }
-    .particle {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      background: #00D4FF;
-      border-radius: 50%;
-      opacity: 0;
-      animation: floatUp linear infinite;
-    }
-
-    @keyframes floatUp {
-      0%   { opacity: 0; transform: translateY(0) scale(1); }
-      10%  { opacity: 0.4; }
-      90%  { opacity: 0.1; }
-      100% { opacity: 0; transform: translateY(-700px) scale(0.5); }
+    @keyframes grainShift {
+      0%  { transform: translate(0, 0); }
+      25% { transform: translate(-3%, 2%); }
+      50% { transform: translate(2%, -3%); }
+      75% { transform: translate(-1%, 1%); }
     }
 
-    /* ── Línea de progreso ── */
-    .progress-bar {
+    /* ── Barra de progreso ── */
+    .progress {
       position: absolute;
       bottom: 0; left: 0;
-      height: 3px;
+      height: 2.5px;
       background: #00D4FF;
       width: 0%;
-      z-index: 100;
-      transition: width 0.1s linear;
+      z-index: 90;
+      transition: width 0.08s linear;
+    }
+
+    /* ── Punto de grabación (realismo) ── */
+    .rec-dot {
+      position: absolute;
+      top: 3.5%;
+      right: 5%;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      z-index: 85;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .rec-dot.show { opacity: 1; }
+    .rec-dot-circle {
+      width: 7px; height: 7px;
+      background: #ff3b30;
+      border-radius: 50%;
+      animation: recPulse 1.2s ease-in-out infinite;
+    }
+    .rec-dot-text {
+      font-size: 0.5em;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 2px;
+      font-weight: 500;
+    }
+    @keyframes recPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+
+    /* ── Handle fijo ── */
+    .handle {
+      position: absolute;
+      bottom: 3%;
+      left: 0; right: 0;
+      text-align: center;
+      font-size: 0.55em;
+      color: rgba(255,255,255,0.18);
+      letter-spacing: 1.5px;
+      z-index: 85;
+      font-weight: 400;
     }
 
     /* ── Slides ── */
     .slide {
       position: absolute;
       inset: 0;
+      padding: 8% 9%;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      align-items: flex-start;
-      padding: 52px 44px;
-      z-index: 10;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.5s ease;
     }
     .slide.active {
       opacity: 1;
       pointer-events: all;
     }
 
-    /* ── Handle en todas las slides ── */
-    .handle-fixed {
-      position: absolute;
-      bottom: 28px;
-      left: 0; right: 0;
-      text-align: center;
-      font-size: 11px;
-      color: rgba(255,255,255,0.2);
-      letter-spacing: 1px;
-      z-index: 50;
+    /* ════════════════════════════
+       SLIDE 1 — PREGUNTA HUMANA
+    ════════════════════════════ */
+    .s1-eyebrow {
+      font-size: 0.6em;
+      letter-spacing: 3px;
+      color: rgba(255,255,255,0.25);
+      text-transform: uppercase;
+      margin-bottom: 1.8em;
+      opacity: 0;
+      animation: up 0.7s cubic-bezier(0.16,1,0.3,1) 0.4s both;
+    }
+    .s1-q {
+      font-size: 2.8em;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.1;
+      margin-bottom: 1em;
+    }
+    .s1-q .word {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    .s1-q .word.cyan { color: #00D4FF; }
+    .s1-body {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85em;
+      color: rgba(255,255,255,0.4);
+      line-height: 1.65;
+      opacity: 0;
+      animation: up 0.8s cubic-bezier(0.16,1,0.3,1) 2.2s both;
     }
 
-    /* ══════════════════════════════
-       SLIDE 1 — TYPEWRITER
-    ══════════════════════════════ */
-    .s1-pre {
-      font-size: 12px;
-      letter-spacing: 4px;
+    /* ════════════════════════════
+       SLIDE 2 — LA REALIDAD
+    ════════════════════════════ */
+    .s2-tag {
+      font-size: 0.55em;
+      letter-spacing: 3px;
       color: #00D4FF;
       text-transform: uppercase;
-      margin-bottom: 32px;
+      margin-bottom: 1.6em;
       opacity: 0;
-      animation: fadeIn 0.4s ease 0.3s forwards;
+      animation: up 0.6s cubic-bezier(0.16,1,0.3,1) 0.3s both;
     }
-    .typewriter {
-      font-size: 52px;
-      font-weight: 900;
-      color: #fff;
-      line-height: 1.05;
-      overflow: hidden;
-      border-right: 3px solid #00D4FF;
-      white-space: nowrap;
-      width: 0;
-      animation:
-        typing 2s steps(28) 0.8s forwards,
-        blink 0.7s step-end 2.8s 3;
-    }
-    .typewriter span { color: #00D4FF; }
-
-    @keyframes typing {
-      from { width: 0; }
-      to   { width: 100%; }
-    }
-    @keyframes blink {
-      50% { border-color: transparent; }
-    }
-
-    /* ══════════════════════════════
-       SLIDE 2 — MÉTRICAS
-    ══════════════════════════════ */
-    .s2-label {
-      font-size: 11px;
-      letter-spacing: 4px;
-      color: rgba(255,255,255,0.3);
-      text-transform: uppercase;
-      margin-bottom: 40px;
-      opacity: 0;
-      animation: fadeIn 0.5s ease 0.2s forwards;
-    }
-    .metric-row {
-      width: 100%;
-      margin-bottom: 32px;
-      opacity: 0;
-    }
-    .metric-row:nth-child(2) { animation: slideRight 0.6s ease 0.3s forwards; }
-    .metric-row:nth-child(3) { animation: slideRight 0.6s ease 0.7s forwards; }
-    .metric-row:nth-child(4) { animation: slideRight 0.6s ease 1.1s forwards; }
-
-    .metric-name {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      color: rgba(255,255,255,0.35);
-      letter-spacing: 2px;
-      margin-bottom: 6px;
-    }
-    .metric-val {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 56px;
-      font-weight: 600;
-      line-height: 1;
-      color: #00E676;
-    }
-    .metric-val.c { color: #00D4FF; }
-    .metric-val.w { color: #fff; }
-    .metric-bar {
-      height: 2px;
-      background: rgba(255,255,255,0.06);
-      margin-top: 12px;
-      position: relative;
-      overflow: hidden;
-    }
-    .metric-bar-fill {
-      position: absolute;
-      top: 0; left: 0;
-      height: 100%;
-      background: #00E676;
-      width: 0%;
-    }
-    .metric-row:nth-child(2) .metric-bar-fill { animation: barFill 1s ease 0.5s forwards; width: 0%; }
-    .metric-row:nth-child(3) .metric-bar-fill { animation: barFill 1s ease 0.9s forwards; background: #00D4FF; }
-    .metric-row:nth-child(4) .metric-bar-fill { animation: barFill 1s ease 1.3s forwards; background: #fff; }
-
-    @keyframes barFill {
-      from { width: 0%; }
-      to   { width: var(--w, 80%); }
-    }
-
-    /* ══════════════════════════════
-       SLIDE 3 — STATEMENT
-    ══════════════════════════════ */
-    .s3-line {
-      font-size: 58px;
+    .s2-statement {
+      font-size: 3em;
       font-weight: 900;
       color: #fff;
       line-height: 1.05;
       text-transform: uppercase;
+      margin-bottom: 1em;
+    }
+    .s2-statement .word {
+      display: inline-block;
       opacity: 0;
+      transform: translateX(-8px);
     }
-    .s3-line.l1 { animation: fadeUp 0.6s ease 0.2s forwards; }
-    .s3-line.l2 { animation: fadeUp 0.6s ease 0.5s forwards; }
-    .s3-line.l3 { animation: fadeUp 0.6s ease 0.8s forwards; }
-    .s3-line .cyan { color: #00D4FF; }
-
-    .s3-divider {
-      width: 0%;
-      height: 2px;
-      background: #00D4FF;
-      margin: 28px 0;
-      animation: expandLine 0.8s ease 1.4s forwards;
-    }
-    .s3-sub {
-      font-size: 18px;
-      font-weight: 400;
-      color: rgba(255,255,255,0.55);
-      line-height: 1.6;
-      opacity: 0;
-      animation: fadeIn 0.6s ease 1.8s forwards;
-    }
-    .s3-sub strong { color: rgba(255,255,255,0.85); font-weight: 700; }
-
-    /* ══════════════════════════════
-       SLIDE 4 — SERVICIOS
-    ══════════════════════════════ */
-    .s4-title {
-      font-size: 13px;
-      letter-spacing: 5px;
-      color: #00D4FF;
-      text-transform: uppercase;
-      margin-bottom: 36px;
-      opacity: 0;
-      animation: fadeIn 0.5s ease 0.1s forwards;
-    }
-    .service-card {
-      width: 100%;
-      background: rgba(0,212,255,0.05);
-      border: 1px solid rgba(0,212,255,0.15);
-      border-radius: 6px;
-      padding: 18px 22px;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 18px;
-      opacity: 0;
-      transform: translateX(-30px);
-    }
-    .service-card:nth-child(2) { animation: slideRight 0.5s ease 0.2s forwards; }
-    .service-card:nth-child(3) { animation: slideRight 0.5s ease 0.45s forwards; }
-    .service-card:nth-child(4) { animation: slideRight 0.5s ease 0.7s forwards; }
-    .service-card:nth-child(5) { animation: slideRight 0.5s ease 0.95s forwards; }
-
-    .svc-icon {
-      font-size: 22px;
-      width: 36px;
-      text-align: center;
-      flex-shrink: 0;
-    }
-    .svc-info {}
-    .svc-name {
-      font-size: 16px;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 2px;
-    }
-    .svc-desc {
-      font-size: 12px;
-      color: rgba(255,255,255,0.35);
-    }
-    .svc-tag {
-      margin-left: auto;
-      font-size: 10px;
-      font-weight: 700;
-      color: #00D4FF;
-      letter-spacing: 1px;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-
-    /* ══════════════════════════════
-       SLIDE 5 — CIERRE / CTA
-    ══════════════════════════════ */
-    .s5-logo {
-      margin-bottom: 36px;
-      opacity: 0;
-      animation: fadeIn 0.8s ease 0.3s forwards;
-    }
-    .s5-tagline {
-      font-size: 36px;
-      font-weight: 900;
-      color: #fff;
-      line-height: 1.15;
-      margin-bottom: 32px;
-      opacity: 0;
-      animation: fadeUp 0.7s ease 0.7s forwards;
-    }
-    .s5-tagline .cyan { color: #00D4FF; }
-    .s5-tagline .green { color: #00E676; }
-
-    .s5-divider {
-      width: 0%;
+    .s2-statement .cyan { color: #00D4FF; }
+    .s2-rule {
       height: 1px;
-      background: rgba(255,255,255,0.1);
-      margin-bottom: 28px;
-      animation: expandLine 0.6s ease 1.3s forwards;
+      background: rgba(255,255,255,0.08);
+      margin-bottom: 1em;
+      transform: scaleX(0);
+      transform-origin: left;
+      animation: scaleIn 0.7s cubic-bezier(0.16,1,0.3,1) 1.8s both;
+    }
+    .s2-note {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82em;
+      color: rgba(255,255,255,0.38);
+      line-height: 1.7;
+      opacity: 0;
+      animation: up 0.7s cubic-bezier(0.16,1,0.3,1) 2.1s both;
+    }
+    .s2-note em { color: rgba(255,255,255,0.65); font-style: normal; font-weight: 600; }
+
+    /* ════════════════════════════
+       SLIDE 3 — NÚMEROS REALES
+    ════════════════════════════ */
+    .s3-intro {
+      font-size: 0.58em;
+      letter-spacing: 3px;
+      color: rgba(255,255,255,0.25);
+      text-transform: uppercase;
+      margin-bottom: 1.8em;
+      opacity: 0;
+      animation: up 0.6s cubic-bezier(0.16,1,0.3,1) 0.2s both;
+    }
+    .s3-num-block {
+      margin-bottom: 1.8em;
+      opacity: 0;
+    }
+    .s3-num-block:nth-child(2) { animation: up 0.7s cubic-bezier(0.16,1,0.3,1) 0.4s both; }
+    .s3-num-block:nth-child(3) { animation: up 0.7s cubic-bezier(0.16,1,0.3,1) 0.75s both; }
+    .s3-num-block:nth-child(4) { animation: up 0.7s cubic-bezier(0.16,1,0.3,1) 1.1s both; }
+
+    .s3-num-label {
+      font-size: 0.55em;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 0.2em;
+    }
+    .s3-num-val {
+      font-size: 3.5em;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1;
+      letter-spacing: -2px;
+    }
+    .s3-num-val.g { color: #00E676; }
+    .s3-num-val.c { color: #00D4FF; }
+    .s3-num-line {
+      height: 2px;
+      margin-top: 0.5em;
+      background: rgba(255,255,255,0.06);
+      border-radius: 1px;
+      overflow: hidden;
+    }
+    .s3-num-fill {
+      height: 100%;
+      width: 0%;
+      background: #00E676;
+      border-radius: 1px;
+      transition: width 1.2s cubic-bezier(0.16,1,0.3,1);
+    }
+    .s3-num-fill.c { background: #00D4FF; }
+    .s3-num-fill.w { background: rgba(255,255,255,0.4); }
+    .s3-context {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75em;
+      color: rgba(255,255,255,0.25);
+      margin-top: 1em;
+      opacity: 0;
+      animation: up 0.6s ease 1.8s both;
+    }
+
+    /* ════════════════════════════
+       SLIDE 4 — NUESTRA PROMESA
+    ════════════════════════════ */
+    .s4-overline {
+      font-size: 0.55em;
+      letter-spacing: 3px;
+      color: #00D4FF;
+      text-transform: uppercase;
+      margin-bottom: 1.4em;
+      opacity: 0;
+      animation: up 0.6s cubic-bezier(0.16,1,0.3,1) 0.2s both;
+    }
+    .s4-big {
+      font-size: 2.9em;
+      font-weight: 900;
+      line-height: 1.08;
+      margin-bottom: 1.2em;
+      color: #fff;
+    }
+    .s4-big .word {
+      display: inline-block;
+      opacity: 0;
+    }
+    .s4-big .cyan  { color: #00D4FF; }
+    .s4-big .green { color: #00E676; }
+
+    .s4-items {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8em;
+    }
+    .s4-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.7em;
+      opacity: 0;
+    }
+    .s4-item:nth-child(1) { animation: up 0.6s cubic-bezier(0.16,1,0.3,1) 1.6s both; }
+    .s4-item:nth-child(2) { animation: up 0.6s cubic-bezier(0.16,1,0.3,1) 1.85s both; }
+    .s4-item:nth-child(3) { animation: up 0.6s cubic-bezier(0.16,1,0.3,1) 2.1s both; }
+
+    .s4-dot {
+      width: 5px; height: 5px;
+      background: #00D4FF;
+      border-radius: 50%;
+      margin-top: 0.45em;
+      flex-shrink: 0;
+    }
+    .s4-item-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82em;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.5;
+    }
+    .s4-item-text strong { color: rgba(255,255,255,0.8); font-weight: 600; }
+
+    /* ════════════════════════════
+       SLIDE 5 — CIERRE
+    ════════════════════════════ */
+    .s5-logo {
+      margin-bottom: 2em;
+      opacity: 0;
+      animation: up 0.8s cubic-bezier(0.16,1,0.3,1) 0.3s both;
+    }
+    .s5-close {
+      font-size: 2.6em;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.1;
+      margin-bottom: 1.2em;
+    }
+    .s5-close .word {
+      display: inline-block;
+      opacity: 0;
+    }
+    .s5-close .cyan  { color: #00D4FF; }
+    .s5-close .green { color: #00E676; }
+
+    .s5-sep {
+      height: 1px;
+      background: rgba(255,255,255,0.07);
+      margin-bottom: 1.4em;
+      transform: scaleX(0);
+      transform-origin: left;
+      animation: scaleIn 0.7s cubic-bezier(0.16,1,0.3,1) 2s both;
+    }
+    .s5-cta-block {
+      opacity: 0;
+      animation: up 0.7s cubic-bezier(0.16,1,0.3,1) 2.3s both;
     }
     .s5-cta {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
       border: 1.5px solid #00D4FF;
       color: #00D4FF;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      padding: 12px 22px;
-      border-radius: 30px;
-      opacity: 0;
-      animation: fadeIn 0.6s ease 1.7s forwards;
-      margin-bottom: 16px;
-    }
-    .s5-sub {
-      font-size: 12px;
-      color: rgba(255,255,255,0.25);
-      opacity: 0;
-      animation: fadeIn 0.6s ease 2s forwards;
-    }
-
-    /* ── Animaciones base ── */
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to   { opacity: 1; }
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes slideRight {
-      from { opacity: 0; transform: translateX(-30px); }
-      to   { opacity: 1; transform: translateX(0); }
-    }
-    @keyframes expandLine {
-      from { width: 0%; }
-      to   { width: 100%; }
-    }
-
-    /* ── Botón replay ── */
-    .replay-btn {
-      position: absolute;
-      top: 20px; right: 20px;
-      background: rgba(0,212,255,0.1);
-      border: 1px solid rgba(0,212,255,0.3);
-      color: #00D4FF;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 10px;
+      font-size: 0.7em;
       font-weight: 700;
       letter-spacing: 2px;
       text-transform: uppercase;
-      padding: 6px 12px;
-      border-radius: 20px;
-      cursor: pointer;
-      z-index: 200;
-      opacity: 0;
-      transition: opacity 0.3s;
+      padding: 0.7em 1.4em;
+      border-radius: 30px;
+      margin-bottom: 0.8em;
     }
-    .replay-btn.visible { opacity: 1; }
-    .replay-btn:hover { background: rgba(0,212,255,0.2); }
+    .s5-micro {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65em;
+      color: rgba(255,255,255,0.2);
+      letter-spacing: 0.5px;
+    }
+
+    /* ── Keyframes compartidos ── */
+    @keyframes up {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scaleIn {
+      from { transform: scaleX(0); }
+      to   { transform: scaleX(1); }
+    }
+
+    /* ── Replay ── */
+    .replay {
+      position: absolute;
+      bottom: 8%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,212,255,0.1);
+      border: 1px solid rgba(0,212,255,0.25);
+      color: #00D4FF;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.55em;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 0.7em 1.4em;
+      border-radius: 30px;
+      cursor: pointer;
+      z-index: 90;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s;
+      white-space: nowrap;
+    }
+    .replay.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* Transición entre slides */
+    .slide { transition: opacity 0.45s ease; }
   </style>
 </head>
 <body>
 
 <div class="frame" id="frame">
 
-  <!-- Partículas -->
-  <div class="particles" id="particles"></div>
+  <div class="grain"></div>
+  <div class="progress" id="prog"></div>
+  <div class="rec-dot" id="rec"><div class="rec-dot-circle"></div><span class="rec-dot-text">REC</span></div>
+  <div class="handle">@somosmiradadigital</div>
+  <button class="replay" id="replay" onclick="restart()">↺ &nbsp;Ver de nuevo</button>
 
-  <!-- Barra de progreso -->
-  <div class="progress-bar" id="progress"></div>
-
-  <!-- Handle fijo -->
-  <div class="handle-fixed">@somosmiradadigital</div>
-
-  <!-- Botón replay -->
-  <button class="replay-btn" id="replayBtn" onclick="restart()">↺ Replay</button>
-
-  <!-- ══ SLIDE 1: TYPEWRITER ══ -->
+  <!-- ════ S1 — PREGUNTA ════ -->
   <div class="slide" id="s1">
-    <p class="s1-pre">Mirada Digital</p>
-    <div style="overflow:hidden; width:100%;">
-      <div class="typewriter">¿Sabés en qué<br><span>se fue tu plata?</span></div>
-    </div>
-  </div>
-
-  <!-- ══ SLIDE 2: MÉTRICAS ══ -->
-  <div class="slide" id="s2">
-    <p class="s2-label">Resultados reales — Mayo 2025</p>
-    <div class="metric-row">
-      <p class="metric-name">// ROAS</p>
-      <p class="metric-val">4.7×</p>
-      <div class="metric-bar"><div class="metric-bar-fill" style="--w:75%"></div></div>
-    </div>
-    <div class="metric-row">
-      <p class="metric-name">// RETORNO</p>
-      <p class="metric-val w">$226K</p>
-      <div class="metric-bar"><div class="metric-bar-fill" style="--w:90%"></div></div>
-    </div>
-    <div class="metric-row">
-      <p class="metric-name">// CPA</p>
-      <p class="metric-val c">$812</p>
-      <div class="metric-bar"><div class="metric-bar-fill" style="--w:55%"></div></div>
-    </div>
-  </div>
-
-  <!-- ══ SLIDE 3: STATEMENT ══ -->
-  <div class="slide" id="s3">
-    <p class="s3-line l1">Tu agencia</p>
-    <p class="s3-line l2">te está</p>
-    <p class="s3-line l3"><span class="cyan">mintiendo.</span></p>
-    <div class="s3-divider"></div>
-    <p class="s3-sub">
-      La mayoría ejecuta campañas.<br>
-      <strong>Nadie explica nada.</strong><br>
-      Nosotros sí.
+    <p class="s1-eyebrow">Mirada Digital</p>
+    <h1 class="s1-q">
+      <span class="word">¿Cuándo</span> <span class="word">fue</span><br>
+      <span class="word">la</span> <span class="word">última</span> <span class="word">vez</span><br>
+      <span class="word">que</span> <span class="word">tu</span><br>
+      <span class="word">agencia</span><br>
+      <span class="word cyan">te explicó algo?</span>
+    </h1>
+    <p class="s1-body">
+      No el PDF de siempre.<br>
+      Una explicación real de qué pasó con tu plata.
     </p>
   </div>
 
-  <!-- ══ SLIDE 4: SERVICIOS ══ -->
+  <!-- ════ S2 — LA REALIDAD ════ -->
+  <div class="slide" id="s2">
+    <p class="s2-tag">El problema</p>
+    <h2 class="s2-statement">
+      <span class="word">La</span> <span class="word">mayoría</span><br>
+      <span class="word">ejecuta.</span><br>
+      <span class="word cyan">Nadie</span><br>
+      <span class="word cyan">explica.</span>
+    </h2>
+    <div class="s2-rule"></div>
+    <p class="s2-note">
+      Pagás todos los meses y lo único que sabés<br>
+      es que <em>"las campañas están activas"</em>.<br>
+      Eso no es suficiente.
+    </p>
+  </div>
+
+  <!-- ════ S3 — NÚMEROS ════ -->
+  <div class="slide" id="s3">
+    <p class="s3-intro">Cliente real · Mayo 2025</p>
+    <div class="s3-num-block">
+      <p class="s3-num-label">Inversión total</p>
+      <p class="s3-num-val">$48.000</p>
+      <div class="s3-num-line"><div class="s3-num-fill w" data-w="55%"></div></div>
+    </div>
+    <div class="s3-num-block">
+      <p class="s3-num-label">Retorno generado</p>
+      <p class="s3-num-val g">$226.000</p>
+      <div class="s3-num-line"><div class="s3-num-fill" data-w="90%"></div></div>
+    </div>
+    <div class="s3-num-block">
+      <p class="s3-num-label">ROAS</p>
+      <p class="s3-num-val c">4.7×</p>
+      <div class="s3-num-line"><div class="s3-num-fill c" data-w="72%"></div></div>
+    </div>
+    <p class="s3-context">Cada número tiene una explicación. Te la damos.</p>
+  </div>
+
+  <!-- ════ S4 — PROMESA ════ -->
   <div class="slide" id="s4">
-    <p class="s4-title">Nuestros servicios</p>
-    <div class="service-card">
-      <span class="svc-icon">⚡</span>
-      <div class="svc-info">
-        <p class="svc-name">Auditoría Express</p>
-        <p class="svc-desc">Revisión completa de campañas</p>
+    <p class="s4-overline">Lo que hacemos</p>
+    <h2 class="s4-big">
+      <span class="word">Invertís.</span><br>
+      <span class="word">Nosotros</span><br>
+      <span class="word cyan">te mostramos</span><br>
+      <span class="word green">todo.</span>
+    </h2>
+    <div class="s4-items">
+      <div class="s4-item">
+        <div class="s4-dot"></div>
+        <p class="s4-item-text"><strong>Reporte mensual real</strong> — no un PDF genérico</p>
       </div>
-      <span class="svc-tag">GRATIS · 72hs</span>
-    </div>
-    <div class="service-card">
-      <span class="svc-icon">📊</span>
-      <div class="svc-info">
-        <p class="svc-name">Performance 360°</p>
-        <p class="svc-desc">Meta + Google + Dashboard</p>
+      <div class="s4-item">
+        <div class="s4-dot"></div>
+        <p class="s4-item-text"><strong>Dashboard en tiempo real</strong> — ves todo siempre</p>
       </div>
-      <span class="svc-tag">TIEMPO REAL</span>
-    </div>
-    <div class="service-card">
-      <span class="svc-icon">📱</span>
-      <div class="svc-info">
-        <p class="svc-name">Social Estratégico</p>
-        <p class="svc-desc">Redes con objetivos medibles</p>
+      <div class="s4-item">
+        <div class="s4-dot"></div>
+        <p class="s4-item-text"><strong>Auditoría gratis en 72hs</strong> — sin compromiso</p>
       </div>
-      <span class="svc-tag">CON REPORTE</span>
-    </div>
-    <div class="service-card">
-      <span class="svc-icon">🌐</span>
-      <div class="svc-info">
-        <p class="svc-name">Presencia Digital</p>
-        <p class="svc-desc">SEO + Web profesional</p>
-      </div>
-      <span class="svc-tag">90 DÍAS</span>
     </div>
   </div>
 
-  <!-- ══ SLIDE 5: CIERRE ══ -->
+  <!-- ════ S5 — CIERRE ════ -->
   <div class="slide" id="s5">
     <div class="s5-logo">
-      <svg width="56" height="34" viewBox="0 0 90 52" fill="none">
+      <svg width="52" height="30" viewBox="0 0 90 52" fill="none">
         <path d="M5 26 C20 6,70 6,85 26 C70 46,20 46,5 26Z"
               stroke="#00D4FF" stroke-width="3.5" fill="none" stroke-linecap="round"/>
         <circle cx="45" cy="26" r="10" stroke="#00D4FF" stroke-width="3.5" fill="none"/>
       </svg>
     </div>
-    <p class="s5-tagline">
-      Invertís.<br>
-      Nosotros te<br>
-      mostramos<br>
-      <span class="cyan">qué pasa con</span><br>
-      <span class="green">cada peso.</span>
-    </p>
-    <div class="s5-divider"></div>
-    <span class="s5-cta">Auditoría gratis → DM</span>
-    <p class="s5-sub">somosmiradadigital.com.ar</p>
+    <h2 class="s5-close">
+      <span class="word">Empezamos</span><br>
+      <span class="word">con una</span><br>
+      <span class="word cyan">auditoría</span><br>
+      <span class="word green">gratis.</span>
+    </h2>
+    <div class="s5-sep"></div>
+    <div class="s5-cta-block">
+      <div class="s5-cta">Escribinos al DM →</div>
+      <p class="s5-micro">72hs · sin costo · sin compromiso</p>
+    </div>
   </div>
 
 </div>
 
 <script>
-  // ── Partículas ──
-  const pContainer = document.getElementById('particles');
-  for (let i = 0; i < 25; i++) {
-    const p = document.createElement('div');
-    p.className = 'particle';
-    p.style.cssText = `
-      left: ${Math.random() * 100}%;
-      bottom: ${Math.random() * 30}%;
-      width: ${Math.random() * 2 + 1}px;
-      height: ${Math.random() * 2 + 1}px;
-      animation-duration: ${Math.random() * 8 + 6}s;
-      animation-delay: ${Math.random() * 6}s;
-      opacity: 0;
-    `;
-    pContainer.appendChild(p);
+// Animación de palabras en cascada
+function animateWords(container, baseDelay, step) {
+  container.querySelectorAll('.word').forEach((w, i) => {
+    w.style.animation = `up 0.65s cubic-bezier(0.16,1,0.3,1) ${baseDelay + i * step}s both`;
+  });
+}
+
+// Secuencia [id, duración ms]
+const SEQ = [
+  ['s1', 5500],
+  ['s2', 5500],
+  ['s3', 6000],
+  ['s4', 6500],
+  ['s5', 7000],
+];
+const TOTAL = SEQ.reduce((a, b) => a + b[1], 0);
+
+let idx = -1, startTs = null, raf = null;
+
+function activate(id) {
+  document.querySelectorAll('.slide').forEach(s => {
+    s.classList.remove('active');
+    s.style.opacity = 0;
+  });
+  const el = document.getElementById(id);
+  // Clonar para reiniciar animaciones
+  const clone = el.cloneNode(true);
+  el.replaceWith(clone);
+  clone.classList.add('active');
+  clone.style.opacity = 1;
+
+  // Animar palabras según slide
+  const delays = {s1:[0.7,0.08], s2:[0.6,0.12], s3:null, s4:[0.5,0.15], s5:[0.9,0.14]};
+  const d = delays[id];
+  if (d) animateWords(clone, d[0], d[1]);
+
+  // Barras de números en s3
+  if (id === 's3') {
+    setTimeout(() => {
+      clone.querySelectorAll('.s3-num-fill').forEach(b => {
+        b.style.transition = 'width 1.2s cubic-bezier(0.16,1,0.3,1)';
+        b.style.width = b.dataset.w;
+      });
+    }, 500);
   }
+}
 
-  // ── Secuencia de slides ──
-  // [slideId, duracion en ms]
-  const sequence = [
-    ['s1', 4500],
-    ['s2', 5000],
-    ['s3', 5500],
-    ['s4', 6000],
-    ['s5', 7000],
-  ];
+function tick(ts) {
+  if (!startTs) startTs = ts;
+  const elapsed = ts - startTs;
+  document.getElementById('prog').style.width = Math.min(elapsed / TOTAL * 100, 100) + '%';
 
-  const totalDuration = sequence.reduce((a, b) => a + b[1], 0);
-  let currentIndex = 0;
-  let startTime = null;
-  let rafId = null;
-
-  function showSlide(id) {
-    document.querySelectorAll('.slide').forEach(s => {
-      s.classList.remove('active');
-      // Reset animations by clone trick
-    });
-    const slide = document.getElementById(id);
-    // Restart animations
-    const clone = slide.cloneNode(true);
-    slide.parentNode.replaceChild(clone, slide);
-    clone.classList.add('active');
-  }
-
-  function updateProgress(elapsed) {
-    const pct = Math.min((elapsed / totalDuration) * 100, 100);
-    document.getElementById('progress').style.width = pct + '%';
-  }
-
-  function tick(ts) {
-    if (!startTime) startTime = ts;
-    const elapsed = ts - startTime;
-    updateProgress(elapsed);
-
-    let cumulative = 0;
-    for (let i = 0; i < sequence.length; i++) {
-      cumulative += sequence[i][1];
-      if (elapsed < cumulative) {
-        if (currentIndex !== i) {
-          currentIndex = i;
-          showSlide(sequence[i][0]);
-        }
-        break;
-      }
-    }
-
-    if (elapsed < totalDuration) {
-      rafId = requestAnimationFrame(tick);
-    } else {
-      // Fin — mostrar botón replay
-      document.getElementById('replayBtn').classList.add('visible');
+  let cum = 0;
+  for (let i = 0; i < SEQ.length; i++) {
+    cum += SEQ[i][1];
+    if (elapsed < cum) {
+      if (idx !== i) { idx = i; activate(SEQ[i][0]); }
+      break;
     }
   }
 
-  function restart() {
-    cancelAnimationFrame(rafId);
-    startTime = null;
-    currentIndex = -1;
-    document.getElementById('replayBtn').classList.remove('visible');
-    document.getElementById('progress').style.width = '0%';
-    document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
-    rafId = requestAnimationFrame(tick);
+  if (elapsed < TOTAL) {
+    raf = requestAnimationFrame(tick);
+  } else {
+    document.getElementById('replay').classList.add('show');
+    document.getElementById('rec').classList.remove('show');
   }
+}
 
-  // Arrancar automáticamente
-  rafId = requestAnimationFrame(tick);
-  showSlide('s1');
+function restart() {
+  cancelAnimationFrame(raf);
+  idx = -1; startTs = null;
+  document.getElementById('replay').classList.remove('show');
+  document.getElementById('prog').style.width = '0%';
+  document.getElementById('rec').classList.add('show');
+  raf = requestAnimationFrame(tick);
+}
+
+// Arrancar
+document.getElementById('rec').classList.add('show');
+raf = requestAnimationFrame(tick);
 </script>
-
 </body>
 </html>
