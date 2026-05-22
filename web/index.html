@@ -28,7 +28,7 @@
       --font:  'Mona Sans', -apple-system, sans-serif;
     }
 
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; overflow-x: hidden; }
     body {
       background: var(--navy);
       color: var(--white);
@@ -527,14 +527,47 @@
       .vs-divider { display:none; }
       .svc-header { flex-direction:column; align-items:flex-start; }
       .footer-top { flex-direction:column; }
+      .footer-links { gap:32px; }
       .numero-item:first-child { border-radius:20px 20px 0 0; }
       .numero-item:last-child  { border-radius:0 0 20px 20px; }
+      .blob-1 { width:280px; height:280px; }
+      .blob-2 { width:240px; height:240px; }
     }
     @media(max-width:600px){
-      section { padding:72px 5%; }
-      .hero-actions { flex-direction:column; align-items:flex-start; }
-      .vs-col { padding:28px 20px; }
-      .svc-card { padding:28px; }
+      nav { padding:16px 5%; }
+      .nav-logo-text { font-size:14px; }
+      .nav-cta { font-size:12px; padding:8px 14px; letter-spacing:0; }
+      section { padding:64px 6%; }
+      #hero { padding:100px 6% 64px; min-height:100dvh; }
+      .hero-tag { font-size:10px; padding:6px 12px; margin-bottom:24px; }
+      .hero-h1 { font-size: clamp(36px,11vw,56px); letter-spacing:-1px; margin-bottom:20px; }
+      .hero-sub { font-size:15px; margin-bottom:36px; }
+      .hero-actions { flex-direction:column; align-items:stretch; gap:14px; }
+      .btn-primary { justify-content:center; padding:15px 24px; font-size:14px; }
+      .btn-ghost { justify-content:center; font-size:14px; }
+      .scroll-hint { display:none; }
+      .vs-col { padding:24px 18px; }
+      .vs-item { font-size:13px; }
+      .svc-card { padding:24px; }
+      .svc-name { font-size:19px; }
+      .svc-desc { font-size:13px; }
+      .paso-num { width:56px; height:56px; font-size:20px; }
+      .paso-title { font-size:18px; }
+      .numeros-grid { grid-template-columns:repeat(2,1fr); gap:2px; }
+      .numero-item { padding:32px 16px; }
+      .numero-val { font-size:clamp(28px,8vw,42px); }
+      .numero-label { font-size:12px; }
+      .cta-h2 { font-size:clamp(28px,9vw,48px); letter-spacing:-1px; }
+      .cta-sub { font-size:15px; }
+      .btn-big { font-size:15px; padding:16px 32px; width:100%; justify-content:center; }
+      .section-h2 { letter-spacing:-0.5px; }
+      .big-quote { font-size:clamp(16px,5vw,22px); }
+      .footer-links { flex-direction:column; gap:24px; }
+      .footer-bottom { flex-direction:column; text-align:center; }
+    }
+    @media(max-width:380px){
+      .hero-h1 { font-size:34px; }
+      .nav-cta { display:none; }
     }
   </style>
 </head>
