@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 160" width="400" height="160">
+  <!-- Fondo -->
+  <rect width="400" height="160" fill="#0D1B2A"/>
+
+  <!-- Ojo minimalista -->
+  <path d="M30 80 C55 45, 115 45, 140 80 C115 115, 55 115, 30 80Z"
+        stroke="#00D4FF" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <circle cx="85" cy="80" r="16"
+          stroke="#00D4FF" stroke-width="3.5" fill="none"/>
+
+  <!-- Nombre -->
+  <text x="165" y="72"
+        font-family="Space Grotesk, Arial, sans-serif"
+        font-weight="800"
+        font-size="38"
+        fill="#FFFFFF"
+        letter-spacing="-1">MIRADA</text>
+
+  <text x="165" y="112"
+        font-family="Space Grotesk, Arial, sans-serif"
+        font-weight="400"
+        font-size="28"
+        fill="#8892A4"
+        letter-spacing="6">DIGITAL</text>
+</svg>

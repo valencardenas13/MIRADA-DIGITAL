@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Creativo WhatsApp — Mirada Digital</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%; height: 100%;
+      background: #000;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+
+    .frame {
+      position: relative;
+      height: 100vh;
+      width: calc(100vh * 9 / 16);
+      max-width: 100vw;
+      max-height: calc(100vw * 16 / 9);
+      background: #0D1B2A;
+      overflow: hidden;
+      font-family: 'Inter', sans-serif;
+      font-size: calc(100vh * 0.02);
+    }
+
+    /* ── Progreso ── */
+    .progress {
+      position: absolute;
+      bottom: 0; left: 0;
+      height: 2px; background: #00D4FF;
+      width: 0%; z-index: 99;
+      transition: width 0.08s linear;
+    }
+
+    /* ── Replay ── */
+    .replay {
+      position: absolute;
+      bottom: 6%; left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,212,255,0.1);
+      border: 1px solid rgba(0,212,255,0.25);
+      color: #00D4FF;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.55em; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
+      padding: 0.7em 1.5em; border-radius: 30px;
+      cursor: pointer; z-index: 99;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.4s;
+      white-space: nowrap;
+    }
+    .replay.show { opacity: 1; pointer-events: all; }
+
+    /* ══════════════════════════════
+       PANTALLA 0 — INTRO HOOK
+    ══════════════════════════════ */
+    .screen {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+    .screen.active { opacity: 1; pointer-events: all; }
+
+    #s0 {
+      background: #0D1B2A;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 10% 9%;
+    }
+    .intro-tag {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.55em;
+      letter-spacing: 3px;
+      color: #00D4FF;
+      text-transform: uppercase;
+      margin-bottom: 1.4em;
+      opacity: 0;
+      animation: none;
+    }
+    .intro-tag.go { animation: up 0.6s cubic-bezier(0.16,1,0.3,1) 0.2s both; }
+
+    .intro-q {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.9em;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.1;
+      margin-bottom: 1em;
+    }
+    .intro-q .word { display: inline-block; opacity: 0; }
+    .intro-q .cyan { color: #00D4FF; }
+
+    .intro-sub {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82em;
+      color: rgba(255,255,255,0.35);
+      line-height: 1.65;
+      opacity: 0;
+    }
+    .intro-sub.go { animation: up 0.7s ease 2.2s both; }
+
+    /* ══════════════════════════════
+       PANTALLA 1 — CHAT
+    ══════════════════════════════ */
+    #s1 {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .wp-header {
+      background: #0b1d2e;
+      padding: 1em 0.9em 0.85em;
+      display: flex;
+      align-items: center;
+      gap: 0.65em;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      flex-shrink: 0;
+      z-index: 5;
+    }
+    .wp-back { color: rgba(255,255,255,0.4); font-size: 1em; }
+    .wp-avatar {
+      width: 2em; height: 2em;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #666, #333);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72em; color: #fff; font-weight: 600;
+      flex-shrink: 0;
+    }
+    .wp-contact { flex: 1; }
+    .wp-name { font-size: 0.8em; font-weight: 600; color: #fff; line-height: 1.2; }
+    .wp-status { font-size: 0.56em; color: rgba(255,255,255,0.3); }
+    .wp-icons { color: rgba(255,255,255,0.35); font-size: 0.85em; display: flex; gap: 0.7em; }
+
+    /* Mensajes — todos visibles, tamaño compacto */
+    .wp-messages {
+      flex: 1;
+      padding: 0.6em 0.8em;
+      display: flex;
+      flex-direction: column;
+      gap: 0.28em;
+      overflow: hidden;
+    }
+
+    .date-sep {
+      text-align: center;
+      font-size: 0.55em;
+      color: rgba(255,255,255,0.2);
+      padding: 0.25em 0.7em;
+      background: rgba(255,255,255,0.04);
+      border-radius: 6px;
+      align-self: center;
+      margin-bottom: 0.15em;
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    .date-sep.show { opacity: 1; }
+
+    .bubble {
+      max-width: 80%;
+      padding: 0.42em 0.7em 0.32em;
+      border-radius: 9px;
+      font-size: 0.76em;
+      line-height: 1.42;
+      position: relative;
+      opacity: 0;
+      transform: translateY(6px) scale(0.97);
+      transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.16,1,0.3,1);
+    }
+    .bubble.show { opacity: 1; transform: translateY(0) scale(1); }
+
+    .bubble.recv {
+      background: #162536;
+      color: rgba(255,255,255,0.82);
+      border-bottom-left-radius: 2px;
+      align-self: flex-start;
+    }
+    .bubble.recv::before {
+      content: '';
+      position: absolute;
+      left: -4px; bottom: 0;
+      border: 4px solid transparent;
+      border-right-color: #162536;
+      border-bottom-color: #162536;
+    }
+
+    .bubble.sent {
+      background: #0a3d5c;
+      border: 1px solid rgba(0,212,255,0.18);
+      color: rgba(255,255,255,0.88);
+      border-bottom-right-radius: 2px;
+      align-self: flex-end;
+    }
+    .bubble.sent::after {
+      content: '';
+      position: absolute;
+      right: -4px; bottom: 0;
+      border: 4px solid transparent;
+      border-left-color: #0a3d5c;
+      border-bottom-color: #0a3d5c;
+    }
+
+    .bubble-name {
+      font-size: 0.72em; font-weight: 600;
+      color: #777; margin-bottom: 0.1em;
+    }
+    .bubble-meta {
+      display: flex; align-items: center;
+      justify-content: flex-end; gap: 3px;
+      margin-top: 0.15em;
+    }
+    .bubble-time { font-size: 0.65em; color: rgba(255,255,255,0.22); }
+    .bubble-check { font-size: 0.65em; color: #00D4FF; }
+    .bubble-check.grey { color: rgba(255,255,255,0.25); }
+
+    /* Typing */
+    .typing-indicator {
+      align-self: flex-start;
+      background: #162536;
+      border-radius: 9px; border-bottom-left-radius: 2px;
+      padding: 0.5em 0.75em;
+      display: flex; gap: 3px; align-items: center;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .typing-indicator.show { opacity: 1; }
+    .typing-dot {
+      width: 4px; height: 4px;
+      background: rgba(255,255,255,0.35);
+      border-radius: 50%;
+      animation: bounce 1.2s ease-in-out infinite;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.15s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes bounce {
+      0%,60%,100% { transform: translateY(0); }
+      30% { transform: translateY(-3px); }
+    }
+
+    /* Input bar */
+    .wp-input {
+      background: #0b1d2e;
+      padding: 0.55em 0.75em;
+      display: flex; align-items: center; gap: 0.55em;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      flex-shrink: 0;
+    }
+    .wp-input-box {
+      flex: 1;
+      background: #152334;
+      border-radius: 18px;
+      padding: 0.45em 0.8em;
+      font-size: 0.68em;
+      color: rgba(255,255,255,0.25);
+    }
+    .wp-mic {
+      width: 1.7em; height: 1.7em;
+      background: #00D4FF;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75em; flex-shrink: 0;
+    }
+
+    /* ══════════════════════════════
+       PANTALLA 2 — CIERRE
+    ══════════════════════════════ */
+    #s2 {
+      background: #0D1B2A;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 10% 9%;
+    }
+    .close-tag {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.55em; letter-spacing: 3px;
+      color: #00D4FF; text-transform: uppercase;
+      margin-bottom: 1.4em;
+      opacity: 0;
+    }
+    .close-tag.go { animation: up 0.6s cubic-bezier(0.16,1,0.3,1) 0.2s both; }
+
+    .close-h {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.9em; font-weight: 900;
+      color: #fff; line-height: 1.08;
+      margin-bottom: 1.2em;
+    }
+    .close-h .word { display: inline-block; opacity: 0; }
+    .close-h .cyan  { color: #00D4FF; }
+    .close-h .green { color: #00E676; }
+
+    .close-rule {
+      width: 0%; height: 1px;
+      background: rgba(255,255,255,0.08);
+      margin-bottom: 1.4em;
+      transition: width 0.7s cubic-bezier(0.16,1,0.3,1);
+    }
+    .close-cta {
+      display: inline-flex; align-items: center; gap: 8px;
+      border: 1.5px solid #00D4FF; color: #00D4FF;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.68em; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
+      padding: 0.7em 1.4em; border-radius: 30px;
+      margin-bottom: 0.8em; opacity: 0;
+    }
+    .close-sub { font-size: 0.62em; color: rgba(255,255,255,0.2); opacity: 0; }
+    .close-logo {
+      position: absolute; bottom: 7%;
+      left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; gap: 0.5em;
+      opacity: 0;
+    }
+    .close-logo-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.6em; color: rgba(255,255,255,0.22);
+      letter-spacing: 2px;
+    }
+
+    @keyframes up {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+<div class="frame">
+  <div class="progress" id="prog"></div>
+  <button class="replay" id="replay" onclick="restart()">↺ Ver de nuevo</button>
+
+  <!-- ══ PANTALLA 0: INTRO ══ -->
+  <div class="screen" id="s0">
+    <p class="intro-tag" id="itag">¿Te suena familiar?</p>
+    <h1 class="intro-q" id="iq">
+      <span class="word">¿Alguna</span> <span class="word">vez</span><br>
+      <span class="word">le</span> <span class="word">pediste</span><br>
+      <span class="word">un</span> <span class="word">reporte</span><br>
+      <span class="word cyan">a tu agencia?</span>
+    </h1>
+    <p class="intro-sub" id="isub">
+      Esto es lo que le pasa<br>
+      a la mayoría de las empresas.
+    </p>
+  </div>
+
+  <!-- ══ PANTALLA 1: CHAT ══ -->
+  <div class="screen" id="s1">
+    <div class="wp-header">
+      <span class="wp-back">‹</span>
+      <div class="wp-avatar">AG</div>
+      <div class="wp-contact">
+        <p class="wp-name">Marketing Solutions 🚀</p>
+        <p class="wp-status">en línea</p>
+      </div>
+      <div class="wp-icons"><span>📹</span><span>📞</span></div>
+    </div>
+
+    <div class="wp-messages" id="msgs">
+      <div class="date-sep" id="ds">Hoy</div>
+
+      <div class="bubble sent" id="m1">
+        <p>Hola! me mandás el reporte del mes? 🙏</p>
+        <div class="bubble-meta">
+          <span class="bubble-time">14:03</span>
+          <span class="bubble-check">✓✓</span>
+        </div>
+      </div>
+
+      <div class="typing-indicator" id="t1">
+        <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+      </div>
+      <div class="bubble recv" id="m2">
+        <p class="bubble-name">Marketing Solutions</p>
+        <p>¡Todo marchando excelente! 🚀🔥</p>
+        <div class="bubble-meta"><span class="bubble-time">14:07</span></div>
+      </div>
+
+      <div class="bubble sent" id="m3">
+        <p>Sí pero... ¿en números cuánto generamos?</p>
+        <div class="bubble-meta">
+          <span class="bubble-time">14:08</span>
+          <span class="bubble-check">✓✓</span>
+        </div>
+      </div>
+
+      <div class="typing-indicator" id="t2">
+        <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+      </div>
+      <div class="bubble recv" id="m4">
+        <p class="bubble-name">Marketing Solutions</p>
+        <p>Las métricas están en verde 📊 muy buen alcance</p>
+        <div class="bubble-meta"><span class="bubble-time">14:14</span></div>
+      </div>
+
+      <div class="bubble sent" id="m5">
+        <p>¿Cuánto costó cada venta? ¿Cuál fue el ROAS?</p>
+        <div class="bubble-meta">
+          <span class="bubble-time">14:15</span>
+          <span class="bubble-check">✓✓</span>
+        </div>
+      </div>
+
+      <div class="typing-indicator" id="t3">
+        <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+      </div>
+      <div class="bubble recv" id="m6">
+        <p class="bubble-name">Marketing Solutions</p>
+        <p>Te armamos un PDF completo, lo tenés la semana que viene 😊</p>
+        <div class="bubble-meta"><span class="bubble-time">14:22</span></div>
+      </div>
+
+      <div class="bubble sent" id="m7">
+        <p>Me dijiste lo mismo el mes pasado... 🙃</p>
+        <div class="bubble-meta">
+          <span class="bubble-time">14:23</span>
+          <span class="bubble-check grey">✓✓</span>
+        </div>
+      </div>
+
+      <div class="typing-indicator" id="t4">
+        <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+      </div>
+      <div class="bubble recv" id="m8">
+        <p class="bubble-name">Marketing Solutions</p>
+        <p>🔥🔥🔥</p>
+        <div class="bubble-meta"><span class="bubble-time">15:41</span></div>
+      </div>
+    </div>
+
+    <div class="wp-input">
+      <div class="wp-input-box">Mensaje</div>
+      <div class="wp-mic">🎤</div>
+    </div>
+  </div>
+
+  <!-- ══ PANTALLA 2: CIERRE ══ -->
+  <div class="screen" id="s2">
+    <p class="close-tag" id="ct">Mirada Digital</p>
+    <h2 class="close-h" id="ch">
+      <span class="word">Nosotros</span><br>
+      <span class="word">te explicamos</span><br>
+      <span class="word cyan">todo.</span><br>
+      <span class="word green">Siempre.</span>
+    </h2>
+    <div class="close-rule" id="cr"></div>
+    <div class="close-cta" id="cc">Auditoría gratis → DM</div>
+    <p class="close-sub" id="cs">72hs · sin costo · sin vueltas</p>
+    <div class="close-logo" id="cl">
+      <svg width="26" height="15" viewBox="0 0 90 52" fill="none">
+        <path d="M5 26 C20 6,70 6,85 26 C70 46,20 46,5 26Z" stroke="#00D4FF" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <circle cx="45" cy="26" r="10" stroke="#00D4FF" stroke-width="4" fill="none"/>
+      </svg>
+      <span class="close-logo-text">@somosmiradadigital</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function animWords(el, base, step) {
+  el.querySelectorAll('.word').forEach((w, i) => {
+    w.style.animation = `up 0.6s cubic-bezier(0.16,1,0.3,1) ${base + i * step}s both`;
+  });
+}
+
+// Transiciones entre pantallas
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+  });
+  document.getElementById(id).classList.add('active');
+}
+
+// INTRO
+function startIntro() {
+  showScreen('s0');
+  const tag = document.getElementById('itag');
+  tag.classList.add('go');
+  animWords(document.getElementById('iq'), 0.4, 0.1);
+  document.getElementById('isub').classList.add('go');
+}
+
+// CHAT — secuencia de eventos [elemento, acción, delay desde inicio del chat]
+const chatEvents = [
+  ['ds',  'show', 300],
+  ['m1',  'show', 800],
+  ['t1',  'show', 1500],
+  ['t1',  'hide', 3000],
+  ['m2',  'show', 3100],
+  ['m3',  'show', 4000],
+  ['t2',  'show', 4700],
+  ['t2',  'hide', 6500],
+  ['m4',  'show', 6600],
+  ['m5',  'show', 7500],
+  ['t3',  'show', 8200],
+  ['t3',  'hide', 10200],
+  ['m6',  'show', 10300],
+  ['m7',  'show', 11400],
+  ['t4',  'show', 12500],
+  ['t4',  'hide', 14200],
+  ['m8',  'show', 14300],
+];
+const CHAT_DURATION = 16000;
+
+// CIERRE
+function startClose() {
+  showScreen('s2');
+  document.getElementById('ct').classList.add('go');
+  animWords(document.getElementById('ch'), 0.5, 0.18);
+  setTimeout(() => document.getElementById('cr').style.width = '100%', 1400);
+  setTimeout(() => {
+    const cc = document.getElementById('cc');
+    cc.style.animation = 'up 0.6s cubic-bezier(0.16,1,0.3,1) both';
+    cc.style.opacity = 1;
+  }, 1900);
+  setTimeout(() => {
+    const cs = document.getElementById('cs');
+    cs.style.animation = 'up 0.5s ease both';
+    cs.style.opacity = 1;
+  }, 2200);
+  setTimeout(() => {
+    const cl = document.getElementById('cl');
+    cl.style.animation = 'up 0.5s ease both';
+    cl.style.opacity = 1;
+  }, 2600);
+}
+
+// ── Motor principal ──
+const INTRO_DUR  = 4500;
+const CHAT_START = INTRO_DUR + 500;
+const CLOSE_START = CHAT_START + CHAT_DURATION;
+const TOTAL = CLOSE_START + 7000;
+
+let startTs = null, raf = null;
+let chatFired = new Set();
+let chatStarted = false, closeFired = false;
+
+function tick(ts) {
+  if (!startTs) startTs = ts;
+  const e = ts - startTs;
+
+  document.getElementById('prog').style.width = Math.min(e / TOTAL * 100, 100) + '%';
+
+  // Chat
+  if (e >= CHAT_START) {
+    if (!chatStarted) {
+      chatStarted = true;
+      showScreen('s1');
+    }
+    const chatE = e - CHAT_START;
+    chatEvents.forEach((ev, i) => {
+      if (!chatFired.has(i) && chatE >= ev[2]) {
+        chatFired.add(i);
+        const el = document.getElementById(ev[0]);
+        if (el) {
+          if (ev[1] === 'show') el.classList.add('show');
+          else el.classList.remove('show');
+        }
+      }
+    });
+  }
+
+  // Cierre
+  if (e >= CLOSE_START && !closeFired) {
+    closeFired = true;
+    startClose();
+  }
+
+  // Fin
+  if (e >= TOTAL) {
+    document.getElementById('replay').classList.add('show');
+    return;
+  }
+
+  raf = requestAnimationFrame(tick);
+}
+
+function resetClose() {
+  document.getElementById('ct').classList.remove('go');
+  document.getElementById('cr').style.width = '0%';
+  ['cc','cs','cl'].forEach(id => {
+    const el = document.getElementById(id);
+    el.style.animation = 'none';
+    el.style.opacity = 0;
+  });
+  document.querySelectorAll('.close-h .word').forEach(w => {
+    w.style.animation = 'none'; w.style.opacity = 0;
+  });
+}
+function resetIntro() {
+  document.getElementById('itag').classList.remove('go');
+  document.getElementById('isub').classList.remove('go');
+  document.querySelectorAll('.intro-q .word').forEach(w => {
+    w.style.animation = 'none'; w.style.opacity = 0;
+  });
+}
+
+function restart() {
+  cancelAnimationFrame(raf);
+  startTs = null; chatFired = new Set();
+  chatStarted = false; closeFired = false;
+  document.getElementById('replay').classList.remove('show');
+  document.getElementById('prog').style.width = '0%';
+  document.querySelectorAll('.bubble, .date-sep').forEach(el => el.classList.remove('show'));
+  document.querySelectorAll('.typing-indicator').forEach(el => el.classList.remove('show'));
+  resetClose();
+  resetIntro();
+  startIntro();
+  raf = requestAnimationFrame(tick);
+}
+
+// Arrancar
+startIntro();
+raf = requestAnimationFrame(tick);
+</script>
+</body>
+</html>

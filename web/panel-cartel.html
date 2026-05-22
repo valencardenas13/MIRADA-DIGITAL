@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Cartel — Mirada Digital</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #111;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 40px 20px;
+      gap: 12px;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .hint {
+      color: #333;
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    /* ── El panel exacto como aparece en el cartel JCDecaux ── */
+    .panel {
+      width: 100%;
+      max-width: 480px;
+      aspect-ratio: 2 / 3;          /* proporción vertical del cartel */
+      background: #0D1B2A;
+      padding: 9% 10%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      /* Sin border-radius — el cartel es recto */
+    }
+
+    /* Línea superior decorativa muy sutil */
+    .panel::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: #00D4FF;
+      opacity: 0.6;
+    }
+
+    /* ── Bloque superior: titular ── */
+    .headline {
+      font-size: clamp(36px, 9vw, 64px);
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 1.05;
+      text-transform: uppercase;
+      letter-spacing: -1px;
+    }
+
+    /* ── Bloque medio: número + subtítulo ── */
+    .sub-block {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .sub-row {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .number-big {
+      font-size: clamp(44px, 11vw, 76px);
+      font-weight: 900;
+      color: #00D4FF;
+      line-height: 1;
+      letter-spacing: -2px;
+    }
+
+    .sub-text {
+      font-size: clamp(18px, 4.5vw, 30px);
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.2;
+    }
+
+    /* ── Línea divisora ── */
+    .divider {
+      width: 100%;
+      height: 2px;
+      background: #00D4FF;
+      opacity: 0.4;
+      margin: 4% 0;
+    }
+
+    /* ── Bloque inferior: logo + handle ── */
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .brand-name {
+      font-size: clamp(11px, 2.5vw, 16px);
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+    }
+
+    .brand-handle {
+      font-size: clamp(10px, 2.2vw, 14px);
+      font-weight: 400;
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 0.3px;
+    }
+  </style>
+</head>
+<body>
+
+  <p class="hint">panel cartel — capturá este elemento</p>
+
+  <div class="panel">
+
+    <!-- TITULAR -->
+    <h1 class="headline">
+      ¿Tu agencia<br>
+      te está<br>
+      mintiendo?
+    </h1>
+
+    <!-- NÚMERO + SUBTÍTULO -->
+    <div class="sub-block">
+      <div class="sub-row">
+        <span class="number-big">72hs</span>
+        <span class="sub-text">para saber<br>qué estás<br>perdiendo</span>
+      </div>
+    </div>
+
+    <!-- DIVIDER + LOGO -->
+    <div>
+      <div class="divider"></div>
+      <div class="brand-row">
+
+        <!-- Logo SVG — ojo minimalista Mirada Digital -->
+        <svg width="44" height="26" viewBox="0 0 90 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5 26 C20 6, 70 6, 85 26 C70 46, 20 46, 5 26Z"
+                stroke="#00D4FF" stroke-width="4" fill="none"/>
+          <circle cx="45" cy="26" r="10"
+                  stroke="#00D4FF" stroke-width="4" fill="none"/>
+        </svg>
+
+        <div class="brand-text">
+          <span class="brand-name">Mirada Digital</span>
+          <span class="brand-handle">@somosmiradadigital</span>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <p class="hint">somosmiradadigital.com.ar</p>
+
+</body>
+</html>
