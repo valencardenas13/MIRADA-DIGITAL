@@ -1080,10 +1080,12 @@ async function loadProgChart() {
 // ── PODIO
 async function loadPodioEx() {
   if(!U) return;
-  const {data}=await db.from('exercise_logs').select('exercise_name').eq('user_id',U.id);
-  const exs=[...new Set((data||[]).map(r=>r.exercise_name))].sort();
+  // Mostrar todos los ejercicios predefinidos + los que haya cargado cualquier usuario
+  const {data} = await db.rpc('get_all_exercises');
+  const fromDB = (data||[]).map(r=>r.exercise_name);
+  const all = [...new Set([...fromDB, ...EX])].sort();
   H('podio-sel').innerHTML='<option value="">Seleccioná un ejercicio...</option>'+
-    exs.map(e=>`<option value="${e}">${e}</option>`).join('');
+    all.map(e=>`<option value="${e}">${e}</option>`).join('');
 }
 async function loadPodio() {
   const ex=H('podio-sel').value;
