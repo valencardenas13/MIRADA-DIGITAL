@@ -840,6 +840,7 @@ async function handleLogout() { await db.auth.signOut(); }
 function aerr(m) { const el=H('ae'); el.textContent=m; el.style.display='block'; }
 
 // ── NAV
+let chatLoaded = false;
 function sw(btn) {
   const t=btn.dataset.t;
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
@@ -850,6 +851,7 @@ function sw(btn) {
   if(t==='prog') loadProgEx();
   if(t==='podio') loadPodioEx();
   if(t==='peso') loadWeightData();
+  if(t==='coach' && !chatLoaded) { chatLoaded=true; loadChatHistory(); }
 }
 
 // ── HOME
@@ -1371,9 +1373,31 @@ async function saveWeight() {
 }
 
 // ── COACH CHAT
+async function loadChatHistory() {
+  const msgs = H('chat-msgs');
+  const {data} = await db.from('chat_messages')
+    .select('*').eq('user_id', U.id)
+    .order('created_at', {ascending: true})
+    .limit(100);
+
+  if(!data?.length) return; // Muestra bienvenida
+
+  // Ocultar welcome si hay mensajes
+  msgs.querySelector('.chat-welcome')?.remove();
+  chatHistory = data.map(r => ({role: r.role, content: r.content}));
+
+  data.forEach(r => {
+    const time = new Date(r.created_at).toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+    const div = document.createElement('div');
+    div.className = `msg ${r.role==='user'?'user':'ai'}`;
+    div.innerHTML = `<div class="msg-bubble">${r.content.replace(/\n/g,'<br>')}</div><div class="msg-time">${time}</div>`;
+    msgs.appendChild(div);
+  });
+  scrollChat();
+}
+
 function sendChip(el) {
   H('chat-input').value = el.textContent;
-  // Remove welcome screen
   el.closest('.chat-welcome')?.remove();
   sendMsg();
 }
@@ -1385,13 +1409,14 @@ async function sendMsg() {
   input.value = '';
   input.style.height = 'auto';
 
+  // Guardar en DB
+  await db.from('chat_messages').insert({user_id: U.id, role: 'user', content: text});
   appendMsg('user', text);
   chatHistory.push({role:'user', content:text});
 
   // Typing indicator
   const typing = document.createElement('div');
-  typing.className = 'msg ai';
-  typing.id = 'typing-indicator';
+  typing.className = 'msg ai'; typing.id = 'typing-indicator';
   typing.innerHTML = '<div class="msg-bubble typing"><span></span><span></span><span></span></div>';
   H('chat-msgs').appendChild(typing);
   scrollChat();
@@ -1402,7 +1427,7 @@ async function sendMsg() {
       headers:{'Authorization':'Bearer '+GROQ_KEY,'Content-Type':'application/json'},
       body: JSON.stringify({
         model: GROQ_MODEL,
-        messages: [{role:'system',content:SYSTEM_PROMPT}, ...chatHistory.slice(-10)],
+        messages: [{role:'system',content:SYSTEM_PROMPT}, ...chatHistory.slice(-20)],
         temperature: 0.7,
         max_tokens: 300,
       })
@@ -1410,11 +1435,15 @@ async function sendMsg() {
     const data = await res.json();
     const reply = data.choices?.[0]?.message?.content || 'No pude responder, intentá de nuevo.';
     chatHistory.push({role:'assistant', content:reply});
+
+    // Guardar respuesta en DB
+    await db.from('chat_messages').insert({user_id: U.id, role: 'assistant', content: reply});
+
     document.getElementById('typing-indicator')?.remove();
     appendMsg('ai', reply);
   } catch(e) {
     document.getElementById('typing-indicator')?.remove();
-    appendMsg('ai', '❌ Error de conexión. Verificá tu internet e intentá de nuevo.');
+    appendMsg('ai', '❌ Error de conexión. Intentá de nuevo.');
   }
 }
 
