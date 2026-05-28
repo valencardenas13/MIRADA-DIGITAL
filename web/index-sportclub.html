@@ -1009,22 +1009,14 @@ function renderToday(byEx) {
 }
 
 // ── EDIT EXERCISE
-let editExName='', editSets=[];
-function openEditModal(name) {
+let editExName='', editExDate='', editSets=[];
+function openEditModal(name, date) {
   editExName=name;
-  const today=new Date().toISOString().split('T')[0];
-  // Get sets from current todayData
-  const sets=[];
-  document.querySelectorAll('.ex-row').forEach(row=>{
-    if(row.querySelector('.ex-name')?.textContent===name){
-      // already rendered, we'll reload from DB
-    }
-  });
+  editExDate=date||new Date().toISOString().split('T')[0];
   H('em-title').textContent='✏️ '+name;
-  // Load from DB
-  db.from('exercise_logs').select('*').eq('user_id',U.id).eq('date',today)
+  db.from('exercise_logs').select('*').eq('user_id',U.id).eq('date',editExDate)
     .eq('exercise_name',name).order('sets').then(({data})=>{
-      editSets=(data||[]).map(r=>({id:r.id,r:r.reps||'',w:r.weight_kg||''}));
+      editSets=(data||[]).map(r=>({id:r.id,r:r.reps??'',w:r.weight_kg??''}));
       if(!editSets.length) editSets=[{id:null,r:'',w:''}];
       renderEditSets();
       H('em').classList.add('open');
@@ -1048,26 +1040,30 @@ function rmEditSet(i){ if(editSets.length<=1)return; editSets.splice(i,1); rende
 
 async function saveEditedExercise(){
   if(!U||!editExName) return;
-  const today=new Date().toISOString().split('T')[0];
-  // Delete all old sets for this exercise today
-  await db.from('exercise_logs').delete().eq('user_id',U.id).eq('date',today).eq('exercise_name',editExName);
-  // Insert new sets
-  const rows=editSets.filter(s=>s.r||s.w).map((s,i)=>({
-    user_id:U.id,date:today,exercise_name:editExName,
-    sets:i+1,reps:parseInt(s.r)||null,weight_kg:parseFloat(s.w)||null
-  }));
+  await db.from('exercise_logs').delete().eq('user_id',U.id).eq('date',editExDate).eq('exercise_name',editExName);
+  const tbody=H('em-sets');
+  const rows=[];
+  tbody.querySelectorAll('tr').forEach((tr,i)=>{
+    const inputs=tr.querySelectorAll('input');
+    const rVal=inputs[0]?.value.trim();
+    const wVal=inputs[1]?.value.trim();
+    if(!rVal&&!wVal) return;
+    rows.push({user_id:U.id,date:editExDate,exercise_name:editExName,
+      sets:i+1,
+      reps:rVal!==''?parseInt(rVal)||null:null,
+      weight_kg:wVal!==''?parseFloat(wVal)||null:null});
+  });
   if(rows.length){
     const {error}=await db.from('exercise_logs').insert(rows);
     if(error) return toast('❌ '+error.message);
   }
-  closeEditModal(); toast('✅ Ejercicio actualizado'); loadHome();
+  closeEditModal(); toast('✅ Ejercicio actualizado'); loadHome(); loadHist();
 }
 
 async function deleteExercise(){
   if(!U||!editExName) return;
-  const today=new Date().toISOString().split('T')[0];
-  await db.from('exercise_logs').delete().eq('user_id',U.id).eq('date',today).eq('exercise_name',editExName);
-  closeEditModal(); toast('🗑 Ejercicio eliminado'); loadHome();
+  await db.from('exercise_logs').delete().eq('user_id',U.id).eq('date',editExDate).eq('exercise_name',editExName);
+  closeEditModal(); toast('🗑 Ejercicio eliminado'); loadHome(); loadHist();
 }
 
 // ── CALORIES
@@ -1211,14 +1207,20 @@ async function saveWorkout() {
   const rows=[];
   for(let id=1;id<=ec;id++){
     const nameEl=H('en-'+id); if(!nameEl) continue;
-    const name=nameEl.value.trim(); if(!name||!sc[id]) continue;
-    sc[id].forEach((s,i)=>{
-      if(!s.r&&!s.w) return;
+    const name=nameEl.value.trim(); if(!name) continue;
+    const tbody=H('st-'+id); if(!tbody) continue;
+    tbody.querySelectorAll('tr').forEach((tr,i)=>{
+      const inputs=tr.querySelectorAll('input');
+      const rVal=inputs[0]?.value.trim();
+      const wVal=inputs[1]?.value.trim();
+      if(!rVal&&!wVal) return;
       rows.push({user_id:U.id,date:today,exercise_name:name,
-        sets:i+1,reps:parseInt(s.r)||null,weight_kg:parseFloat(s.w)||null});
+        sets:i+1,
+        reps:rVal!==''?parseInt(rVal)||null:null,
+        weight_kg:wVal!==''?parseFloat(wVal)||null:null});
     });
   }
-  if(!rows.length) return toast('⚠️ Agregá al menos una serie');
+  if(!rows.length) return toast('⚠️ Agregá al menos una serie con reps o peso');
   const {error}=await db.from('exercise_logs').insert(rows);
   if(error) return toast('❌ '+error.message);
   closeModal(); toast('✅ Entrenamiento guardado'); loadHome();
@@ -1252,9 +1254,13 @@ async function loadHist() {
       <div class="hcard-body">
         ${Object.entries(exs).map(([nm,sets])=>`
           <div class="hex">
-            <div class="hex-name">${nm}</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+              <div class="hex-name" style="margin-bottom:0">${nm}</div>
+              <button class="bic" style="font-size:12px;padding:4px 8px;flex-shrink:0"
+                onclick="event.stopPropagation();openEditModal('${nm.replace(/'/g,"\\'").replace(/"/g,'&quot;')}','${date}')">✏️</button>
+            </div>
             <div class="hex-sets">
-              ${sets.map((s,i)=>`<div class="hbadge">S${i+1} <b>${s.reps?s.reps+' rep ':''} ${s.weight_kg?s.weight_kg+'kg':'—'}</b></div>`).join('')}
+              ${sets.map((s,i)=>`<div class="hbadge">S${i+1} <b>${s.reps?s.reps+' rep ':''}${s.weight_kg?s.weight_kg+'kg':'—'}</b></div>`).join('')}
             </div>
           </div>`).join('')}
       </div>
