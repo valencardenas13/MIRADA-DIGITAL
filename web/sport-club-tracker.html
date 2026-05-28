@@ -403,6 +403,14 @@
       box-shadow:0 8px 32px rgba(0,0,0,.7)}
     @keyframes ta{0%{opacity:0;transform:translateX(-50%) translateY(-8px)}
       10%{opacity:1;transform:translateX(-50%) translateY(0)}75%{opacity:1}100%{opacity:0}}
+
+    /* ═══ SVG ICONS ═══ */
+    .ic{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+    .ic svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .ic-sm svg{width:16px;height:16px}
+    .ic-md svg{width:20px;height:20px}
+    .ic-lg svg{width:24px;height:24px}
+    .ic-xl svg{width:28px;height:28px}
   </style>
 </head>
 <body>
@@ -515,7 +523,7 @@
     <!-- Calorías -->
     <div style="padding:0 18px" id="cal-section">
       <div class="sec-hdr" style="margin-top:22px">
-        <span class="sec-title">🔥 Calorías de hoy</span>
+        <span class="sec-title" style="display:flex;align-items:center;gap:6px"><span class="ic ic-sm" style="color:var(--m1)"><svg viewBox="0 0 24 24"><path d="M12 2c0 6-5 9-5 14a5 5 0 0010 0c0-5-5-8-5-14z"/></svg></span>Calorías de hoy</span>
         <span class="sec-link" style="cursor:pointer;color:var(--gold);font-weight:700" onclick="openCalModal()">+ Agregar</span>
       </div>
       <div class="cal-card">
@@ -546,7 +554,7 @@
           <div class="num-label orange">Racha</div>
           <div style="display:flex;align-items:baseline;gap:6px">
             <span class="num-val" id="nc-racha">0</span>
-            <span style="font-size:22px">🔥</span>
+            <span class="ic ic-md" style="color:#FF8C42"><svg viewBox="0 0 24 24"><path d="M12 2c0 6-5 9-5 14a5 5 0 0010 0c0-5-5-8-5-14z"/></svg></span>
           </div>
           <div class="num-streak" id="nc-racha-sub">días seguidos</div>
         </div>
@@ -594,21 +602,21 @@
     </div>
     <div class="cwrap" id="pcwrap" style="display:none"><canvas id="pchart"></canvas></div>
     <div id="pempty" class="empty">
-      <div class="ei">📈</div><div class="et">Seleccioná un ejercicio</div>
+      <div class="ei"><span class="ic" style="color:var(--m1)"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span></div><div class="et">Seleccioná un ejercicio</div>
       <div class="ed">Ver tu evolución de peso en el tiempo</div>
     </div>
   </div>
 
   <!-- PODIO -->
   <div id="t-podio" class="tc">
-    <div class="sec-title" style="margin-bottom:16px">🏆 Podio</div>
+    <div class="sec-title" style="margin-bottom:16px;display:flex;align-items:center;gap:6px"><span class="ic ic-sm" style="color:var(--m1)"><svg viewBox="0 0 24 24"><path d="M6 9H4a2 2 0 01-2-2V4h4M18 9h2a2 2 0 002-2V4h-4"/><path d="M6 4h12v5c0 3.866-2.686 7-6 7s-6-3.134-6-7V4z"/><path d="M12 16v5M8 21h8"/></svg></span>Podio</div>
     <div class="fg"><label>Ejercicio</label>
       <select id="podio-sel" onchange="loadPodio()">
         <option value="">Seleccioná un ejercicio...</option>
       </select>
     </div>
     <div id="podio-content">
-      <div class="empty"><div class="ei">🏅</div><div class="et">Seleccioná un ejercicio</div>
+      <div class="empty"><div class="ei"><span class="ic" style="color:var(--m1)"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="15" r="5"/><path d="M8.5 4l3.5 7 3.5-7"/><path d="M5.5 6l4 8M18.5 6l-4 8"/></svg></span></div><div class="et">Seleccioná un ejercicio</div>
         <div class="ed">Ver quién levantó más peso</div></div>
     </div>
   </div>
@@ -617,7 +625,7 @@
   <div id="t-coach" class="tc">
     <div class="chat-hdr">
       <div class="chat-hdr-top">
-        <div class="coach-icon">🤖</div>
+        <div class="coach-icon"><span class="ic ic-xl"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M12 11V7"/><circle cx="12" cy="5" r="2"/><rect x="8" y="13" width="3" height="3" rx=".5"/><rect x="13" y="13" width="3" height="3" rx=".5"/></svg></span></div>
         <div>
           <div class="coach-name">Coach IA · Thays</div>
           <div class="coach-status"><span class="coach-dot"></span>En línea</div>
@@ -626,7 +634,7 @@
     </div>
     <div class="chat-msgs" id="chat-msgs">
       <div class="chat-welcome">
-        <div class="chat-welcome-icon">💪</div>
+        <div class="chat-welcome-icon"><span class="ic" style="color:var(--m1)"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v16M18 4v16M6 12h12M4 6h4M4 18h4M16 6h4M16 18h4"/></svg></span></div>
         <div class="chat-welcome-title">Hola, soy tu Coach IA</div>
         <div class="chat-welcome-sub">Preguntame sobre entrenamiento, rutinas, nutrición, recuperación o motivación. Estoy acá para ayudarte a mejorar.</div>
         <div class="chip-row">
@@ -653,7 +661,7 @@
     <div class="wcard">
       <div class="fg" style="margin-bottom:12px"><label>Tu peso hoy (kg)</label>
         <input type="number" id="wi" placeholder="Ej: 72.5" step="0.1" min="30" max="400"></div>
-      <button class="btn btn-gold" onclick="saveWeight()">💾 Guardar peso</button>
+      <button class="btn btn-gold" onclick="saveWeight()" style="display:flex;align-items:center;justify-content:center;gap:8px"><span class="ic ic-sm"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span> Guardar peso</button>
     </div>
     <div id="wdisplay" style="display:none">
       <div class="bigw">
@@ -700,7 +708,7 @@
 <div id="em" class="mov">
   <div class="msh">
     <div class="mh"></div>
-    <div class="mt" id="em-title">✏️ Editar ejercicio</div>
+    <div class="mt" id="em-title" style="display:flex;align-items:center;gap:8px"><span class="ic ic-md"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span>Editar ejercicio</div>
     <table class="stbl">
       <thead><tr><th>#</th><th>Reps</th><th>Peso (kg)</th><th></th></tr></thead>
       <tbody id="em-sets"></tbody>
@@ -708,9 +716,9 @@
     <button class="btn btn-ghost" style="padding:8px 14px;font-size:13px;width:auto;margin-bottom:16px" onclick="addEditSet()">+ Serie</button>
     <div class="mdiv"></div>
     <div style="display:flex;gap:10px">
-      <button class="btn" style="flex:1;background:rgba(200,23,26,.15);color:var(--red2);border:1.5px solid rgba(200,23,26,.3)" onclick="deleteExercise()">🗑 Borrar</button>
+      <button class="btn" style="flex:1;background:rgba(200,23,26,.15);color:var(--red2);border:1.5px solid rgba(200,23,26,.3);display:flex;align-items:center;justify-content:center;gap:6px" onclick="deleteExercise()"><span class="ic ic-sm"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></span>Borrar</button>
       <button class="btn btn-ghost" style="flex:1" onclick="closeEditModal()">Cancelar</button>
-      <button class="btn btn-red" style="flex:2" onclick="saveEditedExercise()">💾 Guardar</button>
+      <button class="btn btn-red" style="flex:2;display:flex;align-items:center;justify-content:center;gap:8px" onclick="saveEditedExercise()"><span class="ic ic-sm"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span>Guardar</button>
     </div>
   </div>
 </div>
@@ -719,13 +727,13 @@
 <div id="cm" class="mov">
   <div class="msh">
     <div class="mh"></div>
-    <div class="mt">🍽 Agregar comida</div>
+    <div class="mt" style="display:flex;align-items:center;gap:8px"><span class="ic ic-md"><svg viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"/><line x1="7" y1="2" x2="7" y2="11"/><path d="M21 15V2a5 5 0 00-5 5v6c0 1.1.9 2 2 2h2v7"/></svg></span>Agregar comida</div>
     <div style="margin-bottom:14px">
       <div class="meal-type-grid">
-        <div class="meal-type-btn sel" data-type="Desayuno" onclick="selMealType(this)">☀️ Desayuno</div>
-        <div class="meal-type-btn" data-type="Almuerzo" onclick="selMealType(this)">🥗 Almuerzo</div>
-        <div class="meal-type-btn" data-type="Merienda" onclick="selMealType(this)">🫖 Merienda</div>
-        <div class="meal-type-btn" data-type="Cena" onclick="selMealType(this)">🌙 Cena</div>
+        <div class="meal-type-btn sel" data-type="Desayuno" onclick="selMealType(this)" style="display:flex;align-items:center;justify-content:center;gap:6px"><span class="ic ic-sm"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span>Desayuno</div>
+        <div class="meal-type-btn" data-type="Almuerzo" onclick="selMealType(this)" style="display:flex;align-items:center;justify-content:center;gap:6px"><span class="ic ic-sm"><svg viewBox="0 0 24 24"><path d="M12 22c5 0 8-4 8-8H4c0 4 3 8 8 8z"/><path d="M2 14h20"/><path d="M10 6l2-4 2 4"/></svg></span>Almuerzo</div>
+        <div class="meal-type-btn" data-type="Merienda" onclick="selMealType(this)" style="display:flex;align-items:center;justify-content:center;gap:6px"><span class="ic ic-sm"><svg viewBox="0 0 24 24"><path d="M17 8h1a4 4 0 010 8h-1"/><path d="M3 8h14v9a4 4 0 01-4 4H7a4 4 0 01-4-4V8z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg></span>Merienda</div>
+        <div class="meal-type-btn" data-type="Cena" onclick="selMealType(this)" style="display:flex;align-items:center;justify-content:center;gap:6px"><span class="ic ic-sm"><svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg></span>Cena</div>
       </div>
     </div>
     <div class="fg"><label>Descripción</label>
@@ -735,7 +743,7 @@
     <div class="mdiv"></div>
     <div style="display:flex;gap:10px">
       <button class="btn btn-ghost" style="flex:1" onclick="closeCalModal()">Cancelar</button>
-      <button class="btn btn-gold" style="flex:2" onclick="saveCalorie()">💾 Guardar</button>
+      <button class="btn btn-gold" style="flex:2;display:flex;align-items:center;justify-content:center;gap:8px" onclick="saveCalorie()"><span class="ic ic-sm"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span>Guardar</button>
     </div>
   </div>
 </div>
@@ -744,7 +752,7 @@
 <div id="wm" class="mov">
   <div class="msh">
     <div class="mh"></div>
-    <div class="mt">🏋️ Registrar entrenamiento</div>
+    <div class="mt" style="display:flex;align-items:center;gap:8px"><span class="ic ic-md"><svg viewBox="0 0 24 24"><path d="M6 4v16M18 4v16M6 12h12M4 6h4M4 18h4M16 6h4M16 18h4"/></svg></span>Registrar entrenamiento</div>
     <div id="mex-list"></div>
     <button class="btn btn-ghost" style="margin-bottom:16px" onclick="addExBlock()">+ Agregar ejercicio</button>
     <div class="mdiv"></div>
