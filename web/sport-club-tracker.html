@@ -333,6 +333,7 @@
     .cal-bar-wrap{background:var(--c3);border-radius:6px;height:8px;overflow:hidden;margin-bottom:12px}
     .cal-bar-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--gold),#E0A800);transition:width .4s ease}
     .cal-bar-fill.over{background:linear-gradient(90deg,var(--red),var(--red2))}
+    #steps-bar-fill.over{background:linear-gradient(90deg,var(--red),var(--red2))}
     .cal-meals{display:flex;flex-direction:column;gap:1px;background:var(--c3);border-radius:var(--rs);overflow:hidden}
     .cal-meal-row{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--c2)}
     .cal-meal-info{display:flex;align-items:center;gap:10px}
@@ -673,6 +674,27 @@
     <div class="cwrap" id="wcwrap" style="display:none;height:220px">
       <canvas id="wchart"></canvas>
     </div>
+    <!-- Steps Section -->
+    <div class="card" style="margin-top:16px;background:var(--c1);border:1px solid var(--c3);border-radius:var(--rm);padding:20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--m1);text-transform:uppercase;margin-bottom:4px">Pasos de hoy</div>
+          <div style="display:flex;align-items:baseline;gap:6px">
+            <span id="steps-today" style="font-size:38px;font-weight:900;letter-spacing:-1.5px;line-height:1">—</span>
+            <span style="font-size:13px;font-weight:600;color:var(--m1)">pasos</span>
+          </div>
+          <div id="steps-goal-txt" style="font-size:13px;color:var(--m1);font-weight:500">meta: 8.000 pasos</div>
+        </div>
+        <span class="ic" style="color:var(--m1)"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16v-2.38C4 11.5 3 9 3 7a5 5 0 0110 0c0 2-1 4.62-1 6.62V16"/><path d="M15 19a3 3 0 01-3-3v-3"/><path d="M12 7h6a2 2 0 012 2v3a2 2 0 01-2 2h-1"/><line x1="12" y1="7" x2="12" y2="22"/></svg></span>
+      </div>
+      <div style="background:var(--c3);border-radius:6px;height:6px;overflow:hidden;margin-bottom:16px">
+        <div id="steps-bar-fill" style="height:100%;background:var(--green);border-radius:6px;width:0%;transition:width .5s ease"></div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <input type="number" id="steps-input" placeholder="Ej: 8500" min="0" max="99999" style="flex:1">
+        <button class="btn btn-ghost" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px" onclick="saveSteps()"><span class="ic ic-sm"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span>Guardar</button>
+      </div>
+    </div>
   </div>
 
   <!-- Nav -->
@@ -758,7 +780,7 @@
     <div class="mdiv"></div>
     <div style="display:flex;gap:10px">
       <button class="btn btn-ghost" style="flex:1" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-red" style="flex:2" onclick="saveWorkout()">💾 Guardar</button>
+      <button class="btn btn-red" style="flex:2;display:flex;align-items:center;justify-content:center;gap:8px" onclick="saveWorkout()"><span class="ic ic-sm"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span>Guardar</button>
     </div>
   </div>
 </div>
@@ -779,6 +801,18 @@ let chatHistory = [];
 
 const SUPABASE_URL = 'https://ebojkycdborchamlywmx.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVib2preWNkYm9yY2hhbWx5d214Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4MDY3MDcsImV4cCI6MjA5NTM4MjcwN30._sZAekXQKiZ-s0Oii71klywUWlzWdpCrkkrk2eMc7UY';
+// -- SQL for step_logs table:
+// -- CREATE TABLE IF NOT EXISTS step_logs (
+// --   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+// --   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+// --   date DATE NOT NULL DEFAULT CURRENT_DATE,
+// --   steps INTEGER NOT NULL,
+// --   created_at TIMESTAMPTZ DEFAULT NOW(),
+// --   UNIQUE(user_id, date)
+// -- );
+// -- ALTER TABLE step_logs ENABLE ROW LEVEL SECURITY;
+// -- CREATE POLICY "Solo datos propios" ON step_logs FOR ALL USING (auth.uid() = user_id);
+// -- CREATE INDEX IF NOT EXISTS idx_step_user_date ON step_logs (user_id, date);
 
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -798,6 +832,26 @@ const EX = ['Press de banca','Press de banca inclinado','Press de banca declinad
 
 const DIAS = ['DOM','LUN','MAR','MIÉ','JUE','VIE','SÁB'];
 const MESES = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+
+const IC = {
+  save: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>`,
+  edit: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,
+  trash: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>`,
+  fire: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c0 6-5 9-5 14a5 5 0 0010 0c0-5-5-8-5-14z"/></svg>`,
+  trophy: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4a2 2 0 01-2-2V4h4M18 9h2a2 2 0 002-2V4h-4"/><path d="M6 4h12v5c0 3.866-2.686 7-6 7s-6-3.134-6-7V4z"/><path d="M12 16v5M8 21h8"/></svg>`,
+  medal: `<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="15" r="5"/><path d="M8.5 4l3.5 7 3.5-7"/><path d="M5.5 6l4 8M18.5 6l-4 8"/></svg>`,
+  robot: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M12 11V7"/><circle cx="12" cy="5" r="2"/><rect x="8" y="13" width="3" height="3" rx=".5"/><rect x="13" y="13" width="3" height="3" rx=".5"/></svg>`,
+  dumbbell: `<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v16M18 4v16M6 12h12M4 6h4M4 18h4M16 6h4M16 18h4"/></svg>`,
+  food: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"/><line x1="7" y1="2" x2="7" y2="11"/><path d="M21 15V2a5 5 0 00-5 5v6c0 1.1.9 2 2 2h2v7"/></svg>`,
+  sun: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`,
+  bowl: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5 0 8-4 8-8H4c0 4 3 8 8 8z"/><path d="M2 14h20"/><path d="M10 6l2-4 2 4"/></svg>`,
+  coffee: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 010 8h-1"/><path d="M3 8h14v9a4 4 0 01-4 4H7a4 4 0 01-4-4V8z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>`,
+  moon: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>`,
+  chart: `<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`,
+  clipboard: `<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>`,
+  barchart: `<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`,
+  steps: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16v-2.38C4 11.5 3 9 3 7a5 5 0 0110 0c0 2-1 4.62-1 6.62V16"/><path d="M15 19a3 3 0 01-3-3v-3"/><path d="M12 7h6a2 2 0 012 2v3a2 2 0 01-2 2h-1"/><line x1="12" y1="7" x2="12" y2="22"/></svg>`,
+};
 
 let U=null, ec=0, sc={}, pChart=null, wChart=null;
 
@@ -996,7 +1050,7 @@ function drawSparkline(vals) {
 function renderToday(byEx) {
   const el=H('today-list');
   if(!Object.keys(byEx).length){
-    el.innerHTML=`<div class="empty" style="padding:28px 0"><div class="ei">🌙</div>
+    el.innerHTML=`<div class="empty" style="padding:28px 0"><div class="ei"><span class="ic" style="color:var(--m1)">${IC.moon.replace('width="18" height="18"','width="44" height="44"')}</span></div>
       <div class="et">Sin ejercicios hoy</div>
       <div class="ed">Tocá el botón de arriba para registrar tu entreno</div></div>`;
     return;
@@ -1011,7 +1065,7 @@ function renderToday(byEx) {
         <div class="ex-detail">${sets.length} × series · ${setsStr}</div>
       </div>
       ${maxW>0?`<div class="ex-weight"><div class="ex-weight-val">${maxW}</div><div class="ex-weight-unit">KG</div></div>`:''}
-      <button class="edit-ex-btn" onclick="openEditModal('${name.replace(/'/g,"\\'")}')">✏️</button>
+      <button class="edit-ex-btn" onclick="openEditModal('${name.replace(/'/g,"\\'")}')"><span class="ic ic-sm">${IC.edit}</span></button>
     </div>`;
   }).join('')}</div>`;
 }
@@ -1021,7 +1075,7 @@ let editExName='', editExDate='', editSets=[];
 function openEditModal(name, date) {
   editExName=name;
   editExDate=date||new Date().toISOString().split('T')[0];
-  H('em-title').textContent='✏️ '+name;
+  H('em-title').innerHTML=`<span class="ic ic-md">${IC.edit}</span>${name}`;
   db.from('exercise_logs').select('*').eq('user_id',U.id).eq('date',editExDate)
     .eq('exercise_name',name).order('sets').then(({data})=>{
       editSets=(data||[]).map(r=>({id:r.id,r:r.reps??'',w:r.weight_kg??''}));
@@ -1074,9 +1128,38 @@ async function deleteExercise(){
   closeEditModal(); toast('🗑 Ejercicio eliminado'); loadHome(); loadHist();
 }
 
+// ── STEPS
+const STEPS_GOAL = 8000;
+
+async function saveSteps(){
+  const val = parseInt(H('steps-input').value);
+  if(!val||val<1) return toast('⚠️ Ingresá los pasos del día');
+  const today = new Date().toISOString().split('T')[0];
+  const {error} = await db.from('step_logs').upsert(
+    {user_id:U.id, date:today, steps:val},
+    {onConflict:'user_id,date'}
+  );
+  if(error) return toast('❌ '+error.message);
+  H('steps-input').value='';
+  toast('✅ Pasos guardados'); loadSteps();
+}
+
+async function loadSteps(){
+  if(!U) return;
+  const today = new Date().toISOString().split('T')[0];
+  const {data} = await db.from('step_logs').select('steps').eq('user_id',U.id).eq('date',today).single();
+  const steps = data?.steps || 0;
+  H('steps-today').textContent = steps ? steps.toLocaleString('es-AR') : '—';
+  H('steps-goal-txt').textContent = `meta: ${STEPS_GOAL.toLocaleString('es-AR')} pasos`;
+  const pct = Math.min(steps/STEPS_GOAL*100,100);
+  const bar = H('steps-bar-fill');
+  bar.style.width = pct+'%';
+  bar.classList.toggle('over', steps > STEPS_GOAL);
+}
+
 // ── CALORIES
 let selMealTypeVal='Desayuno';
-const MEAL_ICONS={'Desayuno':'☀️','Almuerzo':'🥗','Merienda':'🫖','Cena':'🌙','Snack':'🍎'};
+const MEAL_ICONS={'Desayuno':IC.sun,'Almuerzo':IC.bowl,'Merienda':IC.coffee,'Cena':IC.moon,'Snack':IC.food};
 const CAL_GOAL=2000;
 
 function openCalModal(){
@@ -1122,7 +1205,7 @@ async function loadCalories(){
   list.innerHTML=`<div class="cal-meals">${data.map(r=>`
     <div class="cal-meal-row">
       <div class="cal-meal-info">
-        <div class="cal-meal-icon">${MEAL_ICONS[r.meal_type]||'🍽'}</div>
+        <div class="cal-meal-icon ic ic-sm" style="color:var(--m1)">${MEAL_ICONS[r.meal_type]||IC.food}</div>
         <div><div class="cal-meal-name">${r.meal_name}</div>
           <div class="cal-meal-type">${r.meal_type}</div></div>
       </div>
@@ -1241,7 +1324,7 @@ async function loadHist() {
     .order('date',{ascending:false}).order('exercise_name').order('sets');
   const el=H('hist-list');
   if(!data?.length){
-    el.innerHTML=`<div class="empty"><div class="ei">📋</div>
+    el.innerHTML=`<div class="empty"><div class="ei"><span class="ic" style="color:var(--m1)">${IC.clipboard}</span></div>
       <div class="et">Sin historial todavía</div>
       <div class="ed">Tus entrenamientos aparecerán acá</div></div>`;return;
   }
@@ -1265,7 +1348,7 @@ async function loadHist() {
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
               <div class="hex-name" style="margin-bottom:0">${nm}</div>
               <button class="bic" style="font-size:12px;padding:4px 8px;flex-shrink:0"
-                onclick="event.stopPropagation();openEditModal('${nm.replace(/'/g,"\\'").replace(/"/g,'&quot;')}','${date}')">✏️</button>
+                onclick="event.stopPropagation();openEditModal('${nm.replace(/'/g,"\\'").replace(/"/g,'&quot;')}','${date}')"><span class="ic ic-sm">${IC.edit}</span></button>
             </div>
             <div class="hex-sets">
               ${sets.map((s,i)=>`<div class="hbadge">S${i+1} <b>${s.reps?s.reps+' rep ':''}${s.weight_kg?s.weight_kg+'kg':'—'}</b></div>`).join('')}
@@ -1291,7 +1374,7 @@ async function loadProgChart() {
     .eq('user_id',U.id).eq('exercise_name',ex)
     .not('weight_kg','is',null).order('date',{ascending:true});
   if(!data?.length){
-    em.innerHTML=`<div class="ei">📊</div><div class="et">Sin datos de peso</div>
+    em.innerHTML=`<div class="ei"><span class="ic" style="color:var(--m1)">${IC.barchart}</span></div><div class="et">Sin datos de peso</div>
       <div class="ed">Registrá el peso cuando entrenés</div>`;
     em.style.display='block';cw.style.display='none';return;
   }
@@ -1323,12 +1406,12 @@ async function loadPodioEx() {
 async function loadPodio() {
   const ex=H('podio-sel').value;
   const pc=H('podio-content');
-  if(!ex){pc.innerHTML=`<div class="empty"><div class="ei">🏅</div>
+  if(!ex){pc.innerHTML=`<div class="empty"><div class="ei"><span class="ic" style="color:var(--m1)">${IC.medal}</span></div>
     <div class="et">Seleccioná un ejercicio</div>
     <div class="ed">Ver quién levantó más peso</div></div>`;return;}
   const {data,error}=await db.rpc('get_leaderboard',{ex_name:ex});
   if(error||!data?.length){
-    pc.innerHTML=`<div class="empty"><div class="ei">🏋️</div>
+    pc.innerHTML=`<div class="empty"><div class="ei"><span class="ic" style="color:var(--m1)">${IC.dumbbell}</span></div>
       <div class="et">Sin datos todavía</div>
       <div class="ed">¡Sé el primero en registrar ${ex}!</div></div>`;return;
   }
@@ -1375,6 +1458,7 @@ async function loadWeightData() {
             y:{ticks:{color:'#666',font:{size:11}},grid:{color:'#1E1E1E'}}}}});
     }
   }
+  loadSteps();
 }
 async function saveWeight() {
   const w=parseFloat(H('wi').value);
