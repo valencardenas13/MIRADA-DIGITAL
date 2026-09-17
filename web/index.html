@@ -5,475 +5,627 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mirada Digital — Agencia de Performance</title>
   <meta name="description" content="Invertís en digital. Te mostramos qué pasa con cada peso. Auditoría gratuita en 72hs.">
+  <meta name="theme-color" content="#0D1B2A">
   <meta property="og:title" content="Mirada Digital — Agencia de Performance">
   <meta property="og:description" content="Invertís. Nosotros te mostramos qué pasa con cada peso.">
-  <meta property="og:image" content="https://valencardenas13.github.io/MIRADA-DIGITAL/og-image.jpg">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
-    @font-face {
-      font-family: 'Mona Sans';
-      src: url('https://github.githubassets.com/assets/mona-sans.woff2') format('woff2');
-      font-weight: 100 900;
-      font-style: normal;
-      font-display: swap;
+    /* ============ TOKENS ============ */
+    :root{
+      --surface:      #0D1B2A;
+      --surface-2:    #111F30;
+      --surface-3:    rgba(255,255,255,.035);
+      --ink:          #FFFFFF;
+      --ink-2:        #8892A4;
+      --cyan:         #00D4FF;
+      --green:        #00E676;
+      --line:         rgba(255,255,255,.08);
+      --line-cyan:    rgba(0,212,255,.16);
+      --whatsapp:     #25D366;
+
+      --font-display: 'Space Grotesk', -apple-system, 'Helvetica Neue', Arial, sans-serif;
+      --font-body:    'Inter', -apple-system, 'Helvetica Neue', Arial, sans-serif;
+      --font-mono:    'JetBrains Mono', ui-monospace, Menlo, monospace;
+
+      --fs-hero:   clamp(2.75rem, 8vw, 7.25rem);
+      --fs-h2:     clamp(2rem, 5vw, 3.75rem);
+      --fs-h3:     clamp(1.375rem, 2.4vw, 1.75rem);
+      --fs-lead:   clamp(1.0625rem, 2vw, 1.3125rem);
+      --fs-stat:   clamp(2.5rem, 7vw, 5rem);
+      --fs-body:   1.0625rem;
+      --fs-small:  0.9375rem;
+      --fs-eyebrow: .75rem;
+
+      --gutter: clamp(24px, 6vw, 96px);
+      --max-w: 1280px;
+      --section-pad: clamp(72px, 11vw, 140px);
+
+      --ease: cubic-bezier(.16,.8,.24,1);
     }
-  </style>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --navy:  #0D1B2A;
-      --navy2: #111F30;
-      --cyan:  #00D4FF;
-      --green: #00E676;
-      --gray:  #8892A4;
-      --white: #FFFFFF;
-    }
+    *,*::before,*::after{ box-sizing:border-box; margin:0; padding:0; }
 
-    html { scroll-behavior: smooth; }
+    html{ scroll-behavior:smooth; }
 
-    body {
-      font-family: 'Mona Sans', 'Space Grotesk', sans-serif;
-      background: var(--navy);
-      color: var(--white);
+    body{
+      font-family: var(--font-body);
+      background: var(--surface);
+      color: var(--ink);
       line-height: 1.6;
       overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* ── NAV ── */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 18px 6vw;
-      background: rgba(13,27,42,0.95);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid rgba(0,212,255,0.08);
+    img,svg{ display:block; max-width:100%; }
+
+    a{ color:inherit; }
+
+    .wrap{
+      max-width: var(--max-w);
+      margin-inline: auto;
+      padding-inline: var(--gutter);
     }
 
-    .logo {
-      display: flex; align-items: center; gap: 10px;
-      text-decoration: none; color: var(--white);
+    ::selection{ background: var(--cyan); color: var(--surface); }
+
+    :focus-visible{
+      outline: 2px solid var(--cyan);
+      outline-offset: 3px;
+      border-radius: 2px;
+    }
+    :focus:not(:focus-visible){ outline: none; }
+
+    @media (prefers-reduced-motion: reduce){
+      *{ animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
     }
 
-    .logo-text { font-weight: 800; font-size: 15px; letter-spacing: 1.5px; }
-    .logo-text span { color: var(--cyan); }
-
-    .nav-cta {
-      background: var(--cyan); color: var(--navy);
-      padding: 10px 20px; border-radius: 3px;
-      font-weight: 700; font-size: 13px;
-      text-decoration: none; letter-spacing: 0.5px;
-      white-space: nowrap;
-    }
-
-    /* ── HERO ── */
-    #hero {
-      min-height: 100vh;
-      display: flex; flex-direction: column; justify-content: center;
-      padding: 130px 6vw 80px;
-      position: relative; overflow: hidden;
-    }
-
-    .hero-glow {
-      position: absolute;
-      width: 600px; height: 600px;
-      background: radial-gradient(circle, rgba(0,212,255,0.06) 0%, transparent 70%);
-      top: 10%; right: -10%;
-      pointer-events: none;
-    }
-
-    .hero-tag {
-      display: inline-block;
-      font-size: 11px; font-weight: 600; letter-spacing: 4px;
+    .eyebrow{
+      display:flex; align-items:center; gap:10px;
+      font-family: var(--font-mono);
+      font-size: var(--fs-eyebrow); font-weight: 500; letter-spacing: .16em;
       color: var(--cyan); text-transform: uppercase;
-      margin-bottom: 24px;
-      border-left: 2px solid var(--cyan);
-      padding-left: 12px;
+      margin-bottom: 20px;
+    }
+    .eyebrow::before{
+      content:''; width:16px; height:1px; background: var(--cyan);
+      flex-shrink:0;
     }
 
-    h1 {
-      font-size: clamp(42px, 9vw, 96px);
-      font-weight: 800; line-height: 1.0;
-      margin-bottom: 32px;
-      letter-spacing: -1px;
-    }
+    h1,h2,h3{ font-family: var(--font-display); font-weight: 800; letter-spacing: -.01em; }
+    .accent-cyan{ color: var(--cyan); }
+    .accent-green{ color: var(--green); }
+    .muted{ color: var(--ink-2); font-weight: 400; }
 
-    h1 .cyan { color: var(--cyan); }
-    h1 .block { display: block; }
-
-    .hero-sub {
-      font-size: clamp(16px, 2.5vw, 20px);
-      color: var(--gray); max-width: 480px;
-      margin-bottom: 48px; line-height: 1.6;
-      border-left: 2px solid rgba(255,255,255,0.08);
-      padding-left: 20px;
-    }
-
-    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
-
-    .btn-primary {
-      background: var(--green); color: var(--navy);
-      padding: 16px 30px; border-radius: 3px;
-      font-weight: 800; font-size: 15px; text-decoration: none;
-      letter-spacing: 0.5px;
-    }
-
-    .btn-outline {
-      background: transparent; color: var(--white);
-      padding: 16px 30px; border-radius: 3px;
-      font-weight: 500; font-size: 15px; text-decoration: none;
-      border: 1px solid rgba(255,255,255,0.12);
-    }
-
-    /* ── STATEMENT ── */
-    #statement {
-      padding: 80px 6vw;
-      background: var(--navy2);
-      border-top: 1px solid rgba(0,212,255,0.06);
-      border-bottom: 1px solid rgba(0,212,255,0.06);
-    }
-
-    .statement-text {
-      font-size: clamp(22px, 4vw, 48px);
-      font-weight: 800; line-height: 1.2;
-      max-width: 820px;
-    }
-
-    .statement-text .cyan { color: var(--cyan); }
-    .statement-text .gray { color: var(--gray); font-weight: 400; }
-
-    /* ── VS ── */
-    #vs { padding: 80px 6vw; }
-
-    .vs-label {
-      font-size: 11px; font-weight: 600; letter-spacing: 4px;
-      color: var(--cyan); text-transform: uppercase;
-      margin-bottom: 48px; display: block;
-    }
-
-    .vs-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2px;
-      border-radius: 4px;
-      overflow: hidden;
-    }
-
-    .vs-col { padding: 40px 32px; background: var(--navy2); }
-
-    .vs-col-label {
-      font-size: 11px; letter-spacing: 3px; font-weight: 700;
-      margin-bottom: 28px; display: block;
-    }
-    .vs-col.bad .vs-col-label  { color: var(--gray); }
-    .vs-col.good .vs-col-label { color: var(--green); }
-
-    .vs-item {
-      display: flex; gap: 12px; align-items: flex-start;
-      margin-bottom: 18px;
-      font-size: clamp(14px, 2vw, 16px);
-      line-height: 1.5;
-    }
-    .vs-col.bad  .vs-item { color: var(--gray); }
-    .vs-col.good .vs-item { color: var(--white); }
-    .vs-icon { flex-shrink: 0; font-style: normal; margin-top: 1px; }
-    .vs-col.bad  .vs-icon { color: #ff4444; }
-    .vs-col.good .vs-icon { color: var(--green); }
-
-    /* ── SERVICIOS ── */
-    #servicios { padding: 80px 6vw; background: var(--navy2); }
-
-    .section-header { margin-bottom: 48px; }
-    .section-label {
-      font-size: 11px; font-weight: 600; letter-spacing: 4px;
-      color: var(--cyan); text-transform: uppercase;
-      margin-bottom: 16px; display: block;
-    }
-    h2 {
-      font-size: clamp(28px, 5vw, 52px);
-      font-weight: 800; line-height: 1.1;
-    }
-    h2 .cyan { color: var(--cyan); }
-
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 2px;
-    }
-
-    .card {
-      background: var(--navy);
-      padding: 40px 28px;
-      position: relative;
-    }
-
-    .card::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0;
-      height: 2px; background: var(--cyan);
+    /* ============ REVEAL ============ */
+    /* Visible by default: only animates once JS confirms it can run the reveal (progressive enhancement) */
+    body.js-ready .reveal{
       opacity: 0;
+      transform: translateY(22px);
+      transition: opacity .7s var(--ease), transform .7s var(--ease);
+    }
+    body.js-ready .reveal.is-visible{ opacity: 1; transform: translateY(0); }
+
+    /* ============ NAV ============ */
+    nav{
+      position: fixed; top:0; left:0; right:0; z-index: 200;
+      display:flex; align-items:center; justify-content:space-between;
+      padding: 20px var(--gutter);
+      background: rgba(13,27,42,.72);
+      backdrop-filter: blur(18px) saturate(140%);
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
+      border-bottom: 1px solid transparent;
+      transition: padding .35s var(--ease), background .35s var(--ease), border-color .35s var(--ease);
+    }
+    nav.scrolled{
+      padding: 12px var(--gutter);
+      background: rgba(13,27,42,.92);
+      border-bottom-color: var(--line-cyan);
+    }
+    .logo{
+      display:flex; align-items:center; gap: 10px;
+      text-decoration:none; color: var(--ink);
+    }
+    .logo svg{ width: 30px; height: 30px; flex-shrink: 0; }
+    .logo-text{ font-family: var(--font-display); font-weight: 800; font-size: 14px; letter-spacing: .06em; }
+    .logo-text span{ color: var(--cyan); }
+
+    .nav-links{ display:flex; align-items:center; gap: 36px; }
+    .nav-links a{
+      font-size: 13.5px; font-weight: 500; text-decoration:none; color: var(--ink-2);
+      position:relative; padding: 4px 0; transition: color .25s;
+    }
+    .nav-links a::after{
+      content:''; position:absolute; left:0; right:100%; bottom:0; height:1px;
+      background: var(--cyan); transition: right .3s var(--ease);
+    }
+    .nav-links a:hover{ color: var(--ink); }
+    .nav-links a:hover::after{ right:0; }
+
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      font-family: var(--font-body); font-weight: 700; font-size: 14.5px;
+      letter-spacing: .01em; text-decoration:none;
+      padding: 13px 26px; border-radius: 4px;
+      border: 1px solid transparent;
+      transition: transform .25s var(--ease), background .25s, border-color .25s, opacity .25s;
+    }
+    .btn:active{ transform: scale(.97); }
+    .btn-cyan{ background: var(--cyan); color: var(--surface); }
+    .btn-cyan:hover{ background:#33ddff; transform: translateY(-1px); }
+    .btn-green{ background: var(--green); color: var(--surface); }
+    .btn-green:hover{ background:#33eb8f; transform: translateY(-1px); }
+    .btn-outline{ background: transparent; color: var(--ink); border-color: rgba(255,255,255,.18); }
+    .btn-outline:hover{ border-color: rgba(255,255,255,.4); background: rgba(255,255,255,.04); }
+    .btn-sm{ padding: 10px 20px; font-size: 13px; }
+
+    /* ============ HERO ============ */
+    #hero{
+      min-height: 100svh;
+      display:flex; flex-direction:column; justify-content:center;
+      padding: 150px var(--gutter) 90px;
+      position:relative; overflow:hidden;
+    }
+    .hero-inner{ max-width: var(--max-w); margin-inline:auto; width:100%; position:relative; }
+
+    .hero-glow{
+      position:absolute; width: 720px; height: 720px;
+      background: radial-gradient(circle, rgba(0,212,255,.09) 0%, transparent 68%);
+      top: -12%; right: -8%;
+      pointer-events:none;
+    }
+    .hero-glow-2{
+      position:absolute; width: 560px; height: 560px;
+      background: radial-gradient(circle, rgba(0,230,118,.06) 0%, transparent 70%);
+      bottom: -20%; left: -10%;
+      pointer-events:none;
     }
 
-    .card.featured { border: 1px solid rgba(0,230,118,0.25); }
-    .card.featured::before { background: var(--green); opacity: 1; }
-
-    .card-num {
-      font-size: 11px; font-weight: 700; letter-spacing: 3px;
-      color: var(--gray); margin-bottom: 20px; display: block;
+    .hero-chart{
+      position:absolute; right: 0; top: 8%;
+      width: min(46vw, 560px); opacity: .9;
+      pointer-events:none;
     }
-    .card.featured .card-num { color: var(--green); }
-
-    .card h3 {
-      font-size: 22px; font-weight: 800;
-      margin-bottom: 12px;
+    .hero-chart path.grid{ stroke: rgba(255,255,255,.06); stroke-width:1; fill:none; }
+    .hero-chart path.trend{
+      stroke: var(--cyan); stroke-width: 2.5; fill:none;
+      stroke-linecap:round; stroke-linejoin:round;
     }
-
-    .card p {
-      font-size: 15px; color: var(--gray);
-      line-height: 1.65; margin-bottom: 20px;
+    body.js-ready .hero-chart path.trend{
+      stroke-dasharray: 900; stroke-dashoffset: 900;
+      transition: stroke-dashoffset 2.4s var(--ease) .3s;
     }
+    body.js-ready .hero-chart.drawn path.trend{ stroke-dashoffset: 0; }
+    .hero-chart circle{ fill: var(--green); }
+    body.js-ready .hero-chart circle{ opacity:0; transition: opacity .5s ease .5s; }
+    body.js-ready .hero-chart.drawn circle{ opacity:1; }
 
-    .card-tag {
-      font-size: 10px; font-weight: 700; letter-spacing: 2px;
-      color: var(--navy); background: var(--cyan);
-      padding: 4px 10px; border-radius: 2px;
-      display: inline-block;
+    h1.display{
+      font-size: var(--fs-hero); line-height: .98; margin-bottom: 34px;
+      max-width: 15ch;
     }
-    .card.featured .card-tag { background: var(--green); }
+    h1.display .block{ display:block; }
 
-    /* ── PROCESO ── */
-    #proceso { padding: 80px 6vw; }
-
-    .steps {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 40px; margin-top: 48px;
+    .hero-sub{
+      font-size: var(--fs-lead); color: var(--ink-2); max-width: 480px;
+      margin-bottom: 44px; line-height: 1.6;
+      border-left: 2px solid rgba(255,255,255,.1); padding-left: 20px;
     }
 
-    .step { position: relative; }
+    .hero-actions{ display:flex; gap: 14px; flex-wrap:wrap; }
 
-    .step-num {
-      font-size: 80px; font-weight: 800;
-      color: var(--cyan); opacity: 0.06;
-      position: absolute; top: -16px; left: -8px;
-      line-height: 1; pointer-events: none;
+    /* ============ FACTS STRIP ============ */
+    #facts{
+      border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+      padding: var(--section-pad) 0;
+    }
+    .facts-grid{
+      display:grid; grid-template-columns: repeat(3, 1fr);
+      gap: 48px;
+    }
+    .fact{ }
+    .fact-num{
+      font-family: var(--font-mono); font-weight: 700;
+      font-size: var(--fs-stat); line-height: 1; color: var(--ink);
+      display:flex; align-items:baseline; gap:4px; margin-bottom: 14px;
+    }
+    .fact-num .unit{ font-size: .38em; color: var(--cyan); font-weight: 500; }
+    .fact-label{ color: var(--ink-2); font-size: var(--fs-body); max-width: 32ch; }
+
+    /* ============ STATEMENT ============ */
+    #statement{ padding: var(--section-pad) 0; background: var(--surface-2); }
+    .statement-text{
+      font-family: var(--font-display); font-weight: 800;
+      font-size: clamp(1.75rem, 4.2vw, 3.25rem); line-height: 1.22;
+      max-width: 880px;
     }
 
-    .step-inner { position: relative; padding-top: 20px; }
+    /* ============ DIFERENCIA ============ */
+    #vs{ padding: var(--section-pad) 0; }
+    .vs-grid{
+      display:grid; grid-template-columns: 1fr 1fr; gap: 1px;
+      border-radius: 8px; overflow:hidden; border: 1px solid var(--line);
+      margin-top: 56px;
+    }
+    .vs-col{ padding: 44px 36px; background: var(--surface-2); }
+    .vs-col.good{ background: rgba(0,230,118,.035); }
+    .vs-col-label{
+      font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .18em; font-weight: 500;
+      margin-bottom: 30px; display:block; text-transform: uppercase;
+    }
+    .vs-col.bad .vs-col-label{ color: var(--ink-2); }
+    .vs-col.good .vs-col-label{ color: var(--green); }
+    .vs-item{
+      display:flex; gap: 14px; align-items:flex-start; margin-bottom: 20px;
+      font-size: var(--fs-body); line-height: 1.5;
+    }
+    .vs-col.bad .vs-item{ color: var(--ink-2); }
+    .vs-col.good .vs-item{ color: var(--ink); }
+    .vs-icon{ flex-shrink:0; margin-top:2px; width:18px; height:18px; }
+    .vs-col.bad .vs-icon{ color:#ff5c5c; }
+    .vs-col.good .vs-icon{ color: var(--green); }
 
-    .step-inner h3 {
-      font-size: 13px; font-weight: 700; letter-spacing: 3px;
-      color: var(--cyan); margin-bottom: 12px;
-      text-transform: uppercase;
+    /* ============ SERVICIOS ============ */
+    #servicios{ padding: var(--section-pad) 0; background: var(--surface-2); }
+    .section-head{ max-width: 640px; margin-bottom: 72px; }
+    .section-head h2{ font-size: var(--fs-h2); line-height: 1.06; }
+
+    .service-row{
+      display:grid; grid-template-columns: .9fr 1.1fr; gap: 64px;
+      align-items:center;
+      padding: 56px 0;
+      border-top: 1px solid var(--line);
+    }
+    .service-row:last-child{ border-bottom: 1px solid var(--line); }
+    .service-row.featured .service-tag{ background: var(--green); color: var(--surface); }
+
+    .service-index{
+      font-family: var(--font-mono); font-size: 12.5px; letter-spacing: .18em;
+      color: var(--ink-2); margin-bottom: 18px; display:block;
+    }
+    .service-row.featured .service-index{ color: var(--green); }
+    .service-row h3{ font-size: var(--fs-h3); margin-bottom: 16px; }
+    .service-row p{ color: var(--ink-2); font-size: var(--fs-body); max-width: 52ch; margin-bottom: 22px; }
+    .service-tag{
+      display:inline-block; font-family: var(--font-mono); font-size: 10.5px; font-weight: 500;
+      letter-spacing: .14em; color: var(--surface); background: var(--cyan);
+      padding: 6px 12px; border-radius: 2px;
     }
 
-    .step-inner p { color: var(--gray); font-size: 15px; line-height: 1.6; }
-
-    /* ── CTA ── */
-    #cta {
-      padding: 80px 6vw;
-      background: var(--navy2);
-      text-align: center;
-      border-top: 1px solid rgba(0,212,255,0.08);
+    .service-visual{
+      display:flex; align-items:flex-end; gap: 10px;
+      height: 180px; padding: 0 8px 10px;
+      border-bottom: 1px solid var(--line);
     }
-
-    #cta h2 { margin: 0 auto 16px; max-width: 600px; }
-
-    .cta-sub {
-      color: var(--gray); font-size: 18px; margin-bottom: 40px;
+    .service-visual .bar{
+      flex:1; background: linear-gradient(180deg, var(--cyan), rgba(0,212,255,.15));
+      border-radius: 3px 3px 0 0;
+      transform-origin: bottom;
     }
-
-    .cta-card {
-      max-width: 440px; margin: 0 auto;
-      background: rgba(0,212,255,0.04);
-      border: 1px solid rgba(0,212,255,0.15);
-      border-radius: 6px;
-      padding: 40px 32px;
-      display: flex; flex-direction: column; gap: 16px;
-      align-items: center;
+    body.js-ready .service-visual .bar{
+      transform: scaleY(0);
+      transition: transform 1s var(--ease);
     }
-
-    .cta-badge {
-      background: var(--green); color: var(--navy);
-      font-size: 11px; font-weight: 800; letter-spacing: 2px;
-      padding: 5px 14px; border-radius: 2px;
+    .service-row.featured .service-visual .bar{
+      background: linear-gradient(180deg, var(--green), rgba(0,230,118,.15));
     }
+    .service-row.is-visible .service-visual .bar{ transform: scaleY(1); }
 
-    .cta-title {
-      font-size: 26px; font-weight: 800;
+    /* ============ PROCESO ============ */
+    #proceso{ padding: var(--section-pad) 0; }
+    .steps{
+      display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
+      gap: 48px; margin-top: 64px; position:relative;
     }
-
-    .cta-detail {
-      color: var(--gray); font-size: 15px;
-      text-align: center; line-height: 1.6;
+    .step{ position:relative; }
+    .step-num{
+      font-family: var(--font-mono); font-size: 88px; font-weight: 700;
+      color: var(--cyan); opacity: .07; position:absolute; top:-18px; left:-6px;
+      line-height:1; pointer-events:none;
     }
-
-    .btn-wa {
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-      background: #25D366; color: #fff;
-      padding: 16px 28px; border-radius: 3px;
-      font-weight: 800; font-size: 15px;
-      text-decoration: none; width: 100%;
+    .step-inner{ position:relative; padding-top: 22px; }
+    .step-inner h3{
+      font-family: var(--font-mono); font-size: 12.5px; font-weight: 500; letter-spacing:.16em;
+      color: var(--cyan); margin-bottom: 14px; text-transform: uppercase;
     }
+    .step-inner p{ color: var(--ink-2); font-size: var(--fs-body); line-height:1.65; }
 
-    /* ── FOOTER ── */
-    footer {
-      padding: 32px 6vw;
-      border-top: 1px solid rgba(0,212,255,0.06);
-      display: flex; align-items: center; justify-content: space-between;
-      flex-wrap: wrap; gap: 12px;
+    /* ============ CTA ============ */
+    #cta{
+      padding: var(--section-pad) 0; background: var(--surface-2);
+      text-align:center; border-top: 1px solid var(--line);
     }
+    #cta h2{ font-size: var(--fs-h2); margin: 0 auto 18px; max-width: 620px; line-height:1.08; }
+    .cta-sub{ color: var(--ink-2); font-size: var(--fs-lead); margin-bottom: 48px; }
 
-    .foot-copy { color: var(--gray); font-size: 13px; }
-    .foot-ig {
-      color: var(--cyan); font-size: 13px; font-weight: 600;
-      text-decoration: none;
+    .cta-card{
+      max-width: 460px; margin: 0 auto;
+      background: rgba(0,212,255,.04);
+      border: 1px solid var(--line-cyan); border-radius: 10px;
+      padding: 44px 36px;
+      display:flex; flex-direction:column; gap: 18px; align-items:center;
     }
-
-    /* ── FLOATING WA ── */
-    .wa-float {
-      position: fixed; bottom: 24px; right: 24px; z-index: 200;
-      width: 54px; height: 54px; border-radius: 50%;
-      background: #25D366; color: #fff;
-      display: flex; align-items: center; justify-content: center;
-      text-decoration: none;
-      box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+    .cta-badge{
+      font-family: var(--font-mono); background: var(--green); color: var(--surface);
+      font-size: 11px; font-weight: 700; letter-spacing: .12em;
+      padding: 6px 14px; border-radius: 2px;
     }
+    .cta-title{ font-family: var(--font-display); font-size: 27px; font-weight: 800; }
+    .cta-detail{ color: var(--ink-2); font-size: var(--fs-body); text-align:center; line-height:1.6; }
+    .btn-wa{
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      background: var(--whatsapp); color:#fff;
+      padding: 16px 28px; border-radius: 4px;
+      font-weight: 700; font-size: 15px; text-decoration:none; width:100%;
+      transition: filter .25s, transform .25s;
+    }
+    .btn-wa:hover{ filter: brightness(1.08); transform: translateY(-1px); }
+    .btn-wa svg{ width:20px; height:20px; flex-shrink:0; }
 
-    /* ── RESPONSIVE ── */
-    @media (max-width: 640px) {
-      .vs-grid { grid-template-columns: 1fr; }
-      .vs-col { padding: 28px 20px; }
-      .cta-card { padding: 32px 20px; }
-      footer { justify-content: center; text-align: center; }
+    /* ============ FOOTER ============ */
+    footer{ padding: 56px 0 40px; border-top: 1px solid var(--line); }
+    .footer-top{
+      display:flex; justify-content:space-between; align-items:flex-start;
+      flex-wrap:wrap; gap: 40px; margin-bottom: 44px;
+    }
+    .footer-brand{ max-width: 340px; }
+    .footer-brand .logo{ margin-bottom: 16px; }
+    .footer-brand p{ color: var(--ink-2); font-size: var(--fs-small); line-height:1.6; }
+    .footer-cols{ display:flex; gap: 64px; flex-wrap:wrap; }
+    .footer-col h4{
+      font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em;
+      color: var(--ink-2); text-transform: uppercase; margin-bottom: 16px; font-weight: 500;
+    }
+    .footer-col a{
+      display:block; font-size: var(--fs-small); text-decoration:none; color: var(--ink);
+      margin-bottom: 12px; opacity:.85; transition: opacity .2s, color .2s;
+    }
+    .footer-col a:hover{ opacity:1; color: var(--cyan); }
+    .footer-bottom{
+      display:flex; align-items:center; justify-content:space-between;
+      flex-wrap:wrap; gap: 12px; padding-top: 28px; border-top: 1px solid var(--line);
+    }
+    .foot-copy{ color: var(--ink-2); font-size: 13px; }
+    .foot-ig{ color: var(--cyan); font-size: 13px; font-weight: 600; text-decoration:none; }
+    .foot-ig:hover{ text-decoration: underline; }
+
+    /* ============ FLOATING WA ============ */
+    .wa-float{
+      position:fixed; bottom:24px; right:24px; z-index:200;
+      width:54px; height:54px; border-radius:50%;
+      background: var(--whatsapp); color:#fff;
+      display:flex; align-items:center; justify-content:center;
+      text-decoration:none;
+      box-shadow: 0 4px 24px rgba(37,211,102,.4);
+      transition: transform .25s var(--ease);
+    }
+    .wa-float:hover{ transform: scale(1.07); }
+
+    /* ============ RESPONSIVE ============ */
+    @media (max-width: 980px){
+      .nav-links{ display:none; }
+      .service-row{ grid-template-columns: 1fr; gap: 28px; }
+      .facts-grid{ grid-template-columns: 1fr; gap: 36px; }
+    }
+    @media (max-width: 640px){
+      .vs-grid{ grid-template-columns: 1fr; }
+      .vs-col{ padding: 32px 24px; }
+      .cta-card{ padding: 36px 24px; }
+      .footer-top{ flex-direction:column; }
+      .footer-bottom{ justify-content:center; text-align:center; }
+      .hero-chart{ display:none; }
     }
   </style>
 </head>
 <body>
 
   <!-- NAV -->
-  <nav>
-    <a href="#" class="logo">
-      <svg width="32" height="20" viewBox="0 0 80 48" fill="none">
+  <nav id="nav">
+    <a href="#hero" class="logo" aria-label="Mirada Digital — inicio">
+      <svg viewBox="0 0 80 48" fill="none" aria-hidden="true">
         <path d="M4 24 C20 4 60 4 76 24 C60 44 20 44 4 24Z" stroke="#00D4FF" stroke-width="2.5" fill="none"/>
         <circle cx="40" cy="24" r="9" stroke="#00D4FF" stroke-width="2.5" fill="none"/>
-        <circle cx="40" cy="24" r="3" fill="#00D4FF"/>
+        <polyline points="34,27 38,22 42,25 47,17" fill="none" stroke="#00E676" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
       <span class="logo-text">MIRADA <span>DIGITAL</span></span>
     </a>
-    <a href="#cta" class="nav-cta">Auditoría gratis</a>
+    <div class="nav-links">
+      <a href="#servicios">Servicios</a>
+      <a href="#proceso">Cómo trabajamos</a>
+      <a href="#vs">Diferencia</a>
+    </div>
+    <a href="#cta" class="btn btn-cyan btn-sm">Auditoría gratis</a>
   </nav>
 
   <!-- HERO -->
   <section id="hero">
     <div class="hero-glow"></div>
-    <span class="hero-tag">Agencia de performance · Argentina</span>
-    <h1>
-      <span class="block">Invertís.</span>
-      <span class="block">Nosotros te</span>
-      <span class="block">mostramos <span class="cyan">qué</span></span>
-      <span class="block">pasa con</span>
-      <span class="block cyan">cada peso.</span>
-    </h1>
-    <p class="hero-sub">Sin reportes inentendibles. Sin desaparecer después de cobrar. Con números reales, cada semana.</p>
-    <div class="hero-actions">
-      <a href="#cta" class="btn-primary">Auditoría gratuita →</a>
-      <a href="#servicios" class="btn-outline">Ver servicios</a>
+    <div class="hero-glow-2"></div>
+    <div class="hero-inner">
+      <svg class="hero-chart" id="heroChart" viewBox="0 0 480 260" fill="none" aria-hidden="true">
+        <path class="grid" d="M0 40 H480 M0 100 H480 M0 160 H480 M0 220 H480"/>
+        <path class="trend" d="M10 210 C 90 200, 140 150, 190 150 S 280 90, 330 90 S 410 30, 470 25"/>
+        <circle cx="190" cy="150" r="4"/>
+        <circle cx="330" cy="90" r="4"/>
+        <circle cx="470" cy="25" r="4"/>
+      </svg>
+
+      <span class="eyebrow">Agencia de performance · Argentina</span>
+      <h1 class="display">
+        <span class="block">Invertís.</span>
+        <span class="block">Te mostramos</span>
+        <span class="block"><span class="accent-cyan">qué pasa</span></span>
+        <span class="block">con cada peso.</span>
+      </h1>
+      <p class="hero-sub">Sin reportes inentendibles. Sin desaparecer después de cobrar. Con números reales, cada semana.</p>
+      <div class="hero-actions">
+        <a href="#cta" class="btn btn-green">Auditoría gratuita →</a>
+        <a href="#servicios" class="btn btn-outline">Ver servicios</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FACTS -->
+  <section id="facts">
+    <div class="wrap facts-grid">
+      <div class="fact reveal">
+        <div class="fact-num"><span class="count" data-target="72">72</span><span class="unit">HS</span></div>
+        <p class="fact-label">Auditoría Express: qué está bien, qué está mal y qué cambiaríamos. Sin costo.</p>
+      </div>
+      <div class="fact reveal" style="transition-delay:.08s">
+        <div class="fact-num"><span class="count" data-target="90">90</span><span class="unit">DÍAS</span></div>
+        <p class="fact-label">Resultados en presencia digital — o te explicamos exactamente por qué no.</p>
+      </div>
+      <div class="fact reveal" style="transition-delay:.16s">
+        <div class="fact-num" style="font-size: clamp(2rem, 5.5vw, 3.75rem);">Reporte<br>semanal</div>
+        <p class="fact-label">Claro y accionable. Sabés en qué se gasta cada peso, todas las semanas.</p>
+      </div>
     </div>
   </section>
 
   <!-- STATEMENT -->
   <section id="statement">
-    <p class="statement-text">
-      La mayoría de las agencias cobran<br>
-      por hacer clic en "publicar".<br>
-      <span class="cyan">Nosotros cobramos por resultados.</span><br>
-      <span class="gray">Si no crecés, te lo decimos de frente.</span>
-    </p>
+    <div class="wrap">
+      <p class="statement-text reveal">
+        La mayoría de las agencias cobran<br>
+        por hacer clic en "publicar".<br>
+        <span class="accent-cyan">Nosotros cobramos por resultados.</span><br>
+        <span class="muted">Si no crecés, te lo decimos de frente.</span>
+      </p>
+    </div>
   </section>
 
-  <!-- VS -->
+  <!-- DIFERENCIA -->
   <section id="vs">
-    <span class="vs-label">La diferencia</span>
-    <div class="vs-grid">
-      <div class="vs-col bad">
-        <span class="vs-col-label">LA MAYORÍA DE AGENCIAS</span>
-        <div class="vs-item"><span class="vs-icon">✗</span><span>Ejecutan sin explicar qué hacen</span></div>
-        <div class="vs-item"><span class="vs-icon">✗</span><span>Mandan reportes que no se entienden</span></div>
-        <div class="vs-item"><span class="vs-icon">✗</span><span>Te muestran likes, no ventas</span></div>
-        <div class="vs-item"><span class="vs-icon">✗</span><span>Desaparecen después de cobrar</span></div>
-        <div class="vs-item"><span class="vs-icon">✗</span><span>No te dejan ver tu propia cuenta</span></div>
-      </div>
-      <div class="vs-col good">
-        <span class="vs-col-label">MIRADA DIGITAL</span>
-        <div class="vs-item"><span class="vs-icon">✓</span><span>Cada decisión tiene su explicación</span></div>
-        <div class="vs-item"><span class="vs-icon">✓</span><span>Reporte semanal claro y accionable</span></div>
-        <div class="vs-item"><span class="vs-icon">✓</span><span>Métricas que importan: leads, ventas, ROAS</span></div>
-        <div class="vs-item"><span class="vs-icon">✓</span><span>Reunión mensual de resultados incluida</span></div>
-        <div class="vs-item"><span class="vs-icon">✓</span><span>Tu cuenta es tuya. Siempre.</span></div>
+    <div class="wrap">
+      <span class="eyebrow reveal">La diferencia</span>
+      <h2 class="reveal" style="font-size:var(--fs-h2); max-width:640px;">No ejecutamos y desaparecemos.<br><span class="accent-cyan">Mostramos el proceso.</span></h2>
+      <div class="vs-grid">
+        <div class="vs-col bad reveal">
+          <span class="vs-col-label">La mayoría de agencias</span>
+          <div class="vs-item"><svg class="vs-icon" viewBox="0 0 20 20" fill="none"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Ejecutan sin explicar qué hacen</span></div>
+          <div class="vs-item"><svg class="vs-icon" viewBox="0 0 20 20" fill="none"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Mandan reportes que no se entienden</span></div>
+          <div class="vs-item"><svg class="vs-icon" viewBox="0 0 20 20" fill="none"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Muestran likes, no ventas</span></div>
+          <div class="vs-item"><svg class="vs-icon" viewBox="0 0 20 20" fill="none"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Desaparecen después de cobrar</span></div>
+          <div class="vs-item"><svg class="vs-icon" viewBox="0 0 20 20" fill="none"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>No te dejan ver tu propia cuenta</span></div>
+        </div>
+        <div class="vs-col good reveal" style="transition-delay:.1s">
+          <span class="vs-col-label">Mirada Digital</span>
+          <div class="vs-item"><svg class="vs-icon" viewBox="0 0 20 20" fill="none"><path d="M4 10l4 4 8-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Cada decisión tiene su explicación</span></div>
+          <div class="vs-item"><svg class="vs-icon" viewBox="0 0 20 20" fill="none"><path d="M4 10l4 4 8-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Reporte semanal claro y accionable</span></div>
+          <div class="vs-item"><svg class="vs-icon" viewBox="0 0 20 20" fill="none"><path d="M4 10l4 4 8-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Métricas que importan: leads, ventas, ROAS</span></div>
+          <div class="vs-item"><svg class="vs-icon" viewBox="0 0 20 20" fill="none"><path d="M4 10l4 4 8-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Reunión mensual de resultados incluida</span></div>
+          <div class="vs-item"><svg class="vs-icon" viewBox="0 0 20 20" fill="none"><path d="M4 10l4 4 8-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Tu cuenta es tuya. Siempre.</span></div>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- SERVICIOS -->
   <section id="servicios">
-    <div class="section-header">
-      <span class="section-label">Lo que hacemos</span>
-      <h2>Todo lo que tu negocio<br>necesita para <span class="cyan">crecer.</span></h2>
-    </div>
-    <div class="cards">
-      <div class="card featured">
-        <span class="card-num">ARRANCAR ACA</span>
-        <h3>Auditoría Express ⚡</h3>
-        <p>¿Ya invertís y no ves resultados? En 72hs te decimos qué falla, dónde perdés plata y qué cambiar primero.</p>
-        <span class="card-tag">GRATIS · 72HS</span>
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Lo que hacemos</span>
+        <h2>Todo lo que tu negocio necesita para <span class="accent-cyan">crecer.</span></h2>
       </div>
-      <div class="card">
-        <span class="card-num">01</span>
-        <h3>Paid Ads</h3>
-        <p>Google + Meta gestionados con estrategia real. Campañas que se miden por ventas, no por alcance.</p>
-        <span class="card-tag">GOOGLE · META</span>
+
+      <div class="service-row featured reveal">
+        <div>
+          <span class="service-index">ARRANCÁ ACÁ</span>
+          <h3>Auditoría Express ⚡</h3>
+          <p>Revisión completa de campañas, web y redes en 72hs. Te decimos qué está bien, qué está mal y qué cambiaríamos. Sin costo para nuevos clientes.</p>
+          <span class="service-tag">GRATIS · 72HS</span>
+        </div>
+        <div class="service-visual" aria-hidden="true">
+          <div class="bar" style="height:35%"></div>
+          <div class="bar" style="height:55%"></div>
+          <div class="bar" style="height:40%"></div>
+          <div class="bar" style="height:70%"></div>
+          <div class="bar" style="height:95%"></div>
+        </div>
       </div>
-      <div class="card">
-        <span class="card-num">02</span>
-        <h3>Social Media</h3>
-        <p>Contenido con objetivo medible. Cada pieza existe para generar resultados, no para llenar el feed.</p>
-        <span class="card-tag">INSTAGRAM · META</span>
+
+      <div class="service-row reveal">
+        <div>
+          <span class="service-index">01</span>
+          <h3>Performance 360°</h3>
+          <p>Gestión de campañas Meta + Google + dashboard en tiempo real + reunión mensual. Sabés en todo momento en qué se gasta cada peso y por qué.</p>
+          <span class="service-tag">GOOGLE · META</span>
+        </div>
+        <div class="service-visual" aria-hidden="true">
+          <div class="bar" style="height:25%"></div>
+          <div class="bar" style="height:45%"></div>
+          <div class="bar" style="height:38%"></div>
+          <div class="bar" style="height:62%"></div>
+          <div class="bar" style="height:80%"></div>
+        </div>
       </div>
-      <div class="card">
-        <span class="card-num">03</span>
-        <h3>SEO + Web</h3>
-        <p>Que te encuentren cuando buscan lo que ofrecés. Web rápida, optimizada y que convierte.</p>
-        <span class="card-tag">SEO · WEB</span>
+
+      <div class="service-row reveal">
+        <div>
+          <span class="service-index">02</span>
+          <h3>Social Estratégico</h3>
+          <p>Gestión de redes con calendario editorial orientado a ventas. Cada pieza tiene un objetivo medible. Nada existe para llenar el feed.</p>
+          <span class="service-tag">INSTAGRAM · META</span>
+        </div>
+        <div class="service-visual" aria-hidden="true">
+          <div class="bar" style="height:50%"></div>
+          <div class="bar" style="height:30%"></div>
+          <div class="bar" style="height:65%"></div>
+          <div class="bar" style="height:48%"></div>
+          <div class="bar" style="height:75%"></div>
+        </div>
+      </div>
+
+      <div class="service-row reveal">
+        <div>
+          <span class="service-index">03</span>
+          <h3>Presencia Digital</h3>
+          <p>Web profesional, rápida y que convierte + posicionamiento local y nacional. Resultados en 90 días o te explicamos por qué.</p>
+          <span class="service-tag">SEO · WEB</span>
+        </div>
+        <div class="service-visual" aria-hidden="true">
+          <div class="bar" style="height:20%"></div>
+          <div class="bar" style="height:34%"></div>
+          <div class="bar" style="height:52%"></div>
+          <div class="bar" style="height:68%"></div>
+          <div class="bar" style="height:90%"></div>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- PROCESO -->
   <section id="proceso">
-    <div class="section-header">
-      <span class="section-label">Cómo trabajamos</span>
-      <h2>Simple, transparente<br>y <span class="cyan">sin sorpresas.</span></h2>
-    </div>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">01</div>
-        <div class="step-inner">
-          <h3>Auditoría</h3>
-          <p>Analizamos lo que ya tenés: campañas, web y redes. Te decimos qué está bien, qué está mal y qué cambiaríamos. Sin costo, en 72hs.</p>
-        </div>
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Cómo trabajamos</span>
+        <h2>Simple, transparente<br>y <span class="accent-cyan">sin sorpresas.</span></h2>
       </div>
-      <div class="step">
-        <div class="step-num">02</div>
-        <div class="step-inner">
-          <h3>Propuesta a medida</h3>
-          <p>Sin paquetes genéricos. Te presentamos qué servicios necesitás, qué resultados son reales y cuánto invertir.</p>
+      <div class="steps">
+        <div class="step reveal">
+          <div class="step-num">01</div>
+          <div class="step-inner">
+            <h3>Auditoría</h3>
+            <p>Analizamos lo que ya tenés: campañas, web y redes. Te decimos qué está bien, qué está mal y qué cambiaríamos. Sin costo, en 72hs.</p>
+          </div>
         </div>
-      </div>
-      <div class="step">
-        <div class="step-num">03</div>
-        <div class="step-inner">
-          <h3>Arrancamos</h3>
-          <p>Vos invertís. Nosotros ejecutamos, optimizamos y te mostramos qué pasa con cada peso. Siempre.</p>
+        <div class="step reveal" style="transition-delay:.1s">
+          <div class="step-num">02</div>
+          <div class="step-inner">
+            <h3>Propuesta a medida</h3>
+            <p>Sin paquetes genéricos. Te presentamos qué servicios necesitás, qué resultados son reales y cuánto invertir.</p>
+          </div>
+        </div>
+        <div class="step reveal" style="transition-delay:.2s">
+          <div class="step-num">03</div>
+          <div class="step-inner">
+            <h3>Arrancamos</h3>
+            <p>Vos invertís. Nosotros ejecutamos, optimizamos y te mostramos qué pasa con cada peso. Siempre.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -481,31 +633,149 @@
 
   <!-- CTA -->
   <section id="cta">
-    <span class="section-label">Empezá hoy</span>
-    <h2>¿Querés saber en qué<br>se va tu <span class="cyan">plata?</span></h2>
-    <p class="cta-sub">Pedí tu auditoría gratuita. Sin compromiso. Resultado en 72hs.</p>
-    <div class="cta-card">
-      <span class="cta-badge">SIN COSTO · SIN COMPROMISO</span>
-      <span class="cta-title">Auditoría Express</span>
-      <span class="cta-detail">Analizamos tus campañas, web y redes.<br>Te decimos qué está fallando y qué cambiar primero.</span>
-      <a href="https://wa.me/5491160335080?text=Hola!%20Quiero%20la%20auditor%C3%ADa%20gratuita%20de%20Mirada%20Digital" class="btn-wa" target="_blank" rel="noopener">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        Escribinos por WhatsApp
-      </a>
+    <div class="wrap">
+      <span class="eyebrow reveal" style="justify-content:center;">Empezá hoy</span>
+      <h2 class="reveal">¿Querés saber en qué se va tu <span class="accent-cyan">plata?</span></h2>
+      <p class="cta-sub reveal">Pedí tu auditoría gratuita. Sin compromiso. Resultado en 72hs.</p>
+      <div class="cta-card reveal">
+        <span class="cta-badge">SIN COSTO · SIN COMPROMISO</span>
+        <span class="cta-title">Auditoría Express</span>
+        <span class="cta-detail">Analizamos tus campañas, web y redes.<br>Te decimos qué está fallando y qué cambiar primero.</span>
+        <a href="https://wa.me/5491160335080?text=Hola!%20Quiero%20la%20auditor%C3%ADa%20gratuita%20de%20Mirada%20Digital" class="btn-wa" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Escribinos por WhatsApp
+        </a>
+      </div>
     </div>
   </section>
 
   <!-- FOOTER -->
   <footer>
-    <span class="foot-copy">© 2025 Mirada Digital</span>
-    <a href="https://instagram.com/somosmiradadigital" class="foot-ig" target="_blank" rel="noopener">@somosmiradadigital</a>
+    <div class="wrap">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a href="#hero" class="logo" aria-label="Mirada Digital">
+            <svg viewBox="0 0 80 48" fill="none" aria-hidden="true">
+              <path d="M4 24 C20 4 60 4 76 24 C60 44 20 44 4 24Z" stroke="#00D4FF" stroke-width="2.5" fill="none"/>
+              <circle cx="40" cy="24" r="9" stroke="#00D4FF" stroke-width="2.5" fill="none"/>
+              <polyline points="34,27 38,22 42,25 47,17" fill="none" stroke="#00E676" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="logo-text">MIRADA <span>DIGITAL</span></span>
+          </a>
+          <p>Agencia de performance y transparencia digital. Invertís. Te mostramos qué pasa con cada peso.</p>
+        </div>
+        <div class="footer-cols">
+          <div class="footer-col">
+            <h4>Servicios</h4>
+            <a href="#servicios">Auditoría Express</a>
+            <a href="#servicios">Performance 360°</a>
+            <a href="#servicios">Social Estratégico</a>
+            <a href="#servicios">Presencia Digital</a>
+          </div>
+          <div class="footer-col">
+            <h4>Contacto</h4>
+            <a href="https://wa.me/5491160335080?text=Hola!%20Quiero%20la%20auditor%C3%ADa%20gratuita%20de%20Mirada%20Digital" target="_blank" rel="noopener">WhatsApp</a>
+            <a href="https://www.instagram.com/somosmiradadigital/" target="_blank" rel="noopener">Instagram</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span class="foot-copy">© <span id="year"></span> Mirada Digital</span>
+        <a href="https://www.instagram.com/somosmiradadigital/" class="foot-ig" target="_blank" rel="noopener">@somosmiradadigital</a>
+      </div>
+    </div>
   </footer>
 
   <!-- FLOATING WA -->
   <a href="https://wa.me/5491160335080?text=Hola!%20Quiero%20la%20auditor%C3%ADa%20gratuita%20de%20Mirada%20Digital"
-     class="wa-float" target="_blank" rel="noopener" aria-label="WhatsApp">
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+     class="wa-float" target="_blank" rel="noopener" aria-label="Escribinos por WhatsApp">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="white" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
   </a>
 
+  <script>
+    (function(){
+      "use strict";
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // Progressive enhancement: only hide/animate content once JS is confirmed running
+      document.body.classList.add('js-ready');
+
+      // Footer year
+      var y = document.getElementById('year');
+      if (y) y.textContent = new Date().getFullYear();
+
+      // Nav condense on scroll
+      var nav = document.getElementById('nav');
+      var ticking = false;
+      function onScroll(){
+        if (!ticking){
+          window.requestAnimationFrame(function(){
+            nav.classList.toggle('scrolled', window.scrollY > 8);
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      // Hero chart draw-in
+      var heroChart = document.getElementById('heroChart');
+      if (heroChart){
+        requestAnimationFrame(function(){ heroChart.classList.add('drawn'); });
+      }
+
+      // Scroll reveal
+      var revealEls = document.querySelectorAll('.reveal, .service-row');
+      if (reduceMotion || !('IntersectionObserver' in window)){
+        revealEls.forEach(function(el){ el.classList.add('is-visible'); });
+      } else {
+        var io = new IntersectionObserver(function(entries){
+          entries.forEach(function(entry){
+            if (entry.isIntersecting){
+              entry.target.classList.add('is-visible');
+              io.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.18, rootMargin: '0px 0px -40px 0px' });
+        revealEls.forEach(function(el){ io.observe(el); });
+
+        // Safety net: never leave content permanently hidden if IO is slow/throttled
+        setTimeout(function(){
+          revealEls.forEach(function(el){ el.classList.add('is-visible'); });
+        }, 2500);
+      }
+
+      // Count-up for facts
+      var counters = document.querySelectorAll('.count');
+      function animateCount(el){
+        var target = parseInt(el.getAttribute('data-target'), 10) || 0;
+        if (reduceMotion){ el.textContent = target; return; }
+        el.textContent = '0';
+        var start = null, duration = 1200;
+        function step(ts){
+          if (!start) start = ts;
+          var progress = Math.min((ts - start) / duration, 1);
+          var eased = 1 - Math.pow(1 - progress, 3);
+          el.textContent = Math.round(eased * target);
+          if (progress < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+      if (counters.length && 'IntersectionObserver' in window){
+        var cio = new IntersectionObserver(function(entries){
+          entries.forEach(function(entry){
+            if (entry.isIntersecting){
+              animateCount(entry.target);
+              cio.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.6 });
+        counters.forEach(function(el){ cio.observe(el); });
+      } else {
+        counters.forEach(function(el){ el.textContent = el.getAttribute('data-target'); });
+      }
+    })();
+  </script>
 </body>
 </html>
