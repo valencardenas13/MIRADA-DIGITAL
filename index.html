@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Mirada Digital | Performance con transparencia</title>
+<meta name="description" content="Agencia de performance digital argentina. Auditoría gratis en 72hs.">
+
+<style>
+@font-face {
+  font-family: 'Mona Sans';
+  src: url('https://github.githubassets.com/assets/mona-sans.woff2') format('woff2');
+  font-weight: 100 900;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+:root {
+  --navy:  #0D1B2A;
+  --navy2: #111F30;
+  --cyan:  #00D4FF;
+  --green: #00E676;
+  --grey:  #8892A4;
+  --font:  'Mona Sans', -apple-system, sans-serif;
+}
+html { overflow-x:hidden; }
+body {
+  background: var(--navy);
+  color: #fff;
+  font-family: var(--font);
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── FONDO ── */
+.bg-glow {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(ellipse at 15% 10%, rgba(0,212,255,0.10) 0%, transparent 45%),
+    radial-gradient(ellipse at 85% 90%, rgba(0,230,118,0.07) 0%, transparent 45%);
+  animation: bgBreath 6s ease-in-out infinite alternate;
+}
+@keyframes bgBreath { from{opacity:.7} to{opacity:1} }
+
+.grid-bg {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(ellipse at 50% 30%, black 10%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 30%, black 10%, transparent 70%);
+}
+
+/* ── WRAP ── */
+.wrap {
+  position: relative; z-index: 1;
+  max-width: 420px; margin: 0 auto;
+  padding: 56px 22px calc(48px + env(safe-area-inset-bottom));
+  display: flex; flex-direction: column; align-items: center;
+}
+
+/* ── LOGO ANIMADO ── */
+.logo-wrap {
+  margin-bottom: 24px;
+  animation: popIn 0.7s cubic-bezier(0.16,1,0.3,1) 0.1s both;
+}
+.logo-ring {
+  width: 100px; height: 100px; border-radius: 50%;
+  padding: 3px;
+  background: conic-gradient(var(--cyan) 0%, var(--green) 40%, var(--cyan) 100%);
+  animation: spin 6s linear infinite;
+}
+.logo-inner {
+  width: 100%; height: 100%; border-radius: 50%;
+  background: var(--navy); display: flex; align-items:center; justify-content:center;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes popIn { from{opacity:0;transform:scale(0.7)} to{opacity:1;transform:scale(1)} }
+
+/* ── HEADER ── */
+.tag-live {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: rgba(0,230,118,0.08); border: 1px solid rgba(0,230,118,0.2);
+  color: var(--green); font-size: 10px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  padding: 6px 14px; border-radius: 30px; margin-bottom: 16px;
+  animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.25s both;
+}
+.tag-live::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green); animation: pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.3;transform:scale(0.5)} }
+
+.name {
+  font-size: 28px; font-weight: 900; letter-spacing: -0.8px;
+  text-align: center; line-height: 1.1; margin-bottom: 6px;
+  animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.35s both;
+}
+.handle {
+  font-size: 13px; color: var(--cyan); font-weight: 600; margin-bottom: 16px;
+  animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.4s both;
+}
+.bio {
+  font-size: 14px; color: var(--grey); text-align: center;
+  line-height: 1.65; margin-bottom: 28px; max-width: 300px;
+  animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.45s both;
+}
+.bio strong { color: #fff; font-weight: 700; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── STATS ROW ── */
+.stats {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 8px;
+  width: 100%; margin-bottom: 28px;
+  animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.5s both;
+}
+.stat {
+  background: var(--navy2); border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px; padding: 14px 8px; text-align: center;
+  transition: border-color 0.3s, transform 0.2s;
+}
+.stat:active { transform: scale(0.95); }
+.stat-val { font-size: 22px; font-weight: 900; line-height: 1; margin-bottom: 4px; }
+.stat-lbl { font-size: 9px; color: var(--grey); letter-spacing: 1.5px; text-transform: uppercase; }
+
+/* ── LINKS ── */
+.links { width: 100%; display: flex; flex-direction: column; gap: 11px; }
+
+.lbtn {
+  display: flex; align-items: center; gap: 14px;
+  width: 100%; padding: 0; border: none; border-radius: 20px;
+  text-decoration: none; cursor: pointer; font-family: var(--font);
+  position: relative; overflow: hidden;
+  transition: transform 0.15s cubic-bezier(0.16,1,0.3,1), box-shadow 0.2s;
+}
+.lbtn:active { transform: scale(0.97); }
+.lbtn .inner { display:flex; align-items:center; gap:14px; width:100%; padding:18px 20px; }
+
+/* ripple */
+.lbtn::after {
+  content: ''; position: absolute;
+  width: 0; height: 0; border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  top: 50%; left: 50%; transform: translate(-50%,-50%);
+  transition: width 0.4s ease, height 0.4s ease, opacity 0.4s ease;
+  opacity: 0;
+}
+.lbtn:active::after { width: 300px; height: 300px; opacity: 1; transition: none; }
+
+.lbtn-icon {
+  width: 44px; height: 44px; border-radius: 13px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 21px;
+}
+.lbtn-txt { flex: 1; text-align: left; }
+.lbtn-txt strong { display: block; font-size: 15px; font-weight: 800; line-height: 1.2; }
+.lbtn-txt span   { display: block; font-size: 12px; opacity: 0.65; margin-top: 2px; }
+.lbtn-arrow { font-size: 18px; opacity: 0.5; margin-right: 2px; }
+
+/* PRIMARY */
+.lbtn-primary {
+  background: var(--cyan);
+  box-shadow: 0 6px 32px rgba(0,212,255,0.3);
+  animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.55s both;
+}
+.lbtn-primary .inner { color: var(--navy); }
+.lbtn-primary .lbtn-icon { background: rgba(13,27,42,0.15); }
+.lbtn-primary .lbtn-arrow { opacity: 0.6; }
+
+/* WA */
+.lbtn-wa {
+  background: var(--navy2); border: 1.5px solid rgba(37,211,102,0.3);
+  box-shadow: 0 4px 20px rgba(37,211,102,0.08);
+  animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.65s both;
+}
+.lbtn-wa .lbtn-icon { background: rgba(37,211,102,0.1); }
+.lbtn-wa .lbtn-txt strong { color: var(--green); }
+
+/* IG */
+.lbtn-ig {
+  background: var(--navy2); border: 1.5px solid rgba(255,255,255,0.07);
+  animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.72s both;
+}
+.lbtn-ig .lbtn-icon {
+  background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+}
+
+/* AUDIT */
+.lbtn-audit {
+  background: linear-gradient(135deg, rgba(0,212,255,0.08) 0%, rgba(0,230,118,0.05) 100%);
+  border: 1.5px solid rgba(0,212,255,0.18);
+  animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.79s both;
+}
+.lbtn-audit .lbtn-icon { background: rgba(0,212,255,0.1); }
+.lbtn-audit .lbtn-txt strong { color: var(--cyan); }
+
+/* ── TRUST ── */
+.trust {
+  margin-top: 28px; width: 100%;
+  background: var(--navy2); border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 18px; padding: 18px 20px;
+  animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.85s both;
+}
+.trust-title {
+  font-size: 10px; color: var(--grey); letter-spacing: 2px;
+  text-transform: uppercase; margin-bottom: 14px;
+}
+.trust-items { display: flex; flex-direction: column; gap: 10px; }
+.trust-row {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 13px; color: rgba(255,255,255,0.75);
+}
+.trust-dot {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: rgba(0,212,255,0.12);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; flex-shrink: 0; color: var(--cyan);
+}
+
+/* ── TICKER ── */
+.ticker-wrap {
+  width: 100%; overflow: hidden; margin: 24px 0 0;
+  animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.9s both;
+}
+.ticker {
+  display: flex; gap: 32px;
+  animation: ticker 18s linear infinite;
+  white-space: nowrap;
+}
+.ticker-item {
+  font-size: 11px; color: rgba(255,255,255,0.2);
+  letter-spacing: 2px; text-transform: uppercase;
+  display: flex; align-items: center; gap: 10px;
+}
+.ticker-item::before { content:'·'; color: var(--cyan); }
+@keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+/* ── FOOTER ── */
+.foot {
+  margin-top: 28px; font-size: 11px;
+  color: rgba(255,255,255,0.15); text-align: center;
+  animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.95s both;
+}
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+<div class="grid-bg"></div>
+
+<div class="wrap">
+
+  <!-- logo giratorio -->
+  <div class="logo-wrap">
+    <div class="logo-ring">
+      <div class="logo-inner">
+        <svg width="62" height="62" viewBox="0 0 100 100" fill="none">
+          <path d="M12 50 C26 22,74 22,88 50 C74 78,26 78,12 50Z" stroke="#00D4FF" stroke-width="5.5" fill="none" stroke-linecap="round"/>
+          <circle cx="50" cy="50" r="13" stroke="#00D4FF" stroke-width="5.5" fill="none"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="tag-live">Tomamos nuevos clientes</div>
+  <h1 class="name">Mirada Digital</h1>
+  <p class="handle">@somosmiradadigital</p>
+  <p class="bio">Agencia de performance · Buenos Aires<br><strong>Invertís. Te mostramos en qué.</strong><br>Sin vueltas, con datos reales.</p>
+
+  <!-- stats -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-val" style="color:var(--green)">4.7×</div>
+      <div class="stat-lbl">ROAS</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val" style="color:var(--cyan)">−38%</div>
+      <div class="stat-lbl">CPA</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val" style="color:#fff">72<span style="font-size:14px;color:var(--grey)">hs</span></div>
+      <div class="stat-lbl">Auditoría</div>
+    </div>
+  </div>
+
+  <!-- links -->
+  <div class="links">
+
+    <a href="https://valencardenas13.github.io/MIRADA-DIGITAL/web/mobile.html" class="lbtn lbtn-primary" target="_blank">
+      <div class="inner">
+        <div class="lbtn-icon">
+          <svg width="24" height="24" viewBox="0 0 100 100" fill="none">
+            <path d="M12 50 C26 22,74 22,88 50 C74 78,26 78,12 50Z" stroke="#0D1B2A" stroke-width="9" fill="none" stroke-linecap="round"/>
+            <circle cx="50" cy="50" r="13" stroke="#0D1B2A" stroke-width="9" fill="none"/>
+          </svg>
+        </div>
+        <div class="lbtn-txt">
+          <strong>Ver nuestro sitio</strong>
+          <span>Performance · Transparencia · Resultados</span>
+        </div>
+        <span class="lbtn-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="https://wa.me/5491160335080?text=Hola%21+Quiero+la+auditor%C3%ADa+gratuita" class="lbtn lbtn-wa" target="_blank">
+      <div class="inner">
+        <div class="lbtn-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.528 5.857L.057 23.482a.75.75 0 0 0 .918.919l5.741-1.483A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.726 9.726 0 0 1-4.953-1.358l-.355-.211-3.677.95.982-3.582-.23-.368A9.726 9.726 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
+        </div>
+        <div class="lbtn-txt">
+          <strong>Auditoría gratis — 72hs</strong>
+          <span>Sin costo · Sin compromiso · Ya</span>
+        </div>
+        <span class="lbtn-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="https://www.instagram.com/somosmiradadigital" class="lbtn lbtn-ig" target="_blank">
+      <div class="inner">
+        <div class="lbtn-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="white" stroke="none"/></svg>
+        </div>
+        <div class="lbtn-txt">
+          <strong>Seguinos en Instagram</strong>
+          <span>Casos reales · Tips · Transparencia</span>
+        </div>
+        <span class="lbtn-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="https://wa.me/5491160335080?text=Hola%21+Quiero+saber+m%C3%A1s+sobre+los+servicios+de+Mirada+Digital" class="lbtn lbtn-audit" target="_blank">
+      <div class="inner">
+        <div class="lbtn-icon">⚡</div>
+        <div class="lbtn-txt">
+          <strong>¿Qué hacemos exactamente?</strong>
+          <span>Meta · Google · Analytics · Estrategia</span>
+        </div>
+        <span class="lbtn-arrow">→</span>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- por qué elegirnos -->
+  <div class="trust">
+    <p class="trust-title">Por qué elegirnos</p>
+    <div class="trust-items">
+      <div class="trust-row"><div class="trust-dot">✓</div>Dashboard en tiempo real para cada cliente</div>
+      <div class="trust-row"><div class="trust-dot">✓</div>Reporte el 1° de cada mes, sin falta</div>
+      <div class="trust-row"><div class="trust-dot">✓</div>Reunión mensual de resultados incluida</div>
+      <div class="trust-row"><div class="trust-dot">✓</div>Sin contratos eternos ni letras chicas</div>
+    </div>
+  </div>
+
+  <!-- ticker -->
+  <div class="ticker-wrap">
+    <div class="ticker">
+      <span class="ticker-item">Performance</span>
+      <span class="ticker-item">Transparencia</span>
+      <span class="ticker-item">Meta Ads</span>
+      <span class="ticker-item">Google Ads</span>
+      <span class="ticker-item">Analytics</span>
+      <span class="ticker-item">Buenos Aires</span>
+      <span class="ticker-item">Performance</span>
+      <span class="ticker-item">Transparencia</span>
+      <span class="ticker-item">Meta Ads</span>
+      <span class="ticker-item">Google Ads</span>
+      <span class="ticker-item">Analytics</span>
+      <span class="ticker-item">Buenos Aires</span>
+    </div>
+  </div>
+
+  <p class="foot">Mirada Digital © 2025 · Buenos Aires, Argentina</p>
+
+</div>
+
+<script>
+// stats counter animado
+function countUp(el, target, decimals, suffix, prefix) {
+  const dur = 1600;
+  let start;
+  const step = ts => {
+    if (!start) start = ts;
+    const p = Math.min((ts - start) / dur, 1);
+    const e = 1 - Math.pow(1 - p, 4);
+    const v = decimals ? (e * target).toFixed(decimals) : Math.round(e * target);
+    el.textContent = prefix + v + suffix;
+    if (p < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const el = e.target;
+      const t = parseFloat(el.dataset.target);
+      const d = parseInt(el.dataset.dec || 0);
+      const s = el.dataset.suffix || '';
+      const p = el.dataset.prefix || '';
+      countUp(el, t, d, s, p);
+      obs.unobserve(el);
+    }
+  });
+}, { threshold: 0.5 });
+
+// asignar data attributes a stats
+const statVals = document.querySelectorAll('.stat-val');
+const configs = [
+  { target: 4.7, dec: 1, suffix: '×', prefix: '' },
+  { target: 38,  dec: 0, suffix: '%', prefix: '−' },
+  { target: 72,  dec: 0, suffix: '',  prefix: '' },
+];
+statVals.forEach((el, i) => {
+  const c = configs[i];
+  el.dataset.target  = c.target;
+  el.dataset.dec     = c.dec;
+  el.dataset.suffix  = c.suffix;
+  el.dataset.prefix  = c.prefix;
+  el.textContent = c.prefix + '0' + c.suffix;
+  obs.observe(el);
+});
+</script>
+</body>
+</html>
