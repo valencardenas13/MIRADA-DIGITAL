@@ -1,0 +1,49 @@
+.sectionHead {
+  text-align: center;
+  margin-bottom: 56px;
+}
+
+.sectionHead h2 {
+  font-size: clamp(30px, 4.5vw, 48px);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+}
+
+@media (max-width: 700px) {
+  .steps {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+}
+
+.step {
+  text-align: center;
+}
+
+.stepNum {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+  margin-bottom: 14px;
+}
+
+.step h3 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  letter-spacing: -0.005em;
+}
+
+.step p {
+  font-size: 15px;
+  color: var(--text-secondary);
+  max-width: 280px;
+  margin-inline: auto;
+}
