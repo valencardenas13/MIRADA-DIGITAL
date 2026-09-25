@@ -210,3 +210,22 @@ class TestReferencia(unittest.TestCase):
         picks, descartes = modelo.evaluar(m, f, 0.03)
         self.assertEqual(picks, [])
         self.assertTrue(any("referencia" in d["motivo"] for d in descartes))
+
+
+class TestConfig(unittest.TestCase):
+    def test_lee_env_con_comentarios_y_comillas(self):
+        import os
+        import tempfile
+        from pathlib import Path
+        import config
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / ".env"
+            p.write_text('# comentario\nPRUEBA_A=abc123   # explicación\nPRUEBA_B="con # numeral"\n'
+                         'PRUEBA_C=\nPRUEBA_E=    # solo comentario\nPRUEBA_D=ya_definida\n', encoding="utf-8")
+            os.environ["PRUEBA_D"] = "del_sistema"
+            config.cargar_env(p)
+            self.assertEqual(os.environ["PRUEBA_A"], "abc123")
+            self.assertEqual(os.environ["PRUEBA_B"], "con # numeral")
+            self.assertNotIn("PRUEBA_C", os.environ)   # vacío: queda el valor por defecto
+            self.assertNotIn("PRUEBA_E", os.environ)
+            self.assertEqual(os.environ["PRUEBA_D"], "del_sistema")

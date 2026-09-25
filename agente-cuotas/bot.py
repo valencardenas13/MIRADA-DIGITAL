@@ -10,6 +10,8 @@ Uso:
   python bot.py --prueba   # imprime un análisis de ejemplo en consola, sin Telegram
 """
 
+import config  # noqa: F401  (carga .env antes que el resto lea variables)
+
 import argparse
 import os
 import sqlite3

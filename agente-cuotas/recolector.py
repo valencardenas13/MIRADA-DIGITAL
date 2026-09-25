@@ -11,6 +11,8 @@ El bot lo corre solo cada SYNC_HORAS. Respeta MAX_LLAMADAS por corrida para no
 pasarse del plan (el gratuito de API-Football da 100 consultas por día).
 """
 
+import config  # noqa: F401  (carga .env antes que el resto lea variables)
+
 import argparse
 import os
 import time

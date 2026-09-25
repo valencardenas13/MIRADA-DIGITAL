@@ -62,16 +62,28 @@ Sin keys, el bot funciona con **datos de ejemplo** (cuotas e historial inventado
 
 1. Creá el bot con [@BotFather](https://t.me/BotFather) → `/newbot` → copiá el token.
    Agregalo al grupo.
-2. Instalá y configurá:
+2. Instalá y configurá. El bot lee solo el archivo `.env` de su carpeta.
+
+   **Windows (PowerShell)**
+   ```powershell
+   cd agente-cuotas
+   py -m venv .venv
+   .venv\Scripts\python -m pip install -r requirements.txt
+   copy .env.example .env        # abrilo con el Bloc de notas y completá los valores
+   .venv\Scripts\python recolector.py --temporadas 2
+   .venv\Scripts\python bot.py
+   ```
+
+   **Mac / Linux**
    ```bash
    cd agente-cuotas
+   python3 -m venv .venv && source .venv/bin/activate
    pip install -r requirements.txt
-   cp .env.example .env    # completá los valores
-   set -a; source .env; set +a
+   cp .env.example .env          # completá los valores
    python recolector.py --temporadas 2   # primera carga: temporada actual + anterior
    python bot.py
    ```
-3. Para probar sin Telegram: `python bot.py --prueba` · Tests: `python -m unittest -v`
+3. Para probar sin Telegram ni claves: `python bot.py --prueba` · Tests: `python -m unittest -v`
 
 El bot tiene que quedar corriendo en una máquina (VPS, Railway, Render…). Mientras
 corre, actualiza la base cada `SYNC_HORAS` y, si configurás `TELEGRAM_CHAT_ID` y
