@@ -131,8 +131,8 @@ class MockOddsClient:
                 + _moneyline("mock-2", "stake", 2.05, 3.75, 3.60, rm)
             ),
             "mock-3": (
-                _moneyline("mock-3", "bet365", 1.95, 3.40, 4.00, fp)
-                + _moneyline("mock-3", "betano", 2.00, 3.30, 3.90, fp)
+                _moneyline("mock-3", "bet365", 1.80, 3.40, 4.00, fp)
+                + _moneyline("mock-3", "betano", 2.15, 3.30, 3.90, fp)
             ),
         }
 

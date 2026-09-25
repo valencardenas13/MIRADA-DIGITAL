@@ -80,22 +80,10 @@ def detalle_evento(e: dict, mercados: list[Mercado], casas: list[str], max_merca
                 f"• {escape(m.nombres[s])}: {pct(m.justa[s])} (cuota justa {1 / m.justa[s]:.2f})" for s in m.sides))
             break
 
-    alertas = [a for m in mercados for a in (bloque_arbitraje(e, m, con_titulo=False), bloque_valor(e, m, con_titulo=False)) if a]
-    if alertas:
-        partes.extend(alertas)
+    partes.extend(a for m in mercados if (a := bloque_arbitraje(e, m, con_titulo=False)))
     if faltan:
         partes.append(f"⚠️ Sin cuotas de: {', '.join(faltan)}")
-    partes.append(AVISO)
     return "\n\n".join(partes)
-
-
-def bloque_valor(e: dict, m: Mercado, con_titulo: bool = True) -> str | None:
-    if not m.valor:
-        return None
-    cab = f"💎 <b>Valor</b> — {escape(titulo_evento(e))} · {escape(m.titulo)}" if con_titulo else f"💎 <b>Valor en {escape(m.titulo)}</b>"
-    filas = [f"• {escape(v['nombre'])} a <b>{v['cuota']:.2f}</b> en {casa(v['casa'])} "
-             f"(justa {v['cuota_justa']:.2f}, ventaja +{pct(v['edge'])})" for v in m.valor]
-    return cab + "\n" + "\n".join(filas)
 
 
 def bloque_arbitraje(e: dict, m: Mercado, con_titulo: bool = True, total: float = 100) -> str | None:
@@ -123,3 +111,138 @@ def partir(texto: str, limite: int = 4000) -> list[str]:
     if actual:
         bloques.append(actual)
     return bloques
+
+
+# ── Picks respaldados por datos ───────────────────────────────────────────────
+
+def _racha(forma: list[str]) -> str:
+    return " ".join(f.split()[0] for f in forma) or "sin datos"
+
+
+def _goles_prom(forma: list[str]) -> tuple[float, float] | None:
+    if not forma:
+        return None
+    gf = [int(f.split()[1].split("-")[0]) for f in forma]
+    gc = [int(f.split()[1].split("-")[1]) for f in forma]
+    return sum(gf) / len(gf), sum(gc) / len(gc)
+
+
+def _linea_bajas(ficha, equipo: str) -> str | None:
+    bs = [b for b in ficha.bajas if b["equipo"] == equipo]
+    if not bs:
+        return None
+    partes = []
+    for b in bs[:3]:
+        extra = f", {pct(b['parte'])} de sus goles" if b["parte"] else ""
+        partes.append(f"{b['nombre']} ({'duda' if b['duda'] else b['motivo'] or 'baja'}{extra})")
+    return f"Bajas {equipo}: " + "; ".join(partes)
+
+
+def _linea_arbitro(ficha) -> str | None:
+    a = ficha.arbitro
+    if not a or not a.get("n"):
+        return f"Árbitro {a['nombre']}: sin partidos en la base" if a else None
+    txt = f"Árbitro {a['nombre']} ({a['n']} partidos): {a['goles']:.1f} goles/partido, local gana {pct(a['gana_local'])}"
+    if a.get("amarillas") is not None:
+        txt += f", {a['amarillas']:.1f} amarillas"
+        if ficha.tarjetas_liga:
+            txt += f" (liga {ficha.tarjetas_liga:.1f})"
+    return txt
+
+
+def _linea_clima(ficha) -> str | None:
+    c = ficha.clima
+    if not c:
+        return None
+    return f"Clima: {c['temperatura']:.0f}°C, lluvia {c['lluvia']:.1f} mm, viento {c['viento']:.0f} km/h"
+
+
+def _linea_h2h(ficha) -> str | None:
+    if not ficha.h2h:
+        return None
+    return "Últimos cara a cara: " + " · ".join(ficha.h2h[:3])
+
+
+def razones(ficha, market_key: str, side: str) -> list[str]:
+    """Datos que justifican (o matizan) el pick, según la selección."""
+    out = []
+    lh, la = ficha.goles_esperados
+    if market_key == "moneyline":
+        equipos = {"home": [ficha.local], "away": [ficha.visitante], "draw": [ficha.local, ficha.visitante]}[side]
+        for eq in equipos:
+            forma = ficha.forma_local if eq == ficha.local else ficha.forma_visitante
+            gp = _goles_prom(forma)
+            out.append(f"Forma {eq}: {_racha(forma)}" + (f" ({gp[0]:.1f} a favor, {gp[1]:.1f} en contra)" if gp else ""))
+        rival = {"home": ficha.visitante, "away": ficha.local}.get(side)
+        for eq in ([rival] if rival else []) + equipos:
+            b = _linea_bajas(ficha, eq)
+            if b and b not in out:
+                out.append(b)
+    else:
+        for eq, forma, st in ((ficha.local, ficha.forma_local, ficha.stats_local),
+                              (ficha.visitante, ficha.forma_visitante, ficha.stats_visitante)):
+            gp = _goles_prom(forma)
+            if gp:
+                txt = f"{eq}: {gp[0] + gp[1]:.1f} goles por partido (últimos {len(forma)})"
+                if st and st.get("xg") is not None:
+                    txt += f", xG {st['xg']:.2f}"
+                out.append(txt)
+        for eq in (ficha.local, ficha.visitante):
+            b = _linea_bajas(ficha, eq)
+            if b:
+                out.append(b)
+    out.append(f"Goles esperados: {ficha.local} {lh:.2f} – {la:.2f} {ficha.visitante}")
+    out.extend(x for x in (_linea_h2h(ficha), _linea_arbitro(ficha), _linea_clima(ficha)) if x)
+    out.extend(ficha.ajustes)
+    return out
+
+
+def bloque_pick(e: dict, pick: dict, ficha) -> str:
+    m = pick["mercado"]
+    icono = "🟢" if pick["confianza"] == "alta" else "🟡"
+    cab = (f"{icono} <b>{escape(pick['nombre'])} a {pick['cuota']:.2f}</b> en {casa(pick['casa'])}\n"
+           f"{escape(titulo_evento(e))} · {escape(m.titulo)} · {hora(e.get('start_time'))}\n"
+           f"Modelo {pct(pick['p_modelo'])} · Mercado {pct(pick['p_mercado'])} · "
+           f"Ventaja +{pct(pick['edge_modelo'])} · Confianza {pick['confianza']}")
+    porque = "\n".join(f"• {escape(r)}" for r in razones(ficha, m.market_key, pick["side"]))
+    return f"{cab}\n<b>Por qué:</b>\n{porque}"
+
+
+def resumen_descartes(descartes: list[dict], max_items: int = 5) -> str | None:
+    if not descartes:
+        return None
+    filas = [f"• {escape(d['nombre'])} a {d['cuota']:.2f} ({casa(d['casa'])}): {escape(d['motivo'])}"
+             for d in descartes[:max_items]]
+    resto = f"\n… y {len(descartes) - max_items} más" if len(descartes) > max_items else ""
+    return f"🚫 <b>Descartadas ({len(descartes)})</b> — parecían tentadoras pero los datos no acompañan:\n" + "\n".join(filas) + resto
+
+
+def texto_ficha(e: dict, ficha) -> str:
+    if ficha is None:
+        return (f"📋 <b>{escape(titulo_evento(e))}</b>\n\nNo encontré este partido en la base de datos. "
+                "Revisá que la liga esté en LIGAS y que el recolector haya corrido.")
+    lh, la = ficha.goles_esperados
+    partes = [f"📋 <b>Ficha: {escape(ficha.local)} vs {escape(ficha.visitante)}</b>\n{hora(ficha.fecha)}"]
+    if ficha.matriz:
+        p = {s: ficha.prob("moneyline", s) for s in ("home", "draw", "away")}
+        o25 = ficha.prob("total", "over", "2.5")
+        partes.append(f"🧮 <b>Modelo</b> (historial {ficha.n_local} / {ficha.n_visitante} partidos)\n"
+                      f"Goles esperados {lh:.2f} – {la:.2f}\n"
+                      f"Local {pct(p['home'])} · Empate {pct(p['draw'])} · Visitante {pct(p['away'])}\n"
+                      f"Más de 2.5: {pct(o25)}")
+    else:
+        partes.append("🧮 Sin historial suficiente para el modelo.")
+    for eq, forma, st in ((ficha.local, ficha.forma_local, ficha.stats_local),
+                          (ficha.visitante, ficha.forma_visitante, ficha.stats_visitante)):
+        txt = f"📈 <b>{escape(eq)}</b> — {_racha(forma)}\n" + "\n".join(f"   {escape(f)}" for f in forma)
+        if st:
+            txt += (f"\n   Promedio últimos {st['n']}: {st['tiros']:.1f} tiros ({st['tiros_arco']:.1f} al arco), "
+                    f"{st['corners']:.1f} córners, {st['amarillas']:.1f} amarillas"
+                    + (f", xG {st['xg']:.2f}" if st.get("xg") is not None else ""))
+        partes.append(txt)
+    extras = [x for x in (_linea_h2h(ficha), _linea_bajas(ficha, ficha.local), _linea_bajas(ficha, ficha.visitante),
+                          _linea_arbitro(ficha), _linea_clima(ficha)) if x]
+    extras += ficha.ajustes
+    if extras:
+        partes.append("\n".join(f"• {escape(x)}" for x in extras))
+    return "\n\n".join(partes)

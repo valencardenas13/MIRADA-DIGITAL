@@ -3,3 +3,4 @@ agente-prospector/.env
 __pycache__/
 *.pyc
 *.pyo
+agente-cuotas/*.db
