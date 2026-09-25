@@ -190,3 +190,23 @@ class TestModelo(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestReferencia(unittest.TestCase):
+    def test_referencia_no_se_recomienda_pero_cuenta_para_consenso(self):
+        from test_analisis import linea
+        lines = [linea("bet365", "home", 2.10), linea("bet365", "away", 1.75),
+                 linea("pinnacle", "home", 2.25), linea("pinnacle", "away", 1.70)]
+        m = analizar_evento(lines, 0.03, ["bet365"])[0]
+        self.assertEqual(m.mejor["home"], (2.10, "bet365"))   # pinnacle paga más pero no se recomienda
+        self.assertEqual(set(m.margenes), {"bet365", "pinnacle"})
+        self.assertIsNone(m.arbitraje)
+
+    def test_una_sola_casa_no_manda_picks(self):
+        from test_analisis import linea
+        lines = [linea("bet365", s, o) for s, o in (("home", 3.0), ("draw", 3.4), ("away", 2.6))]
+        m = analizar_evento(lines, 0.03, ["bet365"])
+        f = modelo.Ficha(1, 1, 0, "A", "B", 1, 2, n_local=30, n_visitante=30, matriz=modelo.matriz_poisson(2.0, 0.8))
+        picks, descartes = modelo.evaluar(m, f, 0.03)
+        self.assertEqual(picks, [])
+        self.assertTrue(any("referencia" in d["motivo"] for d in descartes))

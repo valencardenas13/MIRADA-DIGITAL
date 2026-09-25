@@ -261,6 +261,10 @@ def evaluar(mercados, ficha: Ficha | None, edge_mercado: float) -> tuple[list[di
             elif edge_mod < EDGE_MODELO:
                 descartes.append({**base, "motivo": f"el historial no la respalda (modelo {p_mod * 100:.1f}%, "
                                                     f"la cuota necesita {100 * (1 + EDGE_MODELO) / cuota:.1f}%)"})
+            elif len(m.margenes) < 2:
+                # con una sola casa la "probabilidad justa" es la de esa misma casa: no hay contra qué comparar
+                descartes.append({**base, "motivo": "una sola casa cotiza este mercado: falta una casa de "
+                                                    "referencia para comparar (REFERENCIA)"})
             elif edge_mkt < 0:
                 descartes.append({**base, "motivo": "la cuota está por debajo del consenso de las casas"})
             elif abs(p_mod - p_mkt) > MAX_DESVIO:

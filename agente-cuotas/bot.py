@@ -33,6 +33,10 @@ TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")   # grupo para alertas
 API_FOOTBALL_KEY = os.environ.get("API_FOOTBALL_KEY", "").strip()
 
 CASAS          = [c.strip().lower() for c in os.environ.get("CASAS", "bet365,betano,stake").split(",") if c.strip()]
+# Casas que no se recomiendan pero sirven de referencia para la probabilidad justa (ej. pinnacle)
+REFERENCIA     = [c.strip().lower() for c in os.environ.get("REFERENCIA", "").split(",")
+                  if c.strip() and c.strip().lower() not in CASAS]
+TODAS          = CASAS + REFERENCIA
 DEPORTE        = os.environ.get("DEPORTE", "soccer")
 LIGAS_ALERTAS  = [l.strip() for l in os.environ.get("LIGAS_ALERTAS", "").split(",") if l.strip()]
 EDGE_MIN       = float(os.environ.get("EDGE_MIN", "0.03"))     # ventaja mínima contra el consenso del mercado
@@ -112,7 +116,7 @@ def escribiendo(chat_id) -> None:
 # ── Examen de un partido: cuotas + base de datos + modelo ────────────────────
 
 def examinar(con, e: dict, cache_fuerzas=None):
-    mercados = analizar_evento(cliente.odds(e["event_id"], CASAS), EDGE_MIN)
+    mercados = analizar_evento(cliente.odds(e["event_id"], TODAS), EDGE_MIN, CASAS)
     ficha = None
     partido_id = recolector.vincular(con, e)
     if partido_id:
@@ -176,7 +180,7 @@ def cmd_cuotas(chat_id, args):
         return NO_ENCONTRADO.format(cmd="cuotas")
     con = conexion()
     mercados, ficha, picks, descartes = examinar(con, e)
-    partes = [formato.detalle_evento(e, mercados, CASAS)]
+    partes = [formato.detalle_evento(e, mercados, TODAS)]
     if ficha and ficha.matriz:
         p = {s: ficha.prob("moneyline", s) for s in ("home", "draw", "away")}
         partes.append(f"🧮 <b>Modelo con historial</b>: Local {formato.pct(p['home'])} · "
@@ -225,7 +229,7 @@ def cmd_arbitraje(chat_id, args):
     deporte, liga = _deporte_y_liga(args)
     bloques = []
     for e in cliente.events(deporte, liga, limit=ESCANEO_MAX):
-        for m in analizar_evento(cliente.odds(e["event_id"], CASAS), EDGE_MIN):
+        for m in analizar_evento(cliente.odds(e["event_id"], TODAS), EDGE_MIN, CASAS):
             b = formato.bloque_arbitraje(e, m)
             if b:
                 bloques.append(b)
@@ -278,6 +282,10 @@ def cmd_casas(chat_id, args):
     except OddsApiError as e:
         return f"No pude consultar las casas: {formato.escape(str(e))}"
     filas = [f"{'✅' if c in disponibles else '❌'} {formato.casa(c)}" for c in CASAS]
+    filas += [f"{'✅' if c in disponibles else '❌'} {formato.casa(c)} (solo referencia)" for c in REFERENCIA]
+    if len([c for c in TODAS if c in disponibles]) < 2:
+        filas.append("\n⚠️ Con una sola casa no hay contra qué comparar: agregá casas de referencia en REFERENCIA "
+                     "(ej. pinnacle). Mientras tanto no se van a mandar picks.")
     con = conexion()
     n = con.execute("SELECT COUNT(*) FROM partidos").fetchone()[0]
     filas.append(f"\n🗄 Base histórica: {n} partidos")
@@ -394,7 +402,7 @@ def correr_bot() -> None:
         threading.Thread(target=loop_alertas, daemon=True).start()
         print(f"[Bot] Alertas cada {ALERTAS_MIN} min al chat {TELEGRAM_CHAT_ID}", flush=True)
 
-    print(f"[Bot] Escuchando… casas={CASAS} deporte={DEPORTE} {'(MODO EJEMPLO)' if ES_MOCK else ''}", flush=True)
+    print(f"[Bot] Escuchando… casas={CASAS} referencia={REFERENCIA} deporte={DEPORTE} {'(MODO EJEMPLO)' if ES_MOCK else ''}", flush=True)
     offset = None
     while True:
         try:

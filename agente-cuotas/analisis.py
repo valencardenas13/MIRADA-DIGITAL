@@ -66,10 +66,15 @@ def agrupar_mercados(lines: list[dict]) -> list[Mercado]:
     return mercados
 
 
-def analizar_mercado(m: Mercado, edge_min: float = 0.03) -> Mercado:
-    # Mejor cuota por resultado
+def analizar_mercado(m: Mercado, edge_min: float = 0.03, casas_apuesta: set[str] | None = None) -> Mercado:
+    """
+    casas_apuesta: casas donde el grupo apuesta. Las demás (referencia, ej. Pinnacle) solo
+    se usan para calcular la probabilidad justa; nunca se recomiendan ni entran en arbitrajes.
+    """
+    # Mejor cuota por resultado, solo entre las casas donde se apuesta
     for side in m.sides:
-        ofertas = [(c[side], casa) for casa, c in m.cuotas.items() if side in c]
+        ofertas = [(c[side], casa) for casa, c in m.cuotas.items()
+                   if side in c and (casas_apuesta is None or casa in casas_apuesta)]
         if ofertas:
             m.mejor[side] = max(ofertas)
 
@@ -86,6 +91,8 @@ def analizar_mercado(m: Mercado, edge_min: float = 0.03) -> Mercado:
     # Valor: hace falta más de una casa para que el consenso signifique algo
     if len(probs_por_casa) >= 2:
         for side in m.sides:
+            if side not in m.mejor:
+                continue
             cuota, casa = m.mejor[side]
             edge = cuota * m.justa[side] - 1
             if edge >= edge_min:
@@ -104,5 +111,6 @@ def analizar_mercado(m: Mercado, edge_min: float = 0.03) -> Mercado:
     return m
 
 
-def analizar_evento(lines: list[dict], edge_min: float = 0.03) -> list[Mercado]:
-    return [analizar_mercado(m, edge_min) for m in agrupar_mercados(lines)]
+def analizar_evento(lines: list[dict], edge_min: float = 0.03, casas_apuesta=None) -> list[Mercado]:
+    casas = set(casas_apuesta) if casas_apuesta else None
+    return [analizar_mercado(m, edge_min, casas) for m in agrupar_mercados(lines)]

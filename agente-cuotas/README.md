@@ -45,6 +45,11 @@ Las cuotas que parecían tentadoras pero no pasan el filtro se muestran como
 
 No se scrapean las casas: sus términos lo prohíben y bloquean bots.
 
+**Casas de referencia**: si tu proveedor cubre pocas de las casas donde apostás, agregá
+otras en `REFERENCIA` (por ejemplo `pinnacle`, que es la referencia habitual del mercado).
+Se usan solo para calcular la probabilidad justa y nunca se recomiendan. Con una sola
+casa en total, el bot no manda picks, porque no hay contra qué comparar.
+
 **API-Football**: el plan gratis tiene un límite diario de consultas y restricciones
 de temporadas. Para ligas actuales y varias ligas conviene un plan pago; revisá el
 detalle en su dashboard. El recolector no se pasa de `MAX_LLAMADAS` por corrida y
