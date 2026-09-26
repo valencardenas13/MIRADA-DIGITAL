@@ -34,3 +34,34 @@ def cargar_env(path: Path = ENV_PATH) -> None:
 
 
 cargar_env()
+
+
+# ── Tapar claves en todo lo que se muestra en pantalla ────────────────────────
+
+SECRETOS = ("TELEGRAM_TOKEN", "ODDS_API_KEY", "API_FOOTBALL_KEY", "ANTHROPIC_API_KEY")
+
+
+class _SalidaSinSecretos:
+    """Envuelve stdout/stderr y reemplaza cualquier clave por *** (ej. un error de red con la URL de Telegram)."""
+
+    def __init__(self, destino):
+        self._destino = destino
+        self._secretos = [v for k in SECRETOS if len(v := os.environ.get(k, "")) >= 8]
+
+    def write(self, texto):
+        for s in self._secretos:
+            texto = texto.replace(s, "***")
+        return self._destino.write(texto)
+
+    def __getattr__(self, nombre):
+        return getattr(self._destino, nombre)
+
+
+def ocultar_secretos() -> None:
+    import sys
+    if not isinstance(sys.stdout, _SalidaSinSecretos):
+        sys.stdout = _SalidaSinSecretos(sys.stdout)
+        sys.stderr = _SalidaSinSecretos(sys.stderr)
+
+
+ocultar_secretos()

@@ -229,3 +229,21 @@ class TestConfig(unittest.TestCase):
             self.assertNotIn("PRUEBA_C", os.environ)   # vacío: queda el valor por defecto
             self.assertNotIn("PRUEBA_E", os.environ)
             self.assertEqual(os.environ["PRUEBA_D"], "del_sistema")
+
+
+class TestOcultarSecretos(unittest.TestCase):
+    def test_tapa_claves(self):
+        import io
+        import os
+        import config
+        os.environ["TELEGRAM_TOKEN"], antes = "123456:SECRETO-LARGO", os.environ.get("TELEGRAM_TOKEN")
+        try:
+            buf = io.StringIO()
+            salida = config._SalidaSinSecretos(buf)
+            salida.write("Error en https://api.telegram.org/bot123456:SECRETO-LARGO/getUpdates")
+            self.assertEqual(buf.getvalue(), "Error en https://api.telegram.org/bot***/getUpdates")
+        finally:
+            if antes is None:
+                del os.environ["TELEGRAM_TOKEN"]
+            else:
+                os.environ["TELEGRAM_TOKEN"] = antes
