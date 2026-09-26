@@ -18,13 +18,14 @@ import os
 import time
 from dataclasses import dataclass, field
 
+import config
 import db
 
 VIDA_MEDIA_DIAS = 180
 PRIOR = 5                 # peso de "partidos promedio" que se suman a cada equipo
-MIN_PARTIDOS = int(os.environ.get("MIN_PARTIDOS", "8"))
-EDGE_MODELO = float(os.environ.get("EDGE_MODELO", "0.04"))
-MAX_DESVIO = float(os.environ.get("MAX_DESVIO", "0.15"))
+MIN_PARTIDOS = config.numero("MIN_PARTIDOS", 8)
+EDGE_MODELO = config.numero("EDGE_MODELO", 0.04)
+MAX_DESVIO = config.numero("MAX_DESVIO", 0.15)
 
 
 @dataclass

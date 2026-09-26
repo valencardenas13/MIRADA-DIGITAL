@@ -41,10 +41,10 @@ REFERENCIA     = [c.strip().lower() for c in os.environ.get("REFERENCIA", "").sp
 TODAS          = CASAS + REFERENCIA
 DEPORTE        = os.environ.get("DEPORTE", "soccer")
 LIGAS_ALERTAS  = [l.strip() for l in os.environ.get("LIGAS_ALERTAS", "").split(",") if l.strip()]
-EDGE_MIN       = float(os.environ.get("EDGE_MIN", "0.03"))     # ventaja mínima contra el consenso del mercado
-ESCANEO_MAX    = int(os.environ.get("ESCANEO_MAX", "15"))      # partidos por escaneo (cuida la cuota de la API)
-ALERTAS_MIN    = int(os.environ.get("ALERTAS_MIN", "0"))       # cada cuántos minutos escanear; 0 = apagado
-SYNC_HORAS     = int(os.environ.get("SYNC_HORAS", "12"))       # cada cuántas horas actualizar la base
+EDGE_MIN       = config.numero("EDGE_MIN", 0.03)     # ventaja mínima contra el consenso del mercado
+ESCANEO_MAX    = config.numero("ESCANEO_MAX", 15)      # partidos por escaneo (cuida la cuota de la API)
+ALERTAS_MIN    = config.numero("ALERTAS_MIN", 0)       # cada cuántos minutos escanear; 0 = apagado
+SYNC_HORAS     = config.numero("SYNC_HORAS", 12)       # cada cuántas horas actualizar la base
 
 API = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}"
 

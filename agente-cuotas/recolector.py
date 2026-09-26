@@ -22,8 +22,8 @@ from difflib import SequenceMatcher
 import db
 import fuentes
 
-LIGAS        = [int(x) for x in os.environ.get("LIGAS", "128,71,13,39,140").split(",") if x.strip()]
-MAX_LLAMADAS = int(os.environ.get("MAX_LLAMADAS", "80"))
+LIGAS        = config.lista_numeros("LIGAS", "128,71,13,39,140")
+MAX_LLAMADAS = config.numero("MAX_LLAMADAS", 80)
 DIAS_BAJAS   = 2   # buscar lesionados/suspendidos de partidos de los próximos 2 días
 
 

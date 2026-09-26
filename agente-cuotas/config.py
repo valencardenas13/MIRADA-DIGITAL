@@ -36,6 +36,27 @@ def cargar_env(path: Path = ENV_PATH) -> None:
 cargar_env()
 
 
+def numero(clave: str, defecto):
+    """Lee un número del entorno; si el valor está mal escrito avisa y usa el de por defecto."""
+    valor = os.environ.get(clave, "").strip()
+    if not valor:
+        return defecto
+    try:
+        return type(defecto)(valor.replace(",", ".") if isinstance(defecto, float) else valor)
+    except ValueError:
+        print(f"[Config] {clave} en .env no es un número ('{valor[:40]}'): uso {defecto}", flush=True)
+        return defecto
+
+
+def lista_numeros(clave: str, defecto: str) -> list[int]:
+    valor = os.environ.get(clave, "").strip() or defecto
+    try:
+        return [int(x) for x in valor.split(",") if x.strip()]
+    except ValueError:
+        print(f"[Config] {clave} en .env tiene que ser números separados por coma: uso {defecto}", flush=True)
+        return [int(x) for x in defecto.split(",")]
+
+
 # ── Tapar claves en todo lo que se muestra en pantalla ────────────────────────
 
 SECRETOS = ("TELEGRAM_TOKEN", "ODDS_API_KEY", "API_FOOTBALL_KEY", "ANTHROPIC_API_KEY")

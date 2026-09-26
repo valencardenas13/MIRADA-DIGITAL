@@ -247,3 +247,16 @@ class TestOcultarSecretos(unittest.TestCase):
                 del os.environ["TELEGRAM_TOKEN"]
             else:
                 os.environ["TELEGRAM_TOKEN"] = antes
+
+
+class TestNumeros(unittest.TestCase):
+    def test_valor_mal_escrito_usa_defecto(self):
+        import os
+        import config
+        os.environ["PRUEBA_N"] = "cada cuántos minutos"
+        os.environ["PRUEBA_F"] = "0,05"
+        os.environ["PRUEBA_L"] = "128, 71"
+        self.assertEqual(config.numero("PRUEBA_N", 0), 0)
+        self.assertEqual(config.numero("PRUEBA_F", 0.03), 0.05)
+        self.assertEqual(config.numero("PRUEBA_NADA", 12), 12)
+        self.assertEqual(config.lista_numeros("PRUEBA_L", "1"), [128, 71])
