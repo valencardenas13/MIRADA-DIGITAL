@@ -381,9 +381,33 @@ def loop_sync() -> None:
 
 # ── Main ─────────────────────────────────────────────────────────────────────
 
+def _explicar_error_telegram(data: dict) -> str:
+    codigo, desc = data.get("error_code"), data.get("description", "")
+    if codigo == 401:
+        return "el token no es válido (¿lo revocaste y quedó el viejo en .env?)"
+    if codigo == 409:
+        return ("hay OTRO programa usando este mismo bot al mismo tiempo (¿quedó abierta otra ventana "
+                "con el bot?). Cerralo y dejá uno solo")
+    return f"error {codigo}: {desc}"
+
+
+def verificar_telegram() -> None:
+    """Comprueba el token al arrancar y avisa claro si algo está mal."""
+    try:
+        data = httpx.get(f"{API}/getMe", timeout=15).json()
+    except (httpx.HTTPError, ValueError) as e:
+        raise SystemExit(f"[Telegram] No me pude conectar a Telegram: {e}. ¿Hay internet?")
+    if not data.get("ok"):
+        raise SystemExit(f"[Telegram] {_explicar_error_telegram(data)}")
+    print(f"[Telegram] Conectado como @{data['result']['username']}", flush=True)
+    # si el bot tenía un webhook configurado, Telegram no entrega mensajes por getUpdates
+    httpx.post(f"{API}/deleteWebhook", timeout=15)
+
+
 def correr_bot() -> None:
     if not TELEGRAM_TOKEN:
         raise SystemExit("Falta TELEGRAM_TOKEN (pedíselo a @BotFather).")
+    verificar_telegram()
     preparar_base()
     httpx.post(f"{API}/setMyCommands", json={"commands": [
         {"command": "partidos", "description": "Próximos partidos"},
@@ -409,10 +433,15 @@ def correr_bot() -> None:
     while True:
         try:
             r = httpx.get(f"{API}/getUpdates", params={"timeout": 30, "offset": offset}, timeout=40)
-            for upd in r.json().get("result", []):
+            data = r.json()
+            if not data.get("ok"):
+                print(f"[Telegram] No pude leer mensajes: {_explicar_error_telegram(data)}. Reintento en 10 s", flush=True)
+                time.sleep(10)
+                continue
+            for upd in data.get("result", []):
                 offset = upd["update_id"] + 1
                 threading.Thread(target=procesar, args=(upd,), daemon=True).start()
-        except httpx.HTTPError as e:
+        except (httpx.HTTPError, ValueError) as e:
             print(f"[Bot] Error de red: {e}. Reintento en 5 s", flush=True)
             time.sleep(5)
 
