@@ -37,7 +37,11 @@ class ApiFootball:
         data = r.json()
         # API-Football devuelve 200 con "errors" cuando se excede el plan o falta un parámetro
         if data.get("errors"):
-            raise FuenteError(f"API-Football: {data['errors']}")
+            errores = data["errors"]
+            if isinstance(errores, dict) and "plan" in errores:
+                raise FuenteError("Tu plan de API-Football no incluye esta temporada "
+                                  f"({errores['plan']}). Hace falta un plan pago para datos actuales.")
+            raise FuenteError(f"API-Football: {errores}")
         return data.get("response", [])
 
     def temporada_actual(self, liga_id: int) -> dict | None:

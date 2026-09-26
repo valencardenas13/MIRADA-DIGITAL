@@ -4,3 +4,4 @@ __pycache__/
 *.pyc
 *.pyo
 agente-cuotas/*.db
+agente-cuotas/diagnostico.txt
