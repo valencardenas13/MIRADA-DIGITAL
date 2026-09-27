@@ -9,9 +9,9 @@
 }
 
 .navInner {
-  max-width: 980px;
+  max-width: 1120px;
   margin-inline: auto;
-  padding-inline: 22px;
+  padding-inline: 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -23,43 +23,46 @@
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -0.01em;
   white-space: nowrap;
+  font-family: 'Bricolage Grotesque', sans-serif;
 }
 
 .brandLogo {
   height: 20px;
   width: auto;
-  display: block;
+  display: none;
 }
 
 .brandWordmark {
+  display: inline;
+}
+
+:global(:root[data-theme='light']) .brandLogo {
+  display: block;
+}
+:global(:root[data-theme='light']) .brandWordmark {
   display: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  :global(:root:not([data-theme='light'])) .brandLogo {
+@media (prefers-color-scheme: light) {
+  :global(:root:not([data-theme='dark'])) .brandLogo {
+    display: block;
+  }
+  :global(:root:not([data-theme='dark'])) .brandWordmark {
     display: none;
   }
-  :global(:root:not([data-theme='light'])) .brandWordmark {
-    display: inline;
-  }
-}
-
-:global(:root[data-theme='dark']) .brandLogo {
-  display: none;
-}
-:global(:root[data-theme='dark']) .brandWordmark {
-  display: inline;
 }
 
 .navLinks {
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 32px;
   font-size: 12px;
-  font-weight: 400;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--text);
 }
 
@@ -69,18 +72,22 @@
 }
 
 .navLinks a:hover {
-  color: var(--text);
+  color: var(--accent);
 }
 
 .navCta {
-  background: var(--text);
+  background: var(--accent);
   color: var(--bg);
-  padding: 6px 14px;
-  border-radius: 980px;
+  padding: 9px 18px;
+  border-radius: 999px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 700;
   white-space: nowrap;
   display: inline-block;
+}
+
+.navCta:hover {
+  color: var(--bg);
 }
 
 @media (max-width: 700px) {

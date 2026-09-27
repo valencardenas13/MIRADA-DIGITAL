@@ -1,49 +1,53 @@
 .sectionHead {
-  text-align: center;
-  margin-bottom: 56px;
+  margin-bottom: 80px;
 }
 
 .sectionHead h2 {
-  font-size: clamp(30px, 4.5vw, 48px);
+  font-size: clamp(34px, 5.5vw, 64px);
   font-weight: 700;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+  max-width: 16ch;
 }
 
 .steps {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 40px;
+  gap: 48px;
+  border-top: 1px solid var(--border);
+  padding-top: 56px;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 800px) {
   .steps {
     grid-template-columns: 1fr;
-    gap: 48px;
+    gap: 64px;
   }
 }
 
 .step {
-  text-align: center;
+  text-align: left;
 }
 
 .stepNum {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: clamp(52px, 6vw, 76px);
+  font-weight: 700;
   color: var(--accent);
-  letter-spacing: 0.04em;
-  margin-bottom: 14px;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-bottom: 24px;
+  font-family: 'Bricolage Grotesque', sans-serif;
 }
 
 .step h3 {
   font-size: 22px;
   font-weight: 600;
-  margin-bottom: 10px;
-  letter-spacing: -0.005em;
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
 }
 
 .step p {
   font-size: 15px;
   color: var(--text-secondary);
-  max-width: 280px;
-  margin-inline: auto;
+  line-height: 1.6;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }

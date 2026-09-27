@@ -1,33 +1,39 @@
 .hero {
-  padding-block: 120px 96px;
-  text-align: center;
+  padding-block: 160px 110px;
+  text-align: left;
 }
 
 .h1 {
-  font-size: clamp(40px, 7vw, 80px);
+  font-size: clamp(48px, 9.5vw, 132px);
   font-weight: 700;
-  letter-spacing: -0.015em;
-  line-height: 1.05;
+  letter-spacing: -0.03em;
+  line-height: 0.94;
+  max-width: 16ch;
 }
 
 .word {
   display: inline-block;
-  margin-right: 0.28em;
+  margin-right: 0.22em;
 }
 
 .lede {
-  margin-top: 22px;
-  font-size: clamp(19px, 2.4vw, 26px);
+  margin-top: 32px;
+  font-size: clamp(18px, 1.9vw, 22px);
   font-weight: 400;
   color: var(--text-secondary);
-  max-width: 620px;
-  margin-inline: auto;
+  max-width: 540px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .ctas {
-  margin-top: 36px;
+  margin-top: 44px;
   display: flex;
   gap: 18px;
-  justify-content: center;
   flex-wrap: wrap;
+}
+
+@media (max-width: 700px) {
+  .hero {
+    padding-block: 130px 80px;
+  }
 }

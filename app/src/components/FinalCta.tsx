@@ -4,15 +4,19 @@ import MagneticButton from './MagneticButton';
 
 const INSTAGRAM_URL = 'https://instagram.com/somosmiradadigital';
 
+const H2_VARIANT_MOTION = {
+  hidden: { opacity: 0, scale: 0.9 },
+  show: { opacity: 1, scale: 1, transition: { type: 'spring' as const, stiffness: 200, damping: 12 } },
+};
+
+const H2_VARIANT_REDUCED = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { duration: 0.5 } },
+};
+
 export default function FinalCta() {
   const prefersReducedMotion = useReducedMotion();
-
-  const h2Variant = prefersReducedMotion
-    ? { hidden: { opacity: 0 }, show: { opacity: 1, transition: { duration: 0.5 } } }
-    : {
-        hidden: { opacity: 0, scale: 0.9 },
-        show: { opacity: 1, scale: 1, transition: { type: 'spring' as const, stiffness: 200, damping: 12 } },
-      };
+  const h2Variant = prefersReducedMotion ? H2_VARIANT_REDUCED : H2_VARIANT_MOTION;
 
   return (
     <section className={styles.section}>

@@ -7,28 +7,32 @@ const STEPS = [
   { num: '03', title: 'Ejecutamos y ajustamos', text: 'Trato directo con quien hace el trabajo, siempre. Sin cadena de mando en el medio.' },
 ];
 
+const NUM_VARIANT_MOTION = {
+  hidden: { opacity: 0, scale: 0.6 },
+  show: { opacity: 1, scale: 1, transition: { type: 'spring' as const, stiffness: 260, damping: 18 } },
+};
+
+const NUM_VARIANT_REDUCED = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { duration: 0.4 } },
+};
+
+const TEXT_VARIANT = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
+
 export default function Steps() {
   const prefersReducedMotion = useReducedMotion();
 
-  const numVariant = prefersReducedMotion
-    ? { hidden: { opacity: 0 }, show: { opacity: 1, transition: { duration: 0.4 } } }
-    : {
-        hidden: { opacity: 0, scale: 0.6 },
-        show: { opacity: 1, scale: 1, transition: { type: 'spring' as const, stiffness: 260, damping: 18 } },
-      };
-
-  const textVariant = {
-    hidden: { opacity: 0, y: 16 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-  };
+  const numVariant = prefersReducedMotion ? NUM_VARIANT_REDUCED : NUM_VARIANT_MOTION;
+  const textVariant = TEXT_VARIANT;
 
   return (
     <section id="como-trabajamos">
       <div className="container">
         <div className={styles.sectionHead}>
-          <div className="eyebrow" style={{ textAlign: 'center' }}>
-            Cómo trabajamos
-          </div>
+          <div className="eyebrow">Cómo trabajamos</div>
           <h2>Sin intermediarios. Sin vueltas.</h2>
         </div>
 

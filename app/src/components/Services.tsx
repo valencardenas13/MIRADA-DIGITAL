@@ -11,35 +11,39 @@ const SERVICES = [
   { title: 'Retargeting', description: 'Le volvemos a hablar a quien ya te vio, en el momento justo.' },
 ];
 
+const CONTAINER_MOTION = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08 } },
+};
+
+const CONTAINER_REDUCED = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0 } },
+};
+
 export default function Services() {
   const prefersReducedMotion = useReducedMotion();
-
-  const container = {
-    hidden: {},
-    show: {
-      transition: { staggerChildren: prefersReducedMotion ? 0 : 0.08 },
-    },
-  };
+  const container = prefersReducedMotion ? CONTAINER_REDUCED : CONTAINER_MOTION;
 
   return (
     <section id="servicios">
       <div className="container">
         <div className={styles.sectionHead}>
-          <div className="eyebrow" style={{ textAlign: 'center' }}>
-            Qué hacemos
+          <div>
+            <div className="eyebrow">Qué hacemos</div>
+            <h2>Todo lo que necesitás. Nada que no.</h2>
           </div>
-          <h2>Todo lo que necesitás. Nada que no.</h2>
         </div>
 
         <motion.div
-          className={styles.grid}
+          className={styles.list}
           variants={container}
           initial="hidden"
           whileInView="show"
-          viewport={{ once: true, amount: 0.2 }}
+          viewport={{ once: true, amount: 0.1 }}
         >
-          {SERVICES.map((s) => (
-            <ServiceCard key={s.title} title={s.title} description={s.description} />
+          {SERVICES.map((s, i) => (
+            <ServiceCard key={s.title} index={String(i + 1).padStart(2, '0')} title={s.title} description={s.description} />
           ))}
         </motion.div>
       </div>
