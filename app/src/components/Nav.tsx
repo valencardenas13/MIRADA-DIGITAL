@@ -1,6 +1,6 @@
 import { motion, useScroll, useTransform, useSpring } from 'motion/react';
 import styles from './Nav.module.css';
-import logoLight from '../assets/logo-light.svg';
+import logo from '../assets/logo.png';
 
 const INSTAGRAM_URL = 'https://instagram.com/somosmiradadigital';
 
@@ -15,7 +15,7 @@ export default function Nav() {
     <motion.nav className={styles.nav} style={{ height, paddingTop: paddingBlock, paddingBottom: paddingBlock }}>
       <div className={styles.navInner}>
         <div className={styles.brand}>
-          <img className={styles.brandLogo} src={logoLight} alt="Mirada Digital" />
+          <img className={styles.brandLogo} src={logo} alt="Mirada Digital" />
           <span className={styles.brandWordmark}>Mirada Digital</span>
         </div>
         <div className={styles.navLinks}>

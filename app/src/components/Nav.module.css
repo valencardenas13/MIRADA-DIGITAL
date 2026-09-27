@@ -30,28 +30,28 @@
 }
 
 .brandLogo {
-  height: 20px;
+  height: 26px;
   width: auto;
-  display: none;
+  display: block;
 }
 
 .brandWordmark {
-  display: inline;
-}
-
-:global(:root[data-theme='light']) .brandLogo {
-  display: block;
-}
-:global(:root[data-theme='light']) .brandWordmark {
   display: none;
 }
 
-@media (prefers-color-scheme: light) {
-  :global(:root:not([data-theme='dark'])) .brandLogo {
-    display: block;
-  }
-  :global(:root:not([data-theme='dark'])) .brandWordmark {
+:global(:root[data-theme='dark']) .brandLogo {
+  display: none;
+}
+:global(:root[data-theme='dark']) .brandWordmark {
+  display: inline;
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme='light'])) .brandLogo {
     display: none;
+  }
+  :global(:root:not([data-theme='light'])) .brandWordmark {
+    display: inline;
   }
 }
 
@@ -77,7 +77,7 @@
 
 .navCta {
   background: var(--accent);
-  color: var(--bg);
+  color: var(--accent-contrast);
   padding: 9px 18px;
   border-radius: 999px;
   font-size: 12px;
@@ -87,7 +87,7 @@
 }
 
 .navCta:hover {
-  color: var(--bg);
+  background: var(--accent-hover);
 }
 
 @media (max-width: 700px) {
