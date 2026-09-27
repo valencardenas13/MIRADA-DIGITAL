@@ -1,0 +1,20 @@
+.section {
+  text-align: center;
+  padding-block: 160px;
+  background: var(--surface-2);
+}
+
+.h2 {
+  font-size: clamp(40px, 9vw, 108px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 0.96;
+}
+
+.ctas {
+  margin-top: 40px;
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+  flex-wrap: wrap;
+}

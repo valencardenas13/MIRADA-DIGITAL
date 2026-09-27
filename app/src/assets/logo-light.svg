@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 170" width="540" height="170">
+  <defs>
+    <style><![CDATA[
+      @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap');
+    ]]></style>
+  </defs>
+
+  <rect width="540" height="170" fill="#FFFFFF" rx="12"/>
+
+  <g transform="translate(82, 85)">
+    <path d="M -45,0 A 55,55 0 0,1 45,0 A 80,80 0 0,0 -45,0 Z"
+          fill="none" stroke="#0D1B2A" stroke-width="2.5" stroke-linejoin="round"/>
+
+    <circle cx="0" cy="-4" r="15" fill="#0D1B2A" stroke="#0D1B2A" stroke-width="2"/>
+
+    <polyline points="-9,5 -3,0 3,-6 9,-11"
+              fill="none" stroke="#00E676" stroke-width="2.2"
+              stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="-3" cy="0"   r="2.2" fill="#00E676"/>
+    <circle cx="3"  cy="-6"  r="2.2" fill="#00E676"/>
+    <circle cx="9"  cy="-11" r="2.2" fill="#00E676"/>
+
+    <circle cx="0" cy="-4" r="3.5" fill="#00D4FF" opacity="0.5"/>
+  </g>
+
+  <line x1="150" y1="45" x2="150" y2="125" stroke="#8892A4" stroke-width="1" opacity="0.4"/>
+
+  <text x="170" y="83"
+        font-family="'Space Grotesk', 'Helvetica Neue', Arial, sans-serif"
+        font-weight="700" font-size="36" fill="#0D1B2A" letter-spacing="1">MIRADA DIGITAL</text>
+
+  <text x="171" y="112"
+        font-family="'Space Grotesk', 'Helvetica Neue', Arial, sans-serif"
+        font-weight="400" font-size="11" fill="#0088AA" letter-spacing="6">AGENCIA DE PERFORMANCE</text>
+</svg>

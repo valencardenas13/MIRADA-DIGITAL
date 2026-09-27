@@ -1,0 +1,39 @@
+.hero {
+  padding-block: 160px 110px;
+  text-align: left;
+}
+
+.h1 {
+  font-size: clamp(48px, 9.5vw, 132px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 0.94;
+  max-width: 16ch;
+}
+
+.word {
+  display: inline-block;
+  margin-right: 0.22em;
+}
+
+.lede {
+  margin-top: 32px;
+  font-size: clamp(18px, 1.9vw, 22px);
+  font-weight: 400;
+  color: var(--text-secondary);
+  max-width: 540px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.ctas {
+  margin-top: 44px;
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 700px) {
+  .hero {
+    padding-block: 130px 80px;
+  }
+}

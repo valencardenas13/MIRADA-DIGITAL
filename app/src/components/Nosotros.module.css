@@ -1,0 +1,51 @@
+.grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 64px;
+  align-items: start;
+  text-align: left;
+}
+
+@media (max-width: 800px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.text h2 {
+  font-size: clamp(30px, 5vw, 54px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.06;
+}
+
+.support {
+  margin-top: 24px;
+  font-size: clamp(16px, 1.3vw, 18px);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 46ch;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.imgWrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.img {
+  width: 100%;
+  height: auto;
+  display: block;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  filter: grayscale(0.4) contrast(1.05);
+}
+
+.curtain {
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform-origin: right center;
+}
