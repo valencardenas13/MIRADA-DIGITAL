@@ -65,9 +65,6 @@
     ...[400, 500, 700].map((w) => document.fonts.load(font(w, 30, J))),
     load("logoW", "logo-tasker-blanco-borde.png"),
     load("logoB", "logo-tasker-azul.png"),
-    load("heroDesk", "hero-desktop.png"),
-    load("heroMob", "hero-mobile.png"),
-    load("pageMob", "page-mobile-full.png"),
   ]);
 
   // ---------- helpers ----------
@@ -234,7 +231,7 @@
   };
   // keyframes del cursor en coordenadas del cuadrado: [beat, x, y] o [beat, destino]
   const CUR = [
-    [6.5, 1180, 760], [7, 640, 640], [9.6, 640, 560], [10.1, 1180, 1000],
+    [6.5, 1180, 760], [7.1, 560, 300], [8.6, 560, 300], [9.6, 900, 760], [10.1, 1180, 1000],
     [14.2, 1180, 1000], [14.8, 560, 896], [15.4, 560, 896], [16.1, 1180, 1060],
     [19.6, 1180, 1060], [20.5, "c1"], [20.95, "c1"], [21.45, 1180, 300],
     [27.6, 1180, 1100], [28.5, "c2"], [28.95, "c2"], [29.45, 1180, 300],
@@ -310,8 +307,9 @@
     ctx.fillStyle = C.card; ctx.fillRect(0, y0, W, h);
     ctx.fillStyle = C.line; ctx.fillRect(0, y0, W, 2); ctx.fillRect(0, y0 + h - 2, W, 2);
     setFont(500, 22, J, 22 * 0.22);
-    const unit = RIBBON.map((s) => s.toUpperCase() + "   ·   ").join("");
-    const uw = ctx.measureText(unit).width;
+    // ancho del bloque = suma de lo que realmente se dibuja, para que las repeticiones empalmen
+    const sepW = ctx.measureText("   ·   ").width;
+    const uw = RIBBON.reduce((acc, w) => acc + ctx.measureText(w.toUpperCase()).width + sepW, 0);
     let x = -((t * 90) % uw);
     ctx.save(); ctx.beginPath(); ctx.rect(0, y0, W, h); ctx.clip();
     for (; x < W; x += uw) {
@@ -336,8 +334,10 @@
     const whip = E.in(sp(t, bt(5.5), bt(6)));
     ctx.translate(-whip * W * 1.2, 0);
     ctx.translate(W / 2, H / 2); ctx.scale(z, z); ctx.translate(-W / 2, -H / 2);
-    ctx.filter = "blur(14px) brightness(0.45)";
-    imgCover("heroDesk", -40, -40, W + 80, H + 80);
+    ctx.filter = "blur(26px) brightness(0.55)";
+    const lw = W * 1.5;
+    ctx.translate(W / 2, H / 2); ctx.rotate(-0.12); ctx.translate(-W / 2, -H / 2);
+    logo("logoB", (W - lw) / 2, H / 2 - (lw * 147 / 480) / 2, lw * 147 / 480);
     ctx.filter = "none";
     ctx.fillStyle = "rgba(10,12,16,0.45)"; ctx.fillRect(-40, -40, W + 80, H + 80);
     ctx.restore();
@@ -370,7 +370,7 @@
       label("tasker · insumos y máquinas para helado soft", 82, 300, { size: 20, color: C.gr });
     } else {
       // corte: ¿Y en digital?
-      const p1 = E.expoOut(sp(t, bt(3), bt(3) + 0.25));
+      const p1 = E.expoOut(sp(t, bt(3) - 0.07, bt(3) + 0.2));
       mtext("¿Y en", 80, 420, 120, p1, { w: 800 });
       const s2 = fit("digital?", 920, 900, 260);
       const p2 = E.expoOut(sp(t, bt(4), bt(4) + 0.3));
@@ -383,44 +383,46 @@
 
   // ---------- 2 · la propuesta (3–8 s) ----------
 
-  const PH = { x: 330, y: 110, w: 420, h: 900, r: 56 };
-  function phone(t) {
+  // ventana de navegador dibujada en código: URL tipeada, logo real y la frase real del hero de Tasker
+  const BW = { x: 70, y: 220, w: 940, h: 650 };
+  function browser(t) {
     if (t < bt(6) || t >= bt(11)) return;
+    const { x, y, w, h } = BW;
     const up = E.spring(sp(t, bt(6), bt(6) + 0.9), 6, 11);
     const out = E.in(sp(t, bt(10), bt(10) + 0.45));
-    const dy = (1 - up) * 1100;
     ctx.save();
-    ctx.translate(-out * 900, dy + out * 120);
-    ctx.translate(PH.x + PH.w / 2, PH.y + PH.h / 2);
-    ctx.rotate(-0.04 * (1 - up) - out * 0.12);
-    ctx.scale(1 - out * 0.3, 1 - out * 0.3);
-    ctx.translate(-(PH.x + PH.w / 2), -(PH.y + PH.h / 2));
-    // carcasa
-    rrect(PH.x - 14, PH.y - 14, PH.w + 28, PH.h + 28, PH.r + 12);
-    ctx.fillStyle = "#05070a"; ctx.fill();
-    ctx.strokeStyle = C.line; ctx.lineWidth = 3; ctx.stroke();
-    // pantalla con el sitio real scrolleando
-    ctx.save();
-    rrect(PH.x, PH.y, PH.w, PH.h, PH.r); ctx.clip();
-    const it = IMG.pageMob;
-    if (it.ok) {
-      const s = PH.w / it.im.width;
-      const maxScroll = Math.max(0, it.im.height * s - PH.h);
-      let scroll = 0;
-      [[7, 0.22], [8, 0.5], [9, 0.8]].forEach(([b, frac]) => {
-        scroll += maxScroll * (b === 7 ? frac : frac - [0.22, 0.5][b - 8]) * E.inOut(sp(t, bt(b), bt(b) + 0.4));
-      });
-      ctx.drawImage(it.im, PH.x, PH.y - scroll, PH.w, it.im.height * s);
-    } else pending("pageMob", PH.x, PH.y, PH.w, PH.h);
-    ctx.restore();
-    // isla
-    rrect(PH.x + PH.w / 2 - 60, PH.y + 14, 120, 34, 17); ctx.fillStyle = "#05070a"; ctx.fill();
+    ctx.translate(-out * 1100, (1 - up) * 1100 + out * 100);
+    ctx.translate(x + w / 2, y + h / 2);
+    ctx.rotate(-0.05 * (1 - up) - out * 0.1); ctx.scale(1 - out * 0.25, 1 - out * 0.25);
+    ctx.translate(-(x + w / 2), -(y + h / 2));
+    ctx.shadowColor = "rgba(0,0,0,0.6)"; ctx.shadowBlur = 60; ctx.shadowOffsetY = 24;
+    card(x, y, w, h);
+    ctx.shadowColor = "transparent";
+    // barra
+    ctx.fillStyle = "#0e1219"; ctx.fillRect(x + 2, y + 2, w - 4, 76);
+    ctx.fillStyle = C.line; ctx.fillRect(x + 2, y + 78, w - 4, 2);
+    ["#3a4150", "#3a4150", "#3a4150"].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x + 40 + i * 30, y + 40, 8, 0, TAU); ctx.fill(); });
+    ctx.fillStyle = "#171d29"; ctx.fillRect(x + 150, y + 18, w - 190, 44);
+    const url = "tasker.com.ar";
+    const n = Math.floor(url.length * sp(t, bt(6.6), bt(6.6) + 0.5));
+    setFont(500, 24, J); ctx.fillStyle = C.wh; ctx.fillText(url.slice(0, n), x + 174, y + 48);
+    const cw = ctx.measureText(url.slice(0, n)).width;
+    if (t < bt(8) && Math.floor(t * 3) % 2 === 0) { ctx.fillStyle = C.cyan; ctx.fillRect(x + 178 + cw, y + 28, 3, 26); }
+    // contenido
+    const lp = E.expoOut(sp(t, bt(7.5), bt(7.5) + 0.4));
+    if (lp > 0) {
+      ctx.save(); ctx.beginPath(); ctx.rect(x, y + 100, w, 150); ctx.clip(); ctx.translate(0, (1 - lp) * 140);
+      logo("logoW", x + 48, y + 130, 84);
+      ctx.restore();
+    }
+    const hs = fit("Tenemos todo lo que necesitás…", w - 96, 500, 62);
+    mtext("Tenemos todo lo que necesitás…", x + 48, y + 360, hs, E.expoOut(sp(t, bt(8), bt(8) + 0.4)), { w: 500 });
+    mtext("para comenzar tu negocio", x + 48, y + 360 + hs * 1.2, hs, E.expoOut(sp(t, bt(8.5), bt(8.5) + 0.4)), { w: 500, color: C.blue });
+    label("Insumos y máquinas para helado soft", x + 48, y + h - 60, { size: 20, color: C.gr });
     ctx.restore();
 
-    // etiqueta lateral
-    const pl = E.expoOut(sp(t, bt(6.5), bt(6.5) + 0.3)) + E.in(sp(t, bt(10), bt(10) + 0.2));
-    mtext("tasker.com.ar", 800, 560, 34, pl, { w: 700 });
-    label("su sitio hoy", 802, 600, { size: 18 });
+    const pl = E.expoOut(sp(t, bt(9), bt(9) + 0.3)) + E.in(sp(t, bt(10), bt(10) + 0.2));
+    eyebrow("Su sitio hoy", 72, 960, clamp(pl > 1 ? 2 - pl : pl), 20);
   }
 
   const COV = { x: 50, y: 140, w: 980, h: 820 };
@@ -709,7 +711,7 @@
     ctx.save();
     ctx.translate(SQ.x, SQ.y);
     ctx.translate(540, 540); ctx.scale(z, z); ctx.translate(-540, -540);
-    phone(t); cover(t); s3(t); s4(t); s5(t);
+    browser(t); cover(t); s3(t); s4(t); s5(t);
     drawCursor(t);
     ctx.restore();
 
