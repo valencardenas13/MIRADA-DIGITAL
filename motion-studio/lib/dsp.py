@@ -219,7 +219,7 @@ def reverb(x, decay=1.8, wet=0.35, seed=77):
     ir = rng(seed).uniform(-1, 1, n) * np.exp(-t * 6.9 / decay)
     ir = lowpass(ir, 5000)
     ir /= np.sqrt(np.sum(ir**2)) or 1.0
-    tail = fftconvolve(x, ir)[: len(x) + n]
-    out = np.zeros(len(x) + n)
+    tail = fftconvolve(x, ir)
+    out = np.zeros(len(tail))
     out[: len(x)] += x * (1 - wet)
     return out + tail * wet

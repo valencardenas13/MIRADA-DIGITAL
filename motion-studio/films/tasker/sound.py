@@ -4,12 +4,14 @@ Música: kick en negras, hats en corcheas, bajo y acordes en La menor (Am–F–
 cada 2 s). El gancho (0–3 s) es solo kick; el drop completo entra a los 3 s.
 
 python3 sound.py score score.wav   -> música sola (de acá se mide beats.json)
-python3 sound.py mix audio.wav     -> música + SFX en los cues de timeline.json
+python3 sound.py mix audio.wav     -> música + SFX en los cues de timeline.js (compartido con el film)
 """
 
 import json
 import os
 import sys
+
+import numpy as np
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "lib"))
 import dsp  # noqa: E402
@@ -52,10 +54,21 @@ def score():
     return drums
 
 
+EMAIL = "agenciamiradadigital@gmail.com"
+
+
+def timeline():
+    with open(os.path.join(HERE, "timeline.js")) as f:
+        src = f.read()
+    return json.loads(src[src.index("{") : src.rindex("}") + 1])
+
+
 def sfx(data):
-    """Cues desde timeline.json (los escribe el film). Ver mix."""
-    with open(os.path.join(HERE, "timeline.json")) as f:
-        cues = json.load(f)["cues"]
+    """SFX en los cues de timeline.js, más los ticks del contador (0→30) y del tipeo del mail."""
+    tl = timeline()
+    cues = list(tl["cues"])
+    cues += [{"kind": "tick", "beat": 40 + 3 * (k / 15) ** 0.5, "freq": 1400 + k * 60, "gain": 0.16} for k in range(15)]
+    cues += [{"kind": "type", "beat": 56 + k * 0.06} for k in range(len(EMAIL))]
     B = data["beats"]
     fx = dsp.Track(DUR + 3)
     lead = 0.02
@@ -94,14 +107,11 @@ def sfx(data):
 
 def final_hit(track, t_hit):
     """Golpe final con cola de reverb que sigue después de cortar la música."""
-    import numpy as np
-
-    hit = dsp.impact(1.0, seed=99) + dsp.kick(0.6, 1.4) * 0.8
-    chord = dsp.pad([45, 52, 57, 60, 64], 1.2, cutoff=2500, seed=98) * 0.6
-    n = max(len(hit), len(chord))
-    sig = np.zeros(n)
-    sig[: len(hit)] += hit
-    sig[: len(chord)] += chord
+    parts = [dsp.impact(1.0, seed=99), dsp.kick(0.6, 1.4) * 0.8,
+             dsp.pad([45, 52, 57, 60, 64], 1.2, cutoff=2500, seed=98) * 0.6]
+    sig = np.zeros(max(len(p) for p in parts))
+    for p in parts:
+        sig[: len(p)] += p
     track.add(dsp.reverb(sig, decay=2.5, wet=0.45), t_hit, 0.9)
 
 
@@ -111,9 +121,13 @@ if __name__ == "__main__":
     if mode == "mix":
         with open(os.path.join(HERE, "beats.json")) as f:
             data = json.load(f)
+        B = data["beats"]
+        t_hit = B[timeline()["final_hit"]]
+        # La música se corta en el golpe final y queda sonando la cola de reverb.
+        i = int(t_hit * dsp.SR)
+        fade = int(0.03 * dsp.SR)
+        music.buf[i : i + fade] *= np.linspace(1, 0, fade)[:, None]
+        music.buf[i + fade :] = 0
         music.mix(sfx(data), 1.0)
-        with open(os.path.join(HERE, "timeline.json")) as f:
-            fh = json.load(f).get("final_hit")
-        if fh is not None:
-            final_hit(music, fh)
+        final_hit(music, t_hit)
     music.write(out)
