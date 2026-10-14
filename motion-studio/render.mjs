@@ -5,6 +5,7 @@
 //   node render.mjs films/<nombre> --frame 3.2  un frame suelto
 //   node render.mjs films/<nombre> --check      lint + chequeo de determinismo
 //   --no-audio                                  render sin mezclar audio.wav
+//   --fmt <id>                                  formato (?fmt=<id> en la URL; sale como <nombre>-<id>)
 
 import { createHash } from "node:crypto";
 import { spawn, spawnSync } from "node:child_process";
@@ -14,7 +15,8 @@ import { pathToFileURL } from "node:url";
 import browser from "./lib/browser.js";
 
 const args = process.argv.slice(2);
-const filmDir = args.find((a) => !a.startsWith("--") && !/^[\d.]+$/.test(a));
+const fmtArg = args.includes("--fmt") ? args[args.indexOf("--fmt") + 1] : null;
+const filmDir = args.find((a) => !a.startsWith("--") && !/^[\d.]+$/.test(a) && a !== fmtArg);
 if (!filmDir) {
   console.error("uso: node render.mjs films/<nombre> [--sheet | --frame <t> | --check] [--no-audio]");
   process.exit(1);
@@ -22,7 +24,7 @@ if (!filmDir) {
 const flag = (name) => args.includes(`--${name}`);
 const frameArg = flag("frame") ? Number(args[args.indexOf("--frame") + 1]) : null;
 
-const name = path.basename(path.resolve(filmDir));
+const name = path.basename(path.resolve(filmDir)) + (fmtArg ? `-${fmtArg}` : "");
 const outDir = path.resolve("out");
 mkdirSync(outDir, { recursive: true });
 
@@ -63,7 +65,9 @@ async function openFilm() {
   await page.addInitScript(() => {
     window.__RENDER__ = true;
   });
-  await page.goto(pathToFileURL(path.resolve(filmDir, "index.html")).href);
+  const url = pathToFileURL(path.resolve(filmDir, "index.html"));
+  if (fmtArg) url.searchParams.set("fmt", fmtArg);
+  await page.goto(url.href);
   const film = await page.evaluate(() => window.FILM);
   if (!film || typeof film.duration !== "number") throw new Error("index.html debe definir window.FILM");
   await page.setViewportSize({ width: film.width, height: film.height });

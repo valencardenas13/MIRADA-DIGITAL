@@ -208,3 +208,18 @@ class Track:
         peak = np.max(np.abs(out)) or 1.0
         out = out / peak * 0.89  # headroom; la sonoridad final (-14 LUFS) se fija al mezclar
         sf.write(path, out, SR, subtype="PCM_24")
+
+
+def reverb(x, decay=1.8, wet=0.35, seed=77):
+    """Reverb por convolución con una respuesta de ruido que decae (determinista)."""
+    from scipy.signal import fftconvolve
+
+    n = int(decay * SR)
+    t = np.arange(n) / SR
+    ir = rng(seed).uniform(-1, 1, n) * np.exp(-t * 6.9 / decay)
+    ir = lowpass(ir, 5000)
+    ir /= np.sqrt(np.sum(ir**2)) or 1.0
+    tail = fftconvolve(x, ir)[: len(x) + n]
+    out = np.zeros(len(x) + n)
+    out[: len(x)] += x * (1 - wet)
+    return out + tail * wet
