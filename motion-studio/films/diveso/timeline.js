@@ -1,8 +1,8 @@
 window.TL = {
- "_doc": "Tiempos compartidos por el film (index.html) y el sonido (sound.py). 'beat' indexa la grilla medida; 120 BPM, 1 beat = 0.5 s. 66 beats = 33 s.",
- "scenes": {"gancho": 0, "pauta": 12, "cata": 34, "cierre": 54},
+ "_doc": "Tiempos compartidos por el film (index.html) y el sonido (sound.py). 'beat' indexa la grilla medida; 120 BPM, 1 beat = 0.5 s. 74 beats = 37 s.",
+ "scenes": {"gancho": 0, "pauta": 12, "cata": 34, "propuesta": 54, "cierre": 62},
  "pages": [4, 4.3, 4.6, 4.9, 5.15, 5.4, 5.65, 5.9, 6.2, 6.6],
- "final_hit": 62,
+ "final_hit": 70,
  "cues": [
   {"kind": "impact", "beat": 0, "gain": 0.6},
   {"kind": "pop", "beat": 1, "note": 79},
@@ -36,8 +36,13 @@ window.TL = {
   {"kind": "riser", "beat": 54, "dur": 1.5},
 
   {"kind": "impact", "beat": 54, "gain": 0.6},
-  {"kind": "whoosh", "beat": 58, "pan": 0},
-  {"kind": "impact", "beat": 58, "gain": 0.5},
-  {"kind": "pop", "beat": 60, "note": 84}
+  {"kind": "pop", "beat": 55, "note": 81},
+  {"kind": "pop", "beat": 57, "note": 86},
+  {"kind": "riser", "beat": 62, "dur": 1.5},
+
+  {"kind": "impact", "beat": 62, "gain": 0.6},
+  {"kind": "whoosh", "beat": 66, "pan": 0},
+  {"kind": "impact", "beat": 66, "gain": 0.5},
+  {"kind": "pop", "beat": 68, "note": 84}
  ]
 };

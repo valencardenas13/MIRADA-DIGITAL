@@ -1,4 +1,4 @@
-"""Score y SFX del video Diveso (Mirada Digital). 120 BPM, 33 s.
+"""Score y SFX del video Diveso (Mirada Digital). 120 BPM, 37 s.
 
 Música suave y cálida: kick liviano, hats, pad y bajo en Re menor (Dm–Bb–F–C), arpegio en la
 escena de la cata. Funciona sin sonido: el audio acompaña, no explica.
@@ -18,7 +18,7 @@ import dsp  # noqa: E402
 
 BPM = 120
 BEAT = 60 / BPM
-DUR = 33.0
+DUR = 37.0
 CHORDS = [[62, 65, 69], [58, 62, 65], [57, 60, 65], [55, 60, 64]]  # Dm Bb F C
 ROOTS = [38, 34, 41, 36]
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -63,6 +63,8 @@ def sfx(data):
     cues += [{"kind": "page", "beat": p} for p in tl["pages"]]
     cues += [{"kind": "tick", "beat": 8 + 1.5 * (k / 12) ** 0.6, "freq": 1500 + k * 50} for k in range(12)]
     cues += [{"kind": "tick", "beat": 40.5 + 1.8 * (k / 12) ** 0.6, "freq": 1700 + k * 50} for k in range(12)]
+    query = "cata de perfumes buenos aires"
+    cues += [{"kind": "tick", "beat": 57.6 + k * 0.1, "freq": 1800 + (k % 5) * 120, "gain": 0.1} for k in range(len(query))]
     fx = dsp.Track(DUR + 3)
     lead = 0.02
 

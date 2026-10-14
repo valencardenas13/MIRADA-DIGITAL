@@ -8,3 +8,4 @@ Storyboard aprobado por Valen con cambios: sin Día de la Madre (muy sobre la fe
 | 1 | 8 | 8 | 8 | 8 | 8 | 8 | Logo ilegible en el avatar del anuncio; línea de tiempo muy arriba; corte de línea en el texto de escasez |
 
 Reglas respetadas: sin "gratis"/"sin costo", sin precios, sin métricas ni resultados, Día del Padre en tono neutro.
+| 2 | 8 | 8 | 8 | 8 | 8 | 8 | Cyber Monday confirmado 2 al 4/11; escena "Lo que te propuse" (Meta: reservas de cata; Google Search desde la semana 1); firma solo "Mirada Digital". 37 s |
