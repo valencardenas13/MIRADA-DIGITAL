@@ -1,0 +1,51 @@
+window.TL = {
+ "_doc": "Fuente única de tiempos para el film (index.html) y el sonido (sound.py). 'beat' es un índice (fraccionario) sobre la grilla medida en beats.json; 120 BPM, 1 beat = 0.5 s.",
+ "blocks": {"hook": 0, "propuesta": 6, "hallazgos": 16, "numero": 40, "cierre": 48},
+ "clicks": [15, 20.6, 28.6, 36.6, 46, 55],
+ "flashes": [16, 24, 32],
+ "final_hit": 58,
+ "cues": [
+  {"kind": "pop", "beat": 0, "note": 76},
+  {"kind": "pop", "beat": 1, "note": 79},
+  {"kind": "pop", "beat": 2, "note": 83},
+  {"kind": "impact", "beat": 3, "gain": 0.45},
+  {"kind": "impact", "beat": 4, "gain": 0.85},
+  {"kind": "whoosh", "beat": 5.5, "pan": -0.6},
+  {"kind": "riser", "beat": 6, "dur": 0.9},
+
+  {"kind": "impact", "beat": 6, "gain": 0.6},
+  {"kind": "whoosh", "beat": 6, "pan": 0},
+  {"kind": "tick", "beat": 7, "freq": 1500, "gain": 0.25},
+  {"kind": "tick", "beat": 8, "freq": 1650, "gain": 0.25},
+  {"kind": "tick", "beat": 9, "freq": 1800, "gain": 0.25},
+  {"kind": "whoosh", "beat": 10, "pan": -0.5},
+  {"kind": "type", "beat": 10.5}, {"kind": "type", "beat": 10.6}, {"kind": "type", "beat": 10.7}, {"kind": "type", "beat": 10.8},
+  {"kind": "whoosh", "beat": 11, "pan": 0.3},
+  {"kind": "pop", "beat": 13, "note": 76}, {"kind": "pop", "beat": 13.25, "note": 79},
+  {"kind": "pop", "beat": 13.5, "note": 83}, {"kind": "pop", "beat": 13.75, "note": 86},
+  {"kind": "pop", "beat": 14, "note": 88},
+  {"kind": "click", "beat": 15},
+  {"kind": "riser", "beat": 16, "dur": 1.5},
+
+  {"kind": "flash", "beat": 16}, {"kind": "whoosh", "beat": 16, "pan": -0.6},
+  {"kind": "click", "beat": 20.6},
+  {"kind": "riser", "beat": 24, "dur": 0.8},
+  {"kind": "flash", "beat": 24}, {"kind": "whoosh", "beat": 24, "pan": 0.6},
+  {"kind": "click", "beat": 28.6},
+  {"kind": "riser", "beat": 32, "dur": 0.8},
+  {"kind": "flash", "beat": 32}, {"kind": "whoosh", "beat": 32, "pan": -0.6},
+  {"kind": "whoosh", "beat": 33, "pan": 0.5},
+  {"kind": "click", "beat": 36.6},
+  {"kind": "riser", "beat": 40, "dur": 1.5},
+
+  {"kind": "impact", "beat": 40, "gain": 0.75}, {"kind": "whoosh", "beat": 40, "pan": 0},
+  {"kind": "pop", "beat": 43, "note": 79}, {"kind": "pop", "beat": 43.5, "note": 83}, {"kind": "pop", "beat": 44, "note": 86},
+  {"kind": "click", "beat": 46},
+  {"kind": "riser", "beat": 48, "dur": 1.5},
+
+  {"kind": "impact", "beat": 48, "gain": 0.8},
+  {"kind": "whoosh", "beat": 50, "pan": -0.3}, {"kind": "whoosh", "beat": 51, "pan": 0.3},
+  {"kind": "pop", "beat": 53, "note": 84},
+  {"kind": "click", "beat": 55}
+ ]
+};

@@ -10,5 +10,16 @@
         ]
       }
     ]
+  },
+  "extraKnownMarketplaces": {
+    "claude-animation-skill": {
+      "source": {
+        "source": "github",
+        "repo": "buildwithhanif/claude-animation-skill"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "claude-animation@claude-animation-skill": true
   }
 }

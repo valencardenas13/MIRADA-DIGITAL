@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>film</title>
+<link rel="stylesheet" href="../../assets/brand.css">
+<style>
+  #stage { width: 1080px; height: 1920px; }
+  .kicker { position: absolute; left: 96px; top: 220px; font: 600 40px var(--ui); color: var(--gris); }
+  .big { position: absolute; left: 84px; top: 290px; font: 700 300px/0.9 var(--display); letter-spacing: -0.04em; transform-origin: 0 50%; }
+  .mask { position: absolute; left: 96px; top: 620px; height: 130px; overflow: hidden; }
+  .word { font: 700 110px/130px var(--display); color: var(--electrico); }
+  .bars { position: absolute; left: 96px; right: 96px; bottom: 240px; height: 640px; display: flex; align-items: flex-end; gap: 28px; }
+  .bar { flex: 1; height: 100%; background: var(--blanco); transform-origin: 50% 100%; }
+  .bar.on { background: var(--electrico); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="kicker">Plantilla · reemplazar</div>
+  <div class="big" id="big">0</div>
+  <div class="mask"><div class="word" id="word"></div></div>
+  <div class="bars" id="bars"></div>
+</div>
+
+<script src="../../lib/film.js"></script>
+<script src="beats.js"></script>
+<script>
+  // Duración = largo del score medido (beats.js). Sin audio todavía: 8 s.
+  window.FILM = { fps: 30, width: 1080, height: 1920, duration: (window.BEATS && BEATS.duration) || 8 };
+
+  const WORDS = ["Invertís.", "Medimos.", "Mostramos.", "Decidís."];
+  const N_BARS = 8;
+  const heights = Array.from({ length: N_BARS }, (_, k) => 0.35 + 0.65 * F.hash(k, 7));
+  const barEls = Array.from({ length: N_BARS }, () => {
+    const el = document.createElement("div");
+    el.className = "bar";
+    document.getElementById("bars").appendChild(el);
+    return el;
+  });
+  const big = document.getElementById("big");
+  const word = document.getElementById("word");
+
+  // Pura función de t: todo se recalcula desde cero en cada frame.
+  window.seek = function (t) {
+    const bi = F.beatAt(t);
+    const bar = Math.max(0, Math.floor(bi / 4));
+
+    // Número que cuenta hasta 340 durante los primeros 8 beats, con golpe en cada beat.
+    const k = F.ease.out(F.span(t, F.beatTime(0), F.beatTime(8)));
+    big.textContent = Math.round(340 * k) + "%";
+    const punch = bi >= 0 ? F.hit(t, F.beatTime(bi), 0.18) : 0;
+    big.style.transform = `scale(${1 + 0.035 * punch})`;
+
+    // Palabra nueva en cada compás: entra desde abajo dentro de una máscara.
+    const barStart = F.beatTime(bar * 4);
+    const enter = F.ease.expoOut(F.span(t, barStart, barStart + 0.35));
+    word.textContent = WORDS[bar % WORDS.length];
+    word.style.transform = `translateY(${(1 - enter) * 130}px)`;
+
+    // Una barra crece cada 2 beats con resorte; la última en crecer va en el color de acento.
+    barEls.forEach((el, i) => {
+      const at = F.beatTime(i * 2);
+      const g = t < at ? 0 : F.ease.spring(F.span(t, at, at + 0.9));
+      el.style.transform = `scaleY(${heights[i] * g})`;
+      el.classList.toggle("on", Math.floor(bi / 2) === i);
+    });
+  };
+</script>
+<script src="../../lib/preview.js"></script>
+</body>
+</html>

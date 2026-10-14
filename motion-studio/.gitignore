@@ -1,0 +1,5 @@
+node_modules
+out
+films/*/score.wav
+films/*/audio.wav
+films/_smoke

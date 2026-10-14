@@ -1,0 +1,36 @@
+@font-face {
+  font-family: "Space Grotesk";
+  src: url("fonts/SpaceGrotesk.woff2") format("woff2");
+  font-weight: 300 700;
+  font-display: block;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("fonts/Inter.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: block;
+}
+
+:root {
+  --noche: #0d1b2a;
+  --electrico: #00d4ff;
+  --blanco: #ffffff;
+  --gris: #8892a4;
+  --display: "Space Grotesk", sans-serif;
+  --ui: "Inter", sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--noche);
+  overflow: hidden;
+}
+
+#stage {
+  position: relative;
+  overflow: hidden;
+  background: var(--noche);
+  color: var(--blanco);
+  font-family: var(--ui);
+}
