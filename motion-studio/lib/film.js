@@ -28,8 +28,8 @@
   const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
   const lerp = (a, b, k) => a + (b - a) * k;
 
-  // Progreso 0..1 de t dentro de [a, b].
-  const span = (t, a, b) => clamp((t - a) / (b - a));
+  // Progreso 0..1 de t dentro de [a, b]. Una ventana vacía o invertida se comporta como un corte en a.
+  const span = (t, a, b) => (b <= a ? (t >= a ? 1 : 0) : clamp((t - a) / (b - a)));
 
   const ease = {
     linear: (k) => k,

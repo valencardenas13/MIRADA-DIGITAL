@@ -28,28 +28,48 @@ tempo, frames = librosa.beat.beat_track(
 )
 beats = librosa.frames_to_time(frames, sr=sr, hop_length=HOP)
 
-# El tracker llega tarde unos ms: cada beat se ajusta al inicio de onset más cercano (backtrack).
+# Ajuste fino: cada beat se mueve al inicio del ataque más fuerte de la banda grave (bombo)
+# cerca de él. Envolvente de Hilbert (suave, sin la ondulación del propio bombo) y cruce del
+# 20% entre el piso y el pico local. Si no hay un ataque claro, queda el tiempo del tracker.
+from scipy.signal import butter, hilbert, sosfiltfilt
+
+low = sosfiltfilt(butter(4, 150, "low", fs=sr, output="sos"), y)
+env = np.abs(hilbert(low))
+env = np.convolve(env, np.ones(32) / 32, mode="same")
+peak_floor = np.percentile(env, 60)
+
+
+def refine(t):
+    i0 = max(0, int((t - 0.06) * sr))
+    i1 = min(len(env), int((t + 0.06) * sr))
+    if i1 - i0 < 10:
+        return t
+    # pico: el máximo poco después de la subida más grande de la ventana
+    step = 64
+    seg = env[i0 : i1 + int(0.03 * sr)]
+    jump = seg[step:] - seg[:-step]
+    k = int(np.argmax(jump[: i1 - i0]))
+    pk = seg[k : k + int(0.03 * sr)].max()
+    base = seg[max(0, k - int(0.02 * sr)) : k + 1].min()
+    if pk - base < peak_floor * 0.5:
+        return t
+    above = np.nonzero(seg[max(0, k - int(0.02 * sr)) :] > base + 0.2 * (pk - base))[0]
+    return (i0 + max(0, k - int(0.02 * sr)) + above[0]) / sr if len(above) else t
+
+
 onsets = librosa.onset.onset_detect(onset_envelope=onset_env, sr=sr, hop_length=HOP, units="time", backtrack=True)
-if len(onsets) and len(beats):
-    near = onsets[np.abs(onsets[None, :] - beats[:, None]).argmin(axis=1)]
-    beats = np.where(np.abs(near - beats) < 0.07, near, beats)
+beats = np.array([refine(t) for t in beats])
 
 # El tracker suele saltear los primeros beats: se completan hacia atrás con el período medido.
 period = float(np.median(np.diff(beats))) if len(beats) > 1 else 60 / float(np.atleast_1d(tempo)[0])
 while len(beats) and beats[0] - period > -0.03:
-    t = max(0.0, beats[0] - period)
-    if len(onsets):
-        o = onsets[np.abs(onsets - t).argmin()]
-        t = o if abs(o - t) < 0.07 else t
+    t = max(0.0, refine(beats[0] - period))
     beats = np.insert(beats, 0, t)
 
 # Y hacia adelante hasta el final del audio.
 duration = len(y) / sr
 while len(beats) and beats[-1] + period < duration - 0.05:
-    t = beats[-1] + period
-    if len(onsets):
-        o = onsets[np.abs(onsets - t).argmin()]
-        t = o if abs(o - t) < 0.07 else t
+    t = refine(beats[-1] + period)
     beats = np.append(beats, t)
 
 tempo = 60 / period
