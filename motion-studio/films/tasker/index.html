@@ -37,7 +37,7 @@
   cv.width = W; cv.height = H;
   const ctx = cv.getContext("2d");
 
-  const C = { bg: "#0a0c10", card: "#12161e", line: "#232a36", wh: "#ffffff", gr: "#8a93a3", blue: "#3b82f6", cyan: "#22d3ee" };
+  const C = { bg: "#0a0c10", card: "#12161e", line: "#232a36", wh: "#ffffff", gr: "#8a93a3", blue: "#3b82f6", cyan: "#22d3ee", coral: "#f0705f", blueTxt: "#5b9bff", ink: "#0a1020" };
   const M = '"Montserrat"', J = '"JetBrains Mono"';
   const { span: sp, ease: E, hit, clamp, lerp, hash, noise1 } = F;
   const TAU = Math.PI * 2;
@@ -90,10 +90,53 @@
     ctx.beginPath(); ctx.roundRect(x, y, w, h, r);
   }
 
-  function card(x, y, w, h, r = 28) {
-    rrect(x, y, w, h, r);
-    ctx.fillStyle = C.card; ctx.fill();
-    ctx.strokeStyle = C.line; ctx.lineWidth = 2; ctx.stroke();
+  function card(x, y, w, h) {
+    const g = ctx.createLinearGradient(x, y, x, y + h);
+    g.addColorStop(0, "#141924"); g.addColorStop(1, "#10141c");
+    ctx.fillStyle = g; ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = C.line; ctx.lineWidth = 2; ctx.strokeRect(x + 1, y + 1, w - 2, h - 2);
+  }
+
+  // etiqueta de sección del deck: línea corta + texto mono azul
+  function eyebrow(str, x, y, p = 1, size = 20) {
+    if (p <= 0) return;
+    ctx.fillStyle = C.blue; ctx.fillRect(x, y - size * 0.35, 36 * p, 2);
+    const n = Math.floor(str.length * p);
+    label(str.slice(0, n), x + 52, y, { size, color: C.blueTxt });
+  }
+
+  function iconBox(x, y, glyph, p = 1) {
+    if (p <= 0) return;
+    ctx.strokeStyle = C.line; ctx.lineWidth = 2; ctx.strokeRect(x, y, 64, 64);
+    ctx.save(); ctx.translate(x + 32, y + 32); ctx.scale(p, p);
+    ctx.strokeStyle = C.wh; ctx.lineWidth = 3; ctx.lineCap = "round";
+    ctx.beginPath();
+    if (glyph === "ban") { ctx.arc(0, 0, 11, 0, TAU); ctx.moveTo(-8, 8); ctx.lineTo(8, -8); }
+    if (glyph === "up") { ctx.moveTo(-9, 9); ctx.lineTo(9, -9); ctx.moveTo(-2, -9); ctx.lineTo(9, -9); ctx.lineTo(9, 2); }
+    if (glyph === "ring") { ctx.arc(0, 0, 6, 0, TAU); }
+    if (glyph === "inf") { ctx.ellipse(-7, 0, 7, 5, 0, 0, TAU); ctx.moveTo(14, 0); ctx.ellipse(7, 0, 7, 5, 0, 0, TAU); ctx.strokeStyle = C.blueTxt; }
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // botón del deck: rectángulo azul, texto mono oscuro subrayado y flecha larga
+  function deckButton(str, x, y, w, h, size, scale, nudge = 0) {
+    ctx.save();
+    ctx.translate(x + w / 2, y + h / 2); ctx.scale(scale, scale); ctx.translate(-(x + w / 2), -(y + h / 2));
+    ctx.fillStyle = C.blue; ctx.fillRect(x, y, w, h);
+    setFont(700, size, J, size * 0.2);
+    const tw = ctx.measureText(str.toUpperCase()).width;
+    const aw = size * 1.6, gap = size * 0.8;
+    const x0 = x + (w - tw - gap - aw) / 2, by = y + h / 2 + size * 0.36;
+    ctx.fillStyle = C.ink; ctx.fillText(str.toUpperCase(), x0, by);
+    ctx.fillRect(x0, by + size * 0.22, tw, 2);
+    const ax = x0 + tw + gap + nudge, ay = y + h / 2;
+    ctx.strokeStyle = C.ink; ctx.lineWidth = 2.5; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ax + aw, ay);
+    ctx.moveTo(ax + aw - size * 0.4, ay - size * 0.3); ctx.lineTo(ax + aw, ay); ctx.lineTo(ax + aw - size * 0.4, ay + size * 0.3);
+    ctx.stroke();
+    ctx.letterSpacing = "0px";
+    ctx.restore();
   }
 
   function wrap(str, maxW, w, s, f = M) {
@@ -181,17 +224,26 @@
 
   const CLICKS = TL.clicks;
   // keyframes del cursor en coordenadas del cuadrado: [beat, x, y]
+  // destinos que dependen del ancho real del texto (se calculan con las fuentes ya cargadas)
+  const endOf = (str, w, size, f = M) => textW(str, w, size, f) + 18;
+  const T = {
+    c1: () => [FD.x + 44 + endOf("Solo 9 creativos en 2026", 500, TS), FD.y + 190 + 2 * TL_ - 22],
+    c2: () => [FD.x + 44 + endOf("Medición", 500, TS), FD.y + 190 - 22],
+    sv: () => { const it = "Search en Google Ads para demanda activa"; return [184 + endOf(it, 500, fit(it, 790, 500, 31)) - 4, 812]; },
+    ck: () => { const c = CHECKS[2]; return [166 + endOf(c, 500, fit(c, 820, 500, 25, J), J), 836]; },
+  };
+  // keyframes del cursor en coordenadas del cuadrado: [beat, x, y] o [beat, destino]
   const CUR = [
     [6.5, 1180, 760], [7, 640, 640], [9.6, 640, 560], [10.1, 1180, 1000],
-    [14.2, 1180, 1000], [14.8, 200, 880], [15.4, 200, 880], [16.1, 1180, 1060],
-    [19.6, 1180, 1060], [20.5, 132, 738], [20.95, 132, 738], [21.45, 1180, 640],
-    [27.6, 1180, 1100], [28.5, 132, 532], [28.95, 132, 532], [29.45, 1180, 420],
-    [35.6, 1180, 1100], [36.5, 222, 930], [36.95, 222, 930], [37.45, 1180, 1000],
-    [45, 1180, 1100], [45.9, 112, 860], [46.4, 112, 860], [47.3, 1180, 1100],
-    [54, 1180, 1100], [54.9, 130, 795], [55.4, 130, 795], [56.4, 1180, 1100],
+    [14.2, 1180, 1000], [14.8, 560, 896], [15.4, 560, 896], [16.1, 1180, 1060],
+    [19.6, 1180, 1060], [20.5, "c1"], [20.95, "c1"], [21.45, 1180, 300],
+    [27.6, 1180, 1100], [28.5, "c2"], [28.95, "c2"], [29.45, 1180, 300],
+    [35.6, 1180, 1100], [36.5, "sv"], [36.95, "sv"], [37.45, 1180, 1000],
+    [45, 1180, 1100], [45.9, "ck"], [46.4, "ck"], [47.3, 1180, 1100],
+    [54, 1180, 1100], [54.9, 700, 792], [55.4, 700, 792], [56.4, 1180, 1100],
   ];
   function cursorPos(t) {
-    const k = CUR.map(([b, x, y]) => [bt(b), x, y]);
+    const k = CUR.map((e) => (typeof e[1] === "string" ? [bt(e[0]), ...T[e[1]]()] : [bt(e[0]), e[1], e[2]]));
     if (t <= k[0][0]) return [k[0][1], k[0][2]];
     for (let i = 0; i < k.length - 1; i++) {
       if (t <= k[i + 1][0]) {
@@ -247,7 +299,7 @@
     const y = fmt === "916" ? 318 : 62;
     const xl = fmt === "169" ? 64 : 48, xr = W - xl;
     ctx.fillStyle = C.blue; ctx.beginPath(); ctx.arc(xl + 7, y - 8, 7, 0, TAU); ctx.fill();
-    setFont(700, 26); ctx.fillStyle = C.wh; ctx.fillText("Mirada Digital", xl + 24, y);
+    setFont(500, 27); ctx.fillStyle = C.wh; ctx.fillText("Mirada Digital", xl + 24, y);
     label("Propuesta · Tasker", xr, y, { size: 20, align: "right" });
   }
 
@@ -371,142 +423,110 @@
     label("su sitio hoy", 802, 600, { size: 18 });
   }
 
-  const COV = { x: 60, y: 150, w: 960, h: 790 };
+  const COV = { x: 50, y: 140, w: 980, h: 820 };
   function cover(t) {
     if (t < bt(10) || t >= bt(16)) return;
     const { x, y, w, h } = COV;
     const open = E.expoOut(sp(t, bt(10), bt(10) + 0.45));
     ctx.save();
     ctx.beginPath(); ctx.rect(x - 4, y + h / 2 - (h / 2 + 4) * open, w + 8, (h + 8) * open); ctx.clip();
-    card(x, y, w, h, 32);
+    card(x, y, w, h);
 
-    // encabezado tipeado
-    const head = "Propuesta comercial · Marketing digital";
-    const n = Math.floor(head.length * sp(t, bt(10.5), bt(10.5) + 0.45));
-    label(head.slice(0, n), x + 48, y + 72, { size: 18 });
+    eyebrow("Propuesta comercial · Marketing digital", x + 48, y + 74, sp(t, bt(10.5), bt(10.5) + 0.45), 18);
     const lp = E.expoOut(sp(t, bt(10.6), bt(10.6) + 0.35));
     if (lp > 0) {
-      label("para", x + w - 48 - 205, y + 72, { size: 18 });
-      ctx.save(); ctx.globalAlpha = 1; ctx.translate(0, (1 - lp) * 30);
-      logo("logoW", x + w - 48 - 112, y + 46, 38);
+      ctx.save(); ctx.beginPath(); ctx.rect(x, y + 100, w, 80); ctx.clip(); ctx.translate(0, (1 - lp) * 70);
+      label("para", x + 50, y + 150, { size: 18 });
+      logo("logoW", x + 140, y + 118, 44);
+      label("rubro · insumos y equipos para helados soft", x + w - 48, y + 150, { size: 15, align: "right" });
       ctx.restore();
     }
-    mtext("Insumos y equipos para helados soft.", x + 48, y + 140, 26, E.expoOut(sp(t, bt(10.8), bt(10.8) + 0.35)), { w: 500, color: C.gr });
 
-    // título con barrido de máscara
-    const ts = fit("De referentes del rubro", w - 96, 800, 76);
-    sweepText([["De referentes del rubro", C.wh]], x + 48, y + 270, ts, E.inOut(sp(t, bt(11), bt(11) + 0.55)));
-    sweepText([["a referentes ", C.wh], ["en digital", C.blue]], x + 48, y + 270 + ts * 1.15, ts, E.inOut(sp(t, bt(12), bt(12) + 0.55)));
+    // título con barrido de máscara (blanco y liviano, como la portada del deck)
+    const ts = fit("De referentes del rubro", w - 96, 500, 86);
+    sweepText([["De referentes del rubro", C.wh]], x + 48, y + 330, ts, E.inOut(sp(t, bt(11), bt(11) + 0.55)), 500);
+    sweepText([["a referentes en digital", C.wh]], x + 48, y + 330 + ts * 1.2, ts, E.inOut(sp(t, bt(12), bt(12) + 0.55)), 500);
 
-    // fila de servicios (2x2)
+    // fila de servicios: mono azul en chips oscuros (2x2)
     const svc = ["Redes sociales", "Meta Ads", "Contenido & fotografía", "Estrategia & consultoría"];
-    svc.forEach((s, i) => {
+    svc.forEach((sv, i) => {
       const st = bt(13) + i * 0.125;
       const p = E.back(sp(t, st, st + 0.35));
       if (p <= 0) return;
-      const cx = x + 48 + (i % 2) * 438, cy = y + 450 + Math.floor(i / 2) * 104;
+      const cx = x + 48 + (i % 2) * 448, cy = y + 520 + Math.floor(i / 2) * 92;
       ctx.save();
-      ctx.translate(cx + 210, cy + 44); ctx.scale(p, p); ctx.translate(-(cx + 210), -(cy + 44));
-      rrect(cx, cy, 420, 88, 18); ctx.fillStyle = "#0e1219"; ctx.fill(); ctx.strokeStyle = C.line; ctx.lineWidth = 2; ctx.stroke();
-      label(`0${i + 1}`, cx + 24, cy + 54, { size: 20, color: C.blue, w: 700 });
-      setFont(700, fit(s, 300, 700, 28)); ctx.fillStyle = C.wh; ctx.fillText(s, cx + 90, cy + 55);
+      ctx.translate(cx + 214, cy + 38); ctx.scale(p, p); ctx.translate(-(cx + 214), -(cy + 38));
+      ctx.fillStyle = "#171d29"; ctx.fillRect(cx, cy, 428, 76);
+      const txt = `0${i + 1} ${sv}`;
+      setFont(500, fit(txt, 390, 500, 25, J), J); ctx.fillStyle = C.blueTxt; ctx.fillText(txt, cx + 20, cy + 47);
       ctx.restore();
     });
 
-    // botón azul con rebote y click
+    // botón con rebote y click
     const bp = E.spring(sp(t, bt(14), bt(14) + 0.7), 5, 14);
     if (bp > 0) {
-      const press = clamp(1 - Math.abs(t - clickAt(15)) / 0.12) * (t > clickAt(15) - 0.06 ? 1 : 0);
-      const bx = x + 48, by = y + 680, bw = 470, bh = 70;
-      ctx.save();
-      ctx.translate(bx + bw / 2, by + bh / 2); ctx.scale(bp * (1 - 0.06 * press), bp * (1 - 0.06 * press)); ctx.translate(-(bx + bw / 2), -(by + bh / 2));
-      rrect(bx, by, bw, bh, 35); ctx.fillStyle = C.blue; ctx.fill();
-      label("Empezar el recorrido →", bx + bw / 2, by + 44, { size: 20, color: C.wh, w: 700, align: "center" });
-      ctx.restore();
+      const tc = clickAt(15);
+      const press = t > tc - 0.06 ? clamp(1 - Math.abs(t - tc) / 0.12) : 0;
+      deckButton("Empezar el recorrido", x + 48, y + 718, 500, 76, 22, bp * (1 - 0.05 * press), 8 * E.out(sp(t, tc, tc + 0.2)));
     }
     ctx.restore();
   }
 
   // ---------- 3 · tres hallazgos (8–20 s) ----------
 
-  const FD = { x: 70, y: 230, w: 940, h: 800 };
+  const FD = { x: 60, y: 230, w: 960, h: 820 };
   const FINDINGS = [
-    { n: "01", tag: "Urgente", title: "Redes activas, sin rotación de pauta.",
+    { n: "01", tag: "Urgente", glyph: "ban", title: ["Redes activas,", "sin rotación de pauta.", "Solo 9 creativos en 2026"],
       body: "Marca activa en Instagram, Facebook y TikTok: gran oportunidad para sumar pauta a los creativos publicados, a modo de boosteo." },
-    { n: "02", tag: "Clave", title: "Medición sin confirmar",
+    { n: "02", tag: "Clave", glyph: "up", title: ["Medición", "sin confirmar"],
       body: "Tienen Google Tag Manager instalado, pero no podemos confirmar si los píxeles de conversión están activos." },
-    { n: "03", tag: "Oportunidad", title: "Pauta activa detectada",
+    { n: "03", tag: "Oportunidad", glyph: "ring", title: ["Pauta", "activa detectada"],
       body: "Encontramos anuncios activos en Meta: gran oportunidad para crear nueva pauta en Google Ads y TikTok Ads." },
   ];
-
-  function icon(k, cx, cy, p) {
-    ctx.save();
-    ctx.translate(cx, cy); ctx.rotate((1 - p) * -1.2); ctx.scale(p, p);
-    ctx.strokeStyle = C.cyan; ctx.lineWidth = 5; ctx.lineCap = "round";
-    ctx.beginPath(); ctx.arc(0, 0, 40, 0, TAU); ctx.strokeStyle = C.line; ctx.stroke();
-    ctx.strokeStyle = C.cyan;
-    if (k === 0) { ctx.beginPath(); ctx.arc(0, 0, 18, 0, TAU); ctx.moveTo(-13, 13); ctx.lineTo(13, -13); ctx.stroke(); }
-    if (k === 1) { ctx.beginPath(); ctx.moveTo(-16, 16); ctx.lineTo(16, -16); ctx.moveTo(0, -16); ctx.lineTo(16, -16); ctx.lineTo(16, 0); ctx.stroke(); }
-    if (k === 2) { ctx.setLineDash([6, 7]); ctx.beginPath(); ctx.arc(0, 0, 18, 0, TAU); ctx.stroke(); }
-    ctx.restore();
-  }
+  const TS = 66, TL_ = 80; // tamaño y paso de línea de los títulos de tarjeta
 
   function finding(k, t) {
     const st = bt(16 + k * 8);
-    const lt = t - st;
     const side = k % 2 ? 1 : -1;
     const ent = E.spring(sp(t, st, st + 0.75), 6, 11);
     const f = FINDINGS[k];
     const { x, y, w, h } = FD;
 
-    // encabezado de sección
-    mtext("Esto es lo que encontramos.", 72, 196, 50, E.expoOut(sp(t, st + 0.05, st + 0.35)), { w: 800 });
-    label(`02 · Diagnóstico   ·   problema ${k + 1} de 3`, 74, 130, { size: 20, color: C.gr });
+    eyebrow("El punto de partida", 62, 122, sp(t, st, st + 0.35), 20);
+    mtext("Esto es lo que encontramos.", 60, 190, 52, E.expoOut(sp(t, st + 0.05, st + 0.35)), { w: 500 });
 
     ctx.save();
     ctx.translate((1 - ent) * side * 1250, 0);
     ctx.translate(x + w / 2, y + h / 2); ctx.rotate((1 - ent) * side * 0.08); ctx.translate(-(x + w / 2), -(y + h / 2));
-    card(x, y, w, h, 32);
-    label(`Problema / ${f.n}`, x + 48, y + 72, { size: 22 });
-    // etiqueta
-    setFont(700, 18, J, 18 * 0.22);
-    const tw = ctx.measureText(f.tag.toUpperCase()).width;
-    rrect(x + w - 48 - tw - 40, y + 44, tw + 40, 42, 21); ctx.fillStyle = "rgba(59,130,246,0.16)"; ctx.fill();
-    label(f.tag, x + w - 48 - tw - 20, y + 72, { size: 18, color: C.cyan, w: 700 });
-    ctx.letterSpacing = "0px";
-    icon(k, x + 92, y + 175, E.back(sp(t, st + 0.2, st + 0.55)));
+    card(x, y, w, h);
+    label(`Problema / ${f.n}`, x + 44, y + 64, { size: 20 });
+    iconBox(x + w - 44 - 64, y + 34, f.glyph, E.back(sp(t, st + 0.2, st + 0.55)));
 
-    // título
-    const lines = wrap(f.title, w - 96, 800, 66);
-    lines.forEach((ln, i) => {
+    // título como en el deck, línea por línea
+    f.title.forEach((ln, i) => {
+      const ly = y + 190 + i * TL_;
       const p = E.expoOut(sp(t, st + 0.3 + i * 0.08, st + 0.65 + i * 0.08));
-      if (k === 1) marker(x + 48, y + 330 + i * 76, textW(ln, 800, 66), 66, E.inOut(sp(t, clickAt(28.6), clickAt(28.6) + 0.35)));
-      mtext(ln, x + 48, y + 330 + i * 76, 66, p, { w: 800 });
+      if (k === 1) marker(x + 44, ly, textW(ln, 500, TS), TS, E.inOut(sp(t, clickAt(28.6) + i * 0.08, clickAt(28.6) + 0.35 + i * 0.08)));
+      if (k === 0 && i === 2) {
+        const n = Math.round(9 * E.out(sp(t, st + 0.6, st + 1.4)));
+        marker(x + 44, ly, textW("Solo 9 creativos en 2026", 500, TS), TS, E.inOut(sp(t, clickAt(20.6), clickAt(20.6) + 0.35)));
+        mtext(`Solo ${n} creativos en 2026`, x + 44, ly, TS, p, { w: 500, parts: [["Solo ", C.wh], [String(n), C.blue], [" creativos en 2026", C.wh]] });
+      } else mtext(ln, x + 44, ly, TS, p, { w: 500 });
     });
-    const ty = y + 330 + lines.length * 76;
+    const ty = y + 190 + (f.title.length - 1) * TL_;
 
-    if (k === 0) {
-      // "Solo 9 creativos en 2026" con el 9 contando
-      const n = Math.round(9 * E.out(sp(t, st + 0.6, st + 1.4)));
-      const line = `Solo ${n} creativos en 2026`;
-      const lw = textW("Solo 9 creativos en 2026", 800, 60);
-      marker(x + 48, ty + 50, lw, 60, E.inOut(sp(t, clickAt(20.6), clickAt(20.6) + 0.35)));
-      mtext(line, x + 48, ty + 50, 60, E.expoOut(sp(t, st + 0.55, st + 0.9)), {
-        w: 800, parts: [["Solo ", C.wh], [String(n), C.blue], [" creativos en 2026", C.wh]],
-      });
-    }
     if (k === 1) {
       const rows = [["Google Tag Manager", "Instalado", C.cyan, "✓"], ["Píxeles de conversión", "Sin confirmar", C.gr, "?"]];
       rows.forEach(([a, b, col, g], i) => {
         const p = E.expoOut(sp(t, st + 0.6 + i * 0.12, st + 0.95 + i * 0.12));
         if (p <= 0) return;
-        const ry = ty + 20 + i * 76;
-        ctx.save(); ctx.beginPath(); ctx.rect(x + 40, ry - 44, w - 80, 66); ctx.clip();
-        ctx.translate(0, (1 - p) * 66);
-        label(a, x + 48, ry, { size: 24, color: C.wh });
-        const pulse = g === "?" ? 0.6 + 0.4 * Math.abs(Math.sin(t * 5)) : 1;
-        ctx.globalAlpha = pulse;
-        label(`${g}  ${b}`, x + w - 48, ry, { size: 24, color: col, w: 700, align: "right" });
+        const ry = ty + 110 + i * 70;
+        ctx.save(); ctx.beginPath(); ctx.rect(x + 40, ry - 44, w - 80, 64); ctx.clip();
+        ctx.translate(0, (1 - p) * 64);
+        ctx.fillStyle = C.line; ctx.fillRect(x + 44, ry + 18, w - 88, 1);
+        label(a, x + 44, ry, { size: 22, color: C.wh });
+        ctx.globalAlpha = g === "?" ? 0.6 + 0.4 * Math.abs(Math.sin(t * 5)) : 1;
+        label(`${g}  ${b}`, x + w - 44, ry, { size: 22, color: col, w: 700, align: "right" });
         ctx.restore();
       });
     }
@@ -515,20 +535,23 @@
       ch.forEach(([a, b, col], i) => {
         const p = E.back(sp(t, st + 0.6 + i * 0.1, st + 0.95 + i * 0.1));
         if (p <= 0) return;
-        const cx = x + 48 + i * 288, cy = ty - 20;
-        ctx.save(); ctx.translate(cx + 136, cy + 50); ctx.scale(p, p); ctx.translate(-(cx + 136), -(cy + 50));
-        rrect(cx, cy, 272, 100, 18); ctx.fillStyle = "#0e1219"; ctx.fill(); ctx.strokeStyle = i === 0 ? C.cyan : C.line; ctx.lineWidth = 2; ctx.stroke();
-        label(a, cx + 22, cy + 42, { size: 21, color: C.wh, w: 700 });
-        label(b, cx + 22, cy + 76, { size: 18, color: col });
+        const cx = x + 44 + i * 296, cy = ty + 60;
+        ctx.save(); ctx.translate(cx + 140, cy + 48); ctx.scale(p, p); ctx.translate(-(cx + 140), -(cy + 48));
+        ctx.fillStyle = "#171d29"; ctx.fillRect(cx, cy, 280, 96);
+        ctx.strokeStyle = i === 0 ? C.cyan : C.line; ctx.lineWidth = 2; ctx.strokeRect(cx + 1, cy + 1, 278, 94);
+        label(a, cx + 20, cy + 40, { size: 21, color: C.wh, w: 700 });
+        label(b, cx + 20, cy + 74, { size: 18, color: col });
         ctx.restore();
       });
     }
 
     // cuerpo
-    const by = ty + (k === 0 ? 160 : k === 1 ? 200 : 170);
-    wrap(f.body, w - 96, 500, 34).forEach((ln, i) => {
-      mtext(ln, x + 48, by + i * 48, 34, E.expoOut(sp(t, st + 0.75 + i * 0.06, st + 1.1 + i * 0.06)), { w: 500, color: C.gr });
+    const by = ty + (k === 0 ? 90 : k === 1 ? 260 : 220);
+    wrap(f.body, w - 88, 500, 33).forEach((ln, i) => {
+      mtext(ln, x + 44, by + i * 46, 33, E.expoOut(sp(t, st + 0.75 + i * 0.06, st + 1.1 + i * 0.06)), { w: 500, color: C.gr });
     });
+    // tag coral abajo, como en el deck
+    label(f.tag, x + 44, y + h - 48, { size: 20, color: C.coral, w: 700 });
     ctx.restore();
   }
 
@@ -536,23 +559,24 @@
     const st = bt(33);
     if (t < st) return;
     const ent = E.spring(sp(t, st, st + 0.7), 6, 11);
-    const x = 120, y = 655, w = 920, h = 415;
+    const x = 100, y = 600, w = 940, h = 450;
     ctx.save();
     ctx.translate((1 - ent) * 1200, 0);
-    ctx.translate(x + w / 2, y + h / 2); ctx.rotate(-0.025 + (1 - ent) * 0.1); ctx.translate(-(x + w / 2), -(y + h / 2));
-    ctx.shadowColor = "rgba(0,0,0,0.6)"; ctx.shadowBlur = 50; ctx.shadowOffsetY = 20;
-    card(x, y, w, h, 30);
+    ctx.translate(x + w / 2, y + h / 2); ctx.rotate(-0.02 + (1 - ent) * 0.1); ctx.translate(-(x + w / 2), -(y + h / 2));
+    ctx.shadowColor = "rgba(0,0,0,0.65)"; ctx.shadowBlur = 50; ctx.shadowOffsetY = 20;
+    card(x, y, w, h);
     ctx.shadowColor = "transparent";
-    label("Servicio / 02", x + 44, y + 56, { size: 22 });
-    mtext("Meta & Google Ads", x + 44, y + 122, 52, E.expoOut(sp(t, st + 0.2, st + 0.5)), { w: 800 });
-    const items = ["Campañas de leads por rubro: cafés, heladerías, hoteles", "Search en Google Ads para demanda activa", "Remarketing a visitantes del sitio"];
+    label("Servicio / 02  |  Meta & Google Ads", x + 44, y + 66, { size: 22, color: C.wh, w: 700 });
+    iconBox(x + w - 44 - 64, y + 30, "inf", E.back(sp(t, st + 0.2, st + 0.5)));
+    const items = ["Campañas de leads por rubro: cafés, heladerías, hoteles", "Search en Google Ads para demanda activa",
+      "Remarketing a visitantes del sitio", "Optimización semanal de presupuesto"];
     items.forEach((it, i) => {
-      const iy = y + 205 + i * 78;
-      const p = E.expoOut(sp(t, st + 0.35 + i * 0.1, st + 0.7 + i * 0.1));
-      const s = fit(it, w - 140, 700, 32);
-      if (i === 1) marker(x + 86, iy, textW(it, 700, s), s, E.inOut(sp(t, clickAt(36.6), clickAt(36.6) + 0.35)));
-      if (p > 0) { ctx.fillStyle = C.blue; ctx.fillRect(x + 44, iy - 20, 14, 14); }
-      mtext(it, x + 86, iy, s, p, { w: 700 });
+      const iy = y + 160 + i * 76;
+      const p = E.expoOut(sp(t, st + 0.3 + i * 0.09, st + 0.65 + i * 0.09));
+      const s = fit(it, w - 150, 500, 31);
+      if (i === 1) marker(x + 84, iy, textW(it, 500, s), s, E.inOut(sp(t, clickAt(36.6), clickAt(36.6) + 0.35)));
+      if (p > 0) { ctx.fillStyle = C.blue; ctx.fillRect(x + 44, iy - 11, 22, 3); }
+      mtext(it, x + 84, iy, s, p, { w: 500 });
     });
     ctx.restore();
   }
@@ -596,26 +620,27 @@
       const at = bt(43 + i * 0.5);
       const p = E.expoOut(sp(t, at, at + 0.35));
       if (p <= 0) return;
-      const cy = 640 + i * 110;
+      const ry = 600 + i * 98;
       ctx.save();
-      ctx.beginPath(); ctx.rect(60, cy - 50, 980, 100); ctx.clip();
-      ctx.translate(0, (1 - p) * 100);
-      rrect(80, cy - 32, 64, 64, 14); ctx.fillStyle = C.card; ctx.fill(); ctx.strokeStyle = i === 2 ? C.cyan : C.line; ctx.lineWidth = 2; ctx.stroke();
+      ctx.beginPath(); ctx.rect(60, ry - 6, 960, 92); ctx.clip();
+      ctx.translate(0, (1 - p) * 92);
+      ctx.fillStyle = "#10141c"; ctx.fillRect(80, ry, 920, 80);
+      ctx.strokeStyle = i === 2 ? "rgba(34,211,238,0.6)" : C.line; ctx.lineWidth = 2; ctx.strokeRect(81, ry + 1, 918, 78);
+      ctx.strokeStyle = C.blue; ctx.lineWidth = 2.5; ctx.strokeRect(104, ry + 22, 36, 36);
       // tilde: los dos primeros ya vienen tildados, el de 30 días lo tilda el cursor
       const ck = i < 2 ? E.out(sp(t, at + 0.15, at + 0.4)) : E.out(sp(t, clickAt(46), clickAt(46) + 0.3));
       if (ck > 0) {
-        ctx.strokeStyle = i === 2 ? C.cyan : C.blue; ctx.lineWidth = 8; ctx.lineCap = "round"; ctx.lineJoin = "round";
-        ctx.beginPath();
-        const pts = [[96, cy + 2], [108, cy + 16], [130, cy - 14]];
-        const segA = clamp(ck * 2), segB = clamp(ck * 2 - 1);
-        ctx.moveTo(...pts[0]);
-        ctx.lineTo(lerp(pts[0][0], pts[1][0], segA), lerp(pts[0][1], pts[1][1], segA));
-        if (segB > 0) ctx.lineTo(lerp(pts[1][0], pts[2][0], segB), lerp(pts[1][1], pts[2][1], segB));
+        ctx.strokeStyle = i === 2 ? C.cyan : C.blueTxt; ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.lineJoin = "round";
+        const pts = [[112, ry + 40], [120, ry + 49], [134, ry + 30]];
+        const a = clamp(ck * 2), b2 = clamp(ck * 2 - 1);
+        ctx.beginPath(); ctx.moveTo(...pts[0]);
+        ctx.lineTo(lerp(pts[0][0], pts[1][0], a), lerp(pts[0][1], pts[1][1], a));
+        if (b2 > 0) ctx.lineTo(lerp(pts[1][0], pts[2][0], b2), lerp(pts[1][1], pts[2][1], b2));
         ctx.stroke();
       }
-      const s = fit(c, 860, 700, 32);
-      if (i === 2) marker(172, cy + 11, textW(c, 700, s), s, E.inOut(sp(t, clickAt(46) + 0.1, clickAt(46) + 0.45)));
-      setFont(700, s); ctx.fillStyle = C.wh; ctx.fillText(c, 172, cy + 11);
+      const s = fit(c, 820, 500, 25, J);
+      if (i === 2) marker(166, ry + 49, textW(c, 500, s, J), s, E.inOut(sp(t, clickAt(46) + 0.1, clickAt(46) + 0.45)));
+      setFont(500, s, J); ctx.fillStyle = C.wh; ctx.fillText(c, 166, ry + 49);
       ctx.restore();
     });
     ctx.restore();
@@ -635,17 +660,17 @@
     if (lp > 0) {
       ctx.save(); ctx.beginPath(); ctx.rect(40, 170, 1000, 120); ctx.clip(); ctx.translate(0, (1 - lp) * 110);
       ctx.fillStyle = C.blue; ctx.beginPath(); ctx.arc(92, 236, 12, 0, TAU); ctx.fill();
-      setFont(800, 54); ctx.fillStyle = C.wh; ctx.fillText("Mirada Digital", 120, 255);
-      const mw = textW("Mirada Digital", 800, 54);
+      setFont(500, 58); ctx.fillStyle = C.wh; ctx.fillText("Mirada Digital", 120, 255);
+      const mw = textW("Mirada Digital", 500, 58);
       label("×", 120 + mw + 30, 252, { size: 40, color: C.gr });
       logo("logoW", 120 + mw + 90, 200, 72);
       ctx.restore();
     }
     ctx.restore();
 
-    const fs = fit("De referentes del rubro", 920, 800, 84);
-    mtext("De referentes del rubro", 80, 470, fs, E.expoOut(sp(t, bt(50), bt(50) + 0.4)), { w: 800 });
-    mtext("a referentes en digital.", 80, 470 + fs * 1.15, fs, E.expoOut(sp(t, bt(51), bt(51) + 0.4)), { w: 800, color: C.blue });
+    const fs = fit("De referentes del rubro", 920, 500, 92);
+    mtext("De referentes del rubro", 80, 480, fs, E.expoOut(sp(t, bt(50), bt(50) + 0.4)), { w: 500 });
+    mtext("a referentes en digital.", 80, 480 + fs * 1.18, fs, E.expoOut(sp(t, bt(51), bt(51) + 0.4)), { w: 500, color: C.blue });
 
     // botón
     const bp = E.spring(sp(t, bt(53), bt(53) + 0.7), 5, 14);
@@ -653,14 +678,7 @@
       const tc = clickAt(55);
       const press = t > tc - 0.06 ? clamp(1 - Math.abs(t - tc) / 0.12) : 0;
       const nudge = 10 * E.out(sp(t, tc, tc + 0.2)) * (1 - E.in(sp(t, tc + 0.3, tc + 0.6)));
-      const bx = 80, by = 740, bw = 640, bh = 96;
-      ctx.save();
-      ctx.translate(bx + bw / 2, by + bh / 2); ctx.scale(bp * (1 - 0.06 * press), bp * (1 - 0.06 * press)); ctx.translate(-(bx + bw / 2), -(by + bh / 2));
-      rrect(bx, by, bw, bh, 48); ctx.fillStyle = C.blue; ctx.fill();
-      setFont(800, 38); ctx.fillStyle = C.wh;
-      ctx.fillText("Hablemos esta semana", bx + 48, by + 61);
-      ctx.fillText("→", bx + bw - 90 + nudge, by + 61);
-      ctx.restore();
+      deckButton("Hablemos esta semana", 80, 740, 700, 100, 30, bp * (1 - 0.05 * press), nudge);
     }
 
     // mail tipeado
