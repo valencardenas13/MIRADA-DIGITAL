@@ -1,2 +1,14 @@
 [build]
-  publish = "web"
+  base = "app"
+  publish = "dist"
+  # The new landing replaces web/index.html; the other pages in web/ (links, creativos, etc.) keep their URLs.
+  command = "npm ci && npm run build && for f in ../web/*; do [ -e \"dist/$(basename \"$f\")\" ] || cp -r \"$f\" dist/; done"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[[redirects]]
+  from = "https://www.somosmiradadigital.com.ar/*"
+  to = "https://somosmiradadigital.com.ar/:splat"
+  status = 301
+  force = true
