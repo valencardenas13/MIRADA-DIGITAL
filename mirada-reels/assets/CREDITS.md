@@ -14,7 +14,7 @@
 ## Fotos
 | Archivo | Fuente | Licencia | Estado |
 | --- | --- | --- | --- |
-| photos/pago-celular.jpg | Pexels 8475148 — https://www.pexels.com/photo/8475148/ | Pexels License (uso comercial libre, sin atribución obligatoria) | pendiente de archivo |
-| photos/pago-tarjeta.jpg | Pexels 6684769 — https://www.pexels.com/photo/6684769/ | Pexels License | pendiente de archivo |
-| photos/pago-mostrador.jpg | Pexels 8422732 — https://www.pexels.com/photo/8422732/ | Pexels License | pendiente de archivo |
-| photos/puerta-abierto.jpg | Unsplash, Artem Beliaikin — https://unsplash.com/photos/open-signage-on-door-N35J0N8ZglQ | Unsplash License (uso comercial libre) | pendiente de archivo |
+| photos/pago-celular.jpg | Pexels 8475148 — https://www.pexels.com/photo/8475148/ | Pexels License (uso comercial libre, sin atribución obligatoria) | ok |
+| photos/pago-tarjeta.jpg | Pexels 6684769 — https://www.pexels.com/photo/6684769/ | Pexels License | ok |
+| photos/pago-mostrador.jpg | Pexels 8422732 — https://www.pexels.com/photo/8422732/ | Pexels License | ok |
+| photos/puerta-abierto.jpg | Unsplash, Artem Beliaikin — https://unsplash.com/photos/open-signage-on-door-N35J0N8ZglQ | Unsplash License (uso comercial libre) | ok |
