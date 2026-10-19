@@ -1,0 +1,64 @@
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: saturate(180%) blur(16px);
+  -webkit-backdrop-filter: saturate(180%) blur(16px);
+  border-bottom: 1px solid var(--line);
+}
+
+.inner {
+  max-width: 1200px;
+  margin-inline: auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.brand img {
+  height: 30px;
+  width: auto;
+  display: block;
+}
+
+.links {
+  display: flex;
+  gap: 32px;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.links a {
+  color: var(--navy);
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.links a:hover {
+  opacity: 1;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.small {
+  padding: 10px 20px;
+  font-size: 14px;
+}
+
+@media (max-width: 900px) {
+  .links {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .hideMobile {
+    display: none;
+  }
+}

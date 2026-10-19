@@ -1,0 +1,151 @@
+.block {
+  background-color: var(--cyan);
+  background-image:
+    linear-gradient(rgba(25, 29, 41, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(25, 29, 41, 0.07) 1px, transparent 1px);
+  background-size: 80px 80px;
+  color: var(--navy);
+  padding-block: 120px;
+}
+
+.expand {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+  margin-bottom: 140px;
+}
+
+.expandCopy h2 {
+  font-size: clamp(40px, 6vw, 72px);
+  max-width: 10ch;
+}
+
+.expandCopy p {
+  margin: 22px 0 32px;
+  font-size: 18px;
+  max-width: 440px;
+  color: rgba(25, 29, 41, 0.78);
+}
+
+.expandMedia {
+  position: relative;
+  justify-self: center;
+  width: min(100%, 380px);
+}
+
+.photo {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: var(--radius-card);
+  box-shadow: 0 24px 60px rgba(25, 29, 41, 0.25);
+}
+
+.chip {
+  position: absolute;
+  padding: 10px 16px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 12px 28px rgba(25, 29, 41, 0.25);
+  white-space: nowrap;
+}
+
+.chipTop {
+  top: 18%;
+  left: -14%;
+  background: var(--navy);
+  color: var(--cream);
+}
+
+.chipBottom {
+  bottom: 8%;
+  right: -10%;
+  background: var(--white);
+  color: var(--navy);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.card {
+  background: var(--white);
+  border-radius: var(--radius-card);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 2px 0 rgba(25, 29, 41, 0.08);
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cardHead h3 {
+  font-size: 22px;
+  letter-spacing: -0.02em;
+}
+
+.cardIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--navy);
+  color: var(--cyan);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.cardIcon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.card p {
+  color: var(--gray);
+  font-size: 15px;
+  flex: 1;
+}
+
+.more {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.more svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s;
+}
+
+.more:hover svg {
+  transform: translateX(3px);
+}
+
+@media (max-width: 860px) {
+  .expand {
+    grid-template-columns: 1fr;
+    margin-bottom: 96px;
+  }
+  .cards {
+    grid-template-columns: 1fr;
+  }
+  .chipTop {
+    left: -4%;
+  }
+  .chipBottom {
+    right: -4%;
+  }
+}

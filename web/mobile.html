@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Mirada Digital — Performance con transparencia</title>
+<meta name="description" content="Agencia de performance digital argentina. Auditoría gratis en 72hs.">
+
+<style>
+@font-face {
+  font-family: 'Mona Sans';
+  src: url('https://github.githubassets.com/assets/mona-sans.woff2') format('woff2');
+  font-weight: 100 900;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+:root {
+  --navy:  #0D1B2A;
+  --navy2: #111F30;
+  --navy3: #162235;
+  --cyan:  #00D4FF;
+  --green: #00E676;
+  --white: #FFFFFF;
+  --grey:  #8892A4;
+  --font:  'Mona Sans', -apple-system, sans-serif;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+html { overflow-x:hidden; scroll-behavior:smooth; }
+body {
+  background: var(--navy);
+  color: var(--white);
+  font-family: var(--font);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background:var(--cyan); color:var(--navy); }
+
+/* ─── NAV ─── */
+nav {
+  position: fixed; top:0; left:0; right:0; z-index:200;
+  padding: 14px 20px;
+  display: flex; align-items:center; justify-content:space-between;
+  transition: background 0.4s, backdrop-filter 0.4s;
+}
+nav.scrolled {
+  background: #0D1B2A;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.nav-logo {
+  display: flex; align-items:center; gap:10px;
+  text-decoration: none;
+}
+.nav-logo-text {
+  font-size:15px; font-weight:800; color:var(--white); letter-spacing:-0.3px;
+}
+.nav-ig {
+  display: flex; align-items:center; gap:6px;
+  background: rgba(0,212,255,0.08);
+  border: 1px solid rgba(0,212,255,0.2);
+  color: var(--cyan);
+  font-size: 12px; font-weight: 700;
+  padding: 8px 14px; border-radius: 30px;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.nav-ig:active { background: rgba(0,212,255,0.2); }
+.nav-ig svg { flex-shrink:0; }
+
+/* ─── HERO ─── */
+#hero {
+  min-height: 100dvh;
+  display: flex; flex-direction:column; justify-content:center;
+  padding: 110px 24px 80px;
+  position: relative; overflow: hidden;
+}
+#hero::before {
+  content:''; position:absolute; inset:0;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse at 50% 40%, black 20%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 40%, black 20%, transparent 70%);
+}
+.blob {
+  position:absolute; border-radius:50%;
+  filter: blur(80px); pointer-events:none;
+}
+.blob-1 { width:260px; height:260px; background:rgba(0,212,255,0.08); top:-60px; right:-60px; animation:blobFloat 8s ease-in-out infinite; }
+.blob-2 { width:220px; height:220px; background:rgba(0,230,118,0.05); bottom:-40px; left:-60px; animation:blobFloat 10s ease-in-out infinite reverse; }
+@keyframes blobFloat {
+  0%,100% { transform:translate(0,0) scale(1); }
+  50% { transform:translate(12px,-20px) scale(1.06); }
+}
+
+.hero-content { position:relative; z-index:2; }
+
+.hero-tag {
+  display:inline-flex; align-items:center; gap:8px;
+  background:rgba(0,212,255,0.08); border:1px solid rgba(0,212,255,0.2);
+  color:var(--cyan); font-size:10px; font-weight:700;
+  letter-spacing:2px; text-transform:uppercase;
+  padding:7px 14px; border-radius:30px; margin-bottom:28px;
+  opacity:0; animation:fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 0.2s both;
+}
+.hero-tag::before {
+  content:''; width:5px; height:5px; background:var(--cyan); border-radius:50%;
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.3;transform:scale(0.6)} }
+
+.hero-h1 {
+  font-size: clamp(40px, 12vw, 72px);
+  font-weight: 900; line-height: 1.0;
+  letter-spacing: -2px; margin-bottom: 22px;
+}
+.hero-h1 .line { display:block; overflow:hidden; }
+.hero-h1 .line-inner {
+  display:block; transform:translateY(110%);
+  animation: slideUp 0.8s cubic-bezier(0.16,1,0.3,1) both;
+}
+.hero-h1 .line:nth-child(1) .line-inner { animation-delay:0.35s; }
+.hero-h1 .line:nth-child(2) .line-inner { animation-delay:0.50s; }
+.hero-h1 .line:nth-child(3) .line-inner { animation-delay:0.65s; }
+@keyframes slideUp { from{transform:translateY(110%)} to{transform:translateY(0)} }
+
+.cyan  { color:var(--cyan); }
+.green { color:var(--green); }
+
+.hero-sub {
+  font-size: 15px; color:var(--grey); line-height:1.7;
+  margin-bottom: 36px;
+  opacity:0; animation:fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.8s both;
+}
+.hero-sub strong { color:var(--white); font-weight:600; }
+
+.hero-metrics-row {
+  display: grid; grid-template-columns: repeat(3,1fr); gap:10px;
+  margin-bottom: 36px;
+  opacity:0; animation:fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.9s both;
+}
+.m-card {
+  background:var(--navy2); border:1px solid rgba(255,255,255,0.07);
+  border-radius:14px; padding:14px 12px; text-align:center;
+}
+.m-val { font-size:clamp(20px,6vw,28px); font-weight:900; line-height:1; color:var(--green); }
+.m-val.c { color:var(--cyan); }
+.m-val.w { color:var(--white); }
+.m-lbl { font-size:9px; color:var(--grey); letter-spacing:1.5px; text-transform:uppercase; margin-top:4px; }
+
+.hero-actions {
+  display:flex; flex-direction:column; gap:12px;
+  opacity:0; animation:fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 1s both;
+}
+.btn-wa {
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  background:var(--cyan); color:var(--navy);
+  font-family:var(--font); font-size:15px; font-weight:800;
+  padding:17px 24px; border-radius:50px; border:none;
+  text-decoration:none; transition:transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 0 40px rgba(0,212,255,0.2);
+}
+.btn-wa:active { transform:scale(0.97); }
+.btn-ig-hero {
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  background:transparent; color:var(--grey);
+  font-family:var(--font); font-size:14px; font-weight:600;
+  padding:14px 24px; border-radius:50px;
+  border:1px solid rgba(255,255,255,0.1);
+  text-decoration:none; transition:border-color 0.2s, color 0.2s;
+}
+.btn-ig-hero:active { color:var(--white); border-color:rgba(255,255,255,0.3); }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+/* ─── IG STRIP ─── */
+.ig-strip {
+  background:linear-gradient(135deg, #833ab4 0%, #fd1d1d 50%, #fcb045 100%);
+  padding:2px;
+  border-radius:18px;
+  margin: 0 24px;
+}
+.ig-strip-inner {
+  background:var(--navy2);
+  border-radius:16px;
+  padding:20px 22px;
+  display:flex; align-items:center; gap:16px;
+}
+.ig-avatar {
+  width:52px; height:52px; border-radius:50%;
+  background:var(--navy);
+  border:2px solid rgba(0,212,255,0.3);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.ig-info { flex:1; min-width:0; }
+.ig-handle { font-size:13px; font-weight:800; color:var(--white); }
+.ig-name { font-size:11px; color:var(--grey); margin-top:2px; }
+.ig-follow {
+  background:linear-gradient(135deg, #833ab4, #fd1d1d);
+  color:var(--white); font-family:var(--font);
+  font-size:12px; font-weight:700;
+  padding:8px 16px; border-radius:20px; border:none;
+  text-decoration:none; flex-shrink:0; white-space:nowrap;
+}
+
+/* ─── SECCIONES ─── */
+section { padding:72px 24px; }
+.alt-bg { background:var(--navy2); }
+
+.section-tag {
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:10px; font-weight:700;
+  letter-spacing:3px; text-transform:uppercase;
+  color:var(--cyan); margin-bottom:14px;
+}
+.section-tag::before { content:''; width:20px; height:1.5px; background:var(--cyan); }
+.section-h2 {
+  font-size:clamp(26px,8vw,40px);
+  font-weight:900; letter-spacing:-1px; line-height:1.1; margin-bottom:16px;
+}
+
+/* ─── PROBLEMA ─── */
+.big-quote {
+  font-size:clamp(15px,4.5vw,20px);
+  font-weight:800; line-height:1.4; color:var(--white); margin-bottom:16px;
+}
+.quote-sub { font-size:14px; color:var(--grey); line-height:1.7; margin-bottom:32px; }
+
+.pain-list { display:flex; flex-direction:column; gap:12px; }
+.pain-item {
+  display:flex; gap:14px; align-items:flex-start;
+  padding:18px 16px; border-radius:14px;
+  border:1px solid rgba(255,255,255,0.06);
+  background:rgba(17,31,48,0.6);
+  transition:border-color 0.3s;
+}
+.pain-item.active { border-color:rgba(0,212,255,0.25); }
+.pain-icon { font-size:20px; flex-shrink:0; margin-top:1px; }
+.pain-text strong { display:block; font-size:14px; font-weight:700; color:var(--white); margin-bottom:3px; }
+.pain-text p { font-size:12px; color:var(--grey); line-height:1.55; }
+
+/* ─── VS ─── */
+.vs-tabs {
+  display:flex; border-radius:14px;
+  overflow:hidden; border:1px solid rgba(255,255,255,0.08);
+  margin-bottom:20px;
+}
+.vs-tab {
+  flex:1; padding:12px 8px; text-align:center;
+  font-family:var(--font); font-size:12px; font-weight:700;
+  letter-spacing:1.5px; text-transform:uppercase;
+  background:rgba(255,255,255,0.02); color:var(--grey);
+  border:none; cursor:pointer; transition:all 0.25s;
+}
+.vs-tab.active-bad  { background:rgba(255,255,255,0.05); color:var(--white); }
+.vs-tab.active-good { background:rgba(0,212,255,0.1); color:var(--cyan); }
+.vs-panel { display:none; flex-direction:column; gap:12px; }
+.vs-panel.shown { display:flex; }
+.vs-row {
+  display:flex; align-items:flex-start; gap:12px;
+  padding:14px 16px; border-radius:12px;
+  background:rgba(17,31,48,0.5);
+  border:1px solid rgba(255,255,255,0.05);
+  font-size:13px; line-height:1.5;
+}
+.vs-panel.good .vs-row { border-color:rgba(0,212,255,0.1); color:rgba(255,255,255,0.85); }
+.vs-panel.bad  .vs-row { color:rgba(255,255,255,0.45); }
+.vs-dot-bad  { width:20px; height:20px; background:rgba(255,255,255,0.06); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--grey); flex-shrink:0; }
+.vs-dot-good { width:20px; height:20px; background:rgba(0,212,255,0.15); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--cyan); flex-shrink:0; }
+
+/* ─── SERVICIOS ─── */
+.svc-list { display:flex; flex-direction:column; gap:16px; margin-top:32px; }
+.svc-card {
+  background:var(--navy2);
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:20px; padding:26px 22px;
+  position:relative; overflow:hidden;
+  transition:border-color 0.3s, transform 0.3s;
+}
+.svc-card.featured { border-color:rgba(0,212,255,0.2); background:linear-gradient(135deg,rgba(0,212,255,0.05) 0%,var(--navy2) 100%); }
+.svc-badge { display:inline-block; background:rgba(0,230,118,0.12); color:var(--green); font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase; padding:5px 10px; border-radius:20px; margin-bottom:16px; border:1px solid rgba(0,230,118,0.2); }
+.svc-row { display:flex; align-items:center; gap:14px; margin-bottom:12px; }
+.svc-icon { width:46px; height:46px; background:rgba(0,212,255,0.08); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; border:1px solid rgba(0,212,255,0.12); flex-shrink:0; }
+.svc-name { font-size:18px; font-weight:800; color:var(--white); letter-spacing:-0.3px; }
+.svc-desc { font-size:13px; color:var(--grey); line-height:1.65; margin-bottom:18px; }
+.svc-tags { display:flex; flex-wrap:wrap; gap:8px; }
+.svc-tag { font-size:11px; color:rgba(255,255,255,0.55); background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); padding:5px 10px; border-radius:20px; }
+.svc-expand { width:32px; height:32px; border-radius:50%; border:1px solid rgba(255,255,255,0.1); background:transparent; color:var(--grey); font-size:18px; line-height:1; display:flex; align-items:center; justify-content:center; position:absolute; top:22px; right:20px; cursor:pointer; transition:all 0.2s; }
+.svc-card.open .svc-expand { transform:rotate(45deg); background:var(--cyan); border-color:var(--cyan); color:var(--navy); }
+.svc-details { max-height:0; overflow:hidden; transition:max-height 0.4s cubic-bezier(0.16,1,0.3,1); }
+.svc-card.open .svc-details { max-height:200px; }
+.svc-features { list-style:none; margin-top:16px; display:flex; flex-direction:column; gap:8px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.06); }
+.svc-features li { display:flex; align-items:center; gap:8px; font-size:12px; color:rgba(255,255,255,0.6); }
+.svc-features li::before { content:''; width:4px; height:4px; background:var(--cyan); border-radius:50%; flex-shrink:0; }
+
+/* ─── PROCESO ─── */
+.proceso-list { display:flex; flex-direction:column; gap:0; margin-top:32px; }
+.paso {
+  display:flex; gap:20px;
+  padding:24px 0;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+.paso:last-child { border-bottom:none; }
+.paso-left { display:flex; flex-direction:column; align-items:center; gap:0; }
+.paso-num {
+  width:48px; height:48px; border-radius:50%;
+  background:var(--navy); border:2px solid var(--cyan);
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; font-weight:900; color:var(--cyan); flex-shrink:0;
+}
+.paso-line { width:2px; flex:1; background:linear-gradient(to bottom, rgba(0,212,255,0.3), transparent); margin-top:8px; min-height:20px; }
+.paso:last-child .paso-line { display:none; }
+.paso-body { padding-top:10px; }
+.paso-title { font-size:17px; font-weight:800; color:var(--white); margin-bottom:6px; }
+.paso-desc { font-size:13px; color:var(--grey); line-height:1.6; }
+.paso-tag { font-size:11px; font-weight:700; color:var(--green); margin-top:8px; display:block; }
+
+/* ─── NÚMEROS ─── */
+.numeros-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:32px;
+}
+.numero-card {
+  background:var(--navy2); border:1px solid rgba(255,255,255,0.06);
+  border-radius:18px; padding:28px 20px; text-align:center;
+  transition:border-color 0.3s, transform 0.3s;
+}
+.numero-card:active { transform:scale(0.97); }
+.numero-val { font-size:clamp(32px,9vw,44px); font-weight:900; letter-spacing:-2px; line-height:1; }
+.numero-val .u { color:var(--cyan); }
+.numero-label { font-size:12px; color:var(--grey); margin-top:8px; line-height:1.4; }
+
+/* ─── CTA FINAL ─── */
+#cta {
+  text-align:center; padding:80px 24px;
+  position:relative; overflow:hidden;
+}
+#cta::before {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(ellipse at 50% 100%, rgba(0,212,255,0.1) 0%, transparent 65%);
+}
+.cta-content { position:relative; z-index:1; }
+.cta-h2 {
+  font-size:clamp(30px,9vw,52px);
+  font-weight:900; letter-spacing:-1.5px; line-height:1.05; margin-bottom:16px;
+}
+.cta-sub { font-size:15px; color:var(--grey); margin-bottom:36px; line-height:1.65; }
+.cta-sub strong { color:var(--white); }
+.cta-btns { display:flex; flex-direction:column; gap:12px; }
+.btn-big {
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  background:var(--cyan); color:var(--navy);
+  font-family:var(--font); font-size:16px; font-weight:800;
+  padding:18px 28px; border-radius:60px; border:none;
+  text-decoration:none; transition:transform 0.15s, box-shadow 0.2s;
+  box-shadow:0 0 60px rgba(0,212,255,0.25);
+}
+.btn-big:active { transform:scale(0.97); }
+.btn-ig-cta {
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  background:transparent; color:var(--grey);
+  font-family:var(--font); font-size:14px; font-weight:600;
+  padding:16px 24px; border-radius:60px;
+  border:1px solid rgba(255,255,255,0.1);
+  text-decoration:none;
+}
+.btn-ig-cta:active { color:var(--white); border-color:rgba(255,255,255,0.3); }
+.cta-note { font-size:12px; color:rgba(255,255,255,0.2); margin-top:16px; }
+
+/* ─── FOOTER ─── */
+footer {
+  padding:40px 24px calc(40px + var(--safe-bottom));
+  border-top:1px solid rgba(255,255,255,0.06);
+  text-align:center;
+}
+.footer-logo { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:10px; text-decoration:none; }
+.footer-logo-text { font-size:16px; font-weight:800; color:var(--white); }
+.footer-tagline { font-size:12px; color:var(--grey); margin-bottom:28px; line-height:1.6; }
+.footer-links { display:flex; justify-content:center; gap:24px; flex-wrap:wrap; margin-bottom:28px; }
+.footer-links a { font-size:13px; color:var(--grey); text-decoration:none; }
+.footer-bottom { font-size:12px; color:rgba(255,255,255,0.2); }
+.footer-ig { color:var(--cyan); text-decoration:none; }
+
+/* ─── STICKY WA ─── */
+.wa-sticky {
+  position:fixed; bottom:calc(20px + var(--safe-bottom)); right:20px;
+  width:56px; height:56px; border-radius:50%;
+  background:#25D366; border:none;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 4px 20px rgba(37,211,102,0.4);
+  text-decoration:none; z-index:300;
+  transition:transform 0.2s, box-shadow 0.2s;
+  animation:bounce 3s ease-in-out 2s infinite;
+}
+.wa-sticky:active { transform:scale(0.92); }
+@keyframes bounce {
+  0%,100%{ transform:translateY(0); }
+  50%{ transform:translateY(-6px); }
+}
+
+/* ─── REVEAL ─── */
+.reveal {
+  opacity:0; transform:translateY(24px);
+  transition:opacity 0.65s cubic-bezier(0.16,1,0.3,1), transform 0.65s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal.visible { opacity:1; transform:translateY(0); }
+.d1{transition-delay:0.1s} .d2{transition-delay:0.2s} .d3{transition-delay:0.3s}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">
+    <svg width="38" height="38" viewBox="0 0 100 100" fill="none">
+      <circle cx="50" cy="50" r="50" fill="#0D1B2A"/>
+      <path d="M12 50 C26 22,74 22,88 50 C74 78,26 78,12 50Z" stroke="#00D4FF" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+      <circle cx="50" cy="50" r="13" stroke="#00D4FF" stroke-width="4.5" fill="none"/>
+    </svg>
+    <span class="nav-logo-text">Mirada Digital</span>
+  </a>
+  <a href="https://www.instagram.com/somosmiradadigital" class="nav-ig" target="_blank">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+    IG
+  </a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="hero-content">
+    <div class="hero-tag">Performance · Buenos Aires</div>
+    <h1 class="hero-h1">
+      <span class="line"><span class="line-inner">Invertís.</span></span>
+      <span class="line"><span class="line-inner cyan">Nosotros te</span></span>
+      <span class="line"><span class="line-inner green">mostramos todo.</span></span>
+    </h1>
+    <p class="hero-sub">
+      La mayoría de las agencias ejecuta campañas.<br>
+      <strong>Nadie explica en qué se va cada peso.</strong><br>
+      Nosotros sí — datos reales, en tiempo real.
+    </p>
+
+    <div class="hero-metrics-row">
+      <div class="m-card">
+        <div class="m-val">4.7×</div>
+        <div class="m-lbl">ROAS</div>
+      </div>
+      <div class="m-card">
+        <div class="m-val c">−38%</div>
+        <div class="m-lbl">CPA</div>
+      </div>
+      <div class="m-card">
+        <div class="m-val w">72<span style="font-size:14px;color:var(--cyan)">hs</span></div>
+        <div class="m-lbl">Auditoría</div>
+      </div>
+    </div>
+
+    <div class="hero-actions">
+      <a href="https://wa.me/5491160335080" class="btn-wa" target="_blank">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.528 5.857L.057 23.482a.75.75 0 0 0 .918.919l5.741-1.483A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.726 9.726 0 0 1-4.953-1.358l-.355-.211-3.677.95.982-3.582-.23-.368A9.726 9.726 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
+        Auditoría gratis — 72hs
+      </a>
+      <a href="https://www.instagram.com/somosmiradadigital" class="btn-ig-hero" target="_blank">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        @somosmiradadigital
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- IG STRIP -->
+<div style="padding:0 0 40px;">
+  <div class="ig-strip reveal">
+    <div class="ig-strip-inner">
+      <div class="ig-avatar">
+        <svg width="30" height="30" viewBox="0 0 100 100" fill="none">
+          <circle cx="50" cy="50" r="50" fill="#0D1B2A"/>
+          <path d="M12 50 C26 22,74 22,88 50 C74 78,26 78,12 50Z" stroke="#00D4FF" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <circle cx="50" cy="50" r="13" stroke="#00D4FF" stroke-width="5" fill="none"/>
+        </svg>
+      </div>
+      <div class="ig-info">
+        <div class="ig-handle">@somosmiradadigital</div>
+        <div class="ig-name">Mirada Digital | Performance</div>
+      </div>
+      <a href="https://www.instagram.com/somosmiradadigital" class="ig-follow" target="_blank">Seguir</a>
+    </div>
+  </div>
+</div>
+
+<!-- PROBLEMA -->
+<section id="problema">
+  <div class="reveal">
+    <div class="section-tag">El problema</div>
+    <h2 class="section-h2">¿Cuándo fue la última vez que tu agencia te <span class="cyan">explicó algo?</span></h2>
+    <p class="quote-sub">No el PDF de siempre con capturas. Una explicación real de qué pasó con tu plata. El 80% de los dueños no sabe cuánto generó cada peso invertido en digital.</p>
+  </div>
+  <div class="pain-list">
+    <div class="pain-item reveal d1">
+      <span class="pain-icon">💸</span>
+      <div class="pain-text"><strong>Pagás y rezás</strong><p>Las campañas están activas — eso es todo lo que sabés. Sin números, sin contexto.</p></div>
+    </div>
+    <div class="pain-item reveal d2">
+      <span class="pain-icon">📄</span>
+      <div class="pain-text"><strong>El reporte eterno</strong><p>"Te lo mando la semana que viene" — todos los meses, sin excepción.</p></div>
+    </div>
+    <div class="pain-item reveal d3">
+      <span class="pain-icon">📉</span>
+      <div class="pain-text"><strong>Resultados que no se ven</strong><p>Pagaste, esperaste, y estás igual que antes. Nadie te dijo por qué.</p></div>
+    </div>
+    <div class="pain-item reveal">
+      <span class="pain-icon">🤷</span>
+      <div class="pain-text"><strong>No sabés qué canal priorizar</strong><p>¿Meta o Google? Sin datos reales, cualquier decisión es un tiro al aire.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- VS -->
+<section class="alt-bg">
+  <div class="reveal" style="text-align:center;">
+    <div class="section-tag" style="justify-content:center;">La diferencia</div>
+    <h2 class="section-h2">Ellos ejecutan.<br><span class="cyan">Nosotros explicamos.</span></h2>
+  </div>
+  <div class="reveal" style="margin-top:28px;">
+    <div class="vs-tabs">
+      <button class="vs-tab active-bad" id="tab-bad" onclick="showTab('bad')">Agencia genérica</button>
+      <button class="vs-tab" id="tab-good" onclick="showTab('good')">Mirada Digital</button>
+    </div>
+    <div class="vs-panel bad shown" id="panel-bad">
+      <div class="vs-row"><span class="vs-dot-bad">✕</span>"Las métricas están en verde 🚀"</div>
+      <div class="vs-row"><span class="vs-dot-bad">✕</span>El reporte llega en 2 semanas (o no llega)</div>
+      <div class="vs-row"><span class="vs-dot-bad">✕</span>No sabés en qué se gastó cada peso</div>
+      <div class="vs-row"><span class="vs-dot-bad">✕</span>Paquetes genéricos para todos</div>
+      <div class="vs-row"><span class="vs-dot-bad">✕</span>Desaparecen cuando algo sale mal</div>
+    </div>
+    <div class="vs-panel good" id="panel-good">
+      <div class="vs-row"><span class="vs-dot-good">✓</span>Dashboard en tiempo real, siempre disponible</div>
+      <div class="vs-row"><span class="vs-dot-good">✓</span>Reporte el primer día de cada mes</div>
+      <div class="vs-row"><span class="vs-dot-good">✓</span>Desglose completo de inversión y retorno</div>
+      <div class="vs-row"><span class="vs-dot-good">✓</span>Estrategia armada para tu negocio</div>
+      <div class="vs-row"><span class="vs-dot-good">✓</span>Reunión mensual de resultados incluida</div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICIOS -->
+<section id="servicios">
+  <div class="reveal">
+    <div class="section-tag">Servicios</div>
+    <h2 class="section-h2">Todo lo que necesitás,<br>nada que no uses.</h2>
+  </div>
+  <div class="svc-list">
+
+    <div class="svc-card featured reveal">
+      <div class="svc-badge">Sin costo</div>
+      <button class="svc-expand" onclick="toggleCard(this)">+</button>
+      <div class="svc-row">
+        <div class="svc-icon">⚡</div>
+        <div class="svc-name">Auditoría Express</div>
+      </div>
+      <p class="svc-desc">Revisión completa de tus campañas, web y redes. En 72 horas.</p>
+      <div class="svc-tags">
+        <span class="svc-tag">Meta Ads</span>
+        <span class="svc-tag">Google Ads</span>
+        <span class="svc-tag">Web</span>
+      </div>
+      <div class="svc-details">
+        <ul class="svc-features">
+          <li>Análisis de cuentas publicitarias</li>
+          <li>Revisión de web y conversiones</li>
+          <li>Informe con recomendaciones concretas</li>
+          <li>Sin compromiso de contratación</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="svc-card reveal d1">
+      <button class="svc-expand" onclick="toggleCard(this)">+</button>
+      <div class="svc-row">
+        <div class="svc-icon">🎯</div>
+        <div class="svc-name">Performance Ads</div>
+      </div>
+      <p class="svc-desc">Gestión de campañas en Meta y Google con optimización constante y resultados medibles.</p>
+      <div class="svc-tags">
+        <span class="svc-tag">Meta</span>
+        <span class="svc-tag">Google</span>
+        <span class="svc-tag">TikTok</span>
+      </div>
+      <div class="svc-details">
+        <ul class="svc-features">
+          <li>Creación y gestión de campañas</li>
+          <li>Optimización semanal</li>
+          <li>Reportes mensuales detallados</li>
+          <li>A/B testing continuo</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="svc-card reveal d2">
+      <button class="svc-expand" onclick="toggleCard(this)">+</button>
+      <div class="svc-row">
+        <div class="svc-icon">📊</div>
+        <div class="svc-name">Dashboard & Analytics</div>
+      </div>
+      <p class="svc-desc">Tu negocio en tiempo real. Métricas que importan, sin ruido ni datos basura.</p>
+      <div class="svc-tags">
+        <span class="svc-tag">GA4</span>
+        <span class="svc-tag">Looker Studio</span>
+        <span class="svc-tag">CRM</span>
+      </div>
+      <div class="svc-details">
+        <ul class="svc-features">
+          <li>Dashboard personalizado 24/7</li>
+          <li>Tracking de conversiones</li>
+          <li>Atribución multi-canal</li>
+          <li>Alertas automáticas</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="svc-card reveal d3">
+      <button class="svc-expand" onclick="toggleCard(this)">+</button>
+      <div class="svc-row">
+        <div class="svc-icon">🚀</div>
+        <div class="svc-name">Estrategia Digital</div>
+      </div>
+      <p class="svc-desc">Definimos juntos a dónde querés llegar y construimos el camino con datos, no con intuición.</p>
+      <div class="svc-tags">
+        <span class="svc-tag">Consultoría</span>
+        <span class="svc-tag">Funnel</span>
+        <span class="svc-tag">Creativos</span>
+      </div>
+      <div class="svc-details">
+        <ul class="svc-features">
+          <li>Análisis de mercado y competencia</li>
+          <li>Definición de KPIs y objetivos</li>
+          <li>Planificación de medios</li>
+          <li>Reunión mensual de resultados</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PROCESO -->
+<section id="proceso" class="alt-bg">
+  <div class="reveal">
+    <div class="section-tag">Cómo trabajamos</div>
+    <h2 class="section-h2">Simple, transparente<br>y <span class="cyan">sin letra chica.</span></h2>
+  </div>
+  <div class="proceso-list">
+    <div class="paso reveal">
+      <div class="paso-left">
+        <div class="paso-num">1</div>
+        <div class="paso-line"></div>
+      </div>
+      <div class="paso-body">
+        <div class="paso-title">Auditoría gratuita</div>
+        <p class="paso-desc">Revisamos todo lo que tenés activo. Te decimos qué funciona, qué no, y por qué — en 72 horas.</p>
+        <span class="paso-tag">Sin costo ni compromiso</span>
+      </div>
+    </div>
+    <div class="paso reveal d1">
+      <div class="paso-left">
+        <div class="paso-num">2</div>
+        <div class="paso-line"></div>
+      </div>
+      <div class="paso-body">
+        <div class="paso-title">Estrategia personalizada</div>
+        <p class="paso-desc">Armamos un plan específico para tu negocio. No hay paquetes genéricos acá.</p>
+        <span class="paso-tag">A medida de tus objetivos</span>
+      </div>
+    </div>
+    <div class="paso reveal d2">
+      <div class="paso-left">
+        <div class="paso-num">3</div>
+        <div class="paso-line"></div>
+      </div>
+      <div class="paso-body">
+        <div class="paso-title">Ejecución y optimización</div>
+        <p class="paso-desc">Lanzamos, medimos y ajustamos constantemente. Cada peso tiene que rendir.</p>
+        <span class="paso-tag">Optimización semanal</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NÚMEROS -->
+<section id="numeros">
+  <div class="reveal" style="text-align:center;">
+    <div class="section-tag" style="justify-content:center;">Resultados</div>
+    <h2 class="section-h2">Los números<br><span class="cyan">hablan solos.</span></h2>
+  </div>
+  <div class="numeros-grid">
+    <div class="numero-card reveal">
+      <div class="numero-val">4.7<span class="u">×</span></div>
+      <div class="numero-label">ROAS promedio en cuentas activas</div>
+    </div>
+    <div class="numero-card reveal d1">
+      <div class="numero-val" style="color:var(--cyan)">−38<span style="font-size:20px">%</span></div>
+      <div class="numero-label">Reducción de CPA primer trimestre</div>
+    </div>
+    <div class="numero-card reveal d2">
+      <div class="numero-val">+127<span style="font-size:20px;color:var(--green)">%</span></div>
+      <div class="numero-label">Crecimiento en conversiones</div>
+    </div>
+    <div class="numero-card reveal d3">
+      <div class="numero-val" style="color:var(--green)">72<span style="font-size:20px;color:var(--grey)">hs</span></div>
+      <div class="numero-label">Auditoría gratis, sin vueltas</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="cta-content">
+    <div class="reveal">
+      <div class="section-tag" style="justify-content:center;">¿Arrancamos?</div>
+      <h2 class="cta-h2">Tu próximo<br>cliente <span class="cyan">te espera.</span></h2>
+      <p class="cta-sub">Primero la auditoría, después decidís.<br><strong>Sin presión, sin contrato atado.</strong></p>
+    </div>
+    <div class="cta-btns reveal d1">
+      <a href="https://wa.me/5491160335080" class="btn-big" target="_blank">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.528 5.857L.057 23.482a.75.75 0 0 0 .918.919l5.741-1.483A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.726 9.726 0 0 1-4.953-1.358l-.355-.211-3.677.95.982-3.582-.23-.368A9.726 9.726 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
+        Quiero mi auditoría gratis
+      </a>
+      <a href="https://www.instagram.com/somosmiradadigital" class="btn-ig-cta" target="_blank">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        Ver nuestro Instagram
+      </a>
+    </div>
+    <p class="cta-note">Sin costo. Sin contrato. En 72 horas tenés tu informe.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#" class="footer-logo">
+    <svg width="34" height="34" viewBox="0 0 100 100" fill="none">
+      <circle cx="50" cy="50" r="50" fill="#111F30"/>
+      <path d="M12 50 C26 22,74 22,88 50 C74 78,26 78,12 50Z" stroke="#00D4FF" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <circle cx="50" cy="50" r="13" stroke="#00D4FF" stroke-width="5" fill="none"/>
+    </svg>
+    <span class="footer-logo-text">Mirada Digital</span>
+  </a>
+  <p class="footer-tagline">Agencia de performance digital.<br>Invertís. Te mostramos todo.</p>
+  <div class="footer-links">
+    <a href="#servicios">Servicios</a>
+    <a href="#proceso">Proceso</a>
+    <a href="#numeros">Resultados</a>
+    <a href="https://wa.me/5491160335080" target="_blank" style="color:var(--green)">WhatsApp</a>
+  </div>
+  <p class="footer-bottom">
+    © 2025 Mirada Digital · Buenos Aires ·
+    <a href="https://www.instagram.com/somosmiradadigital" class="footer-ig" target="_blank">@somosmiradadigital</a>
+  </p>
+</footer>
+
+<!-- WhatsApp flotante -->
+<a href="https://wa.me/5491160335080" class="wa-sticky" target="_blank" aria-label="WhatsApp">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.528 5.857L.057 23.482a.75.75 0 0 0 .918.919l5.741-1.483A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.726 9.726 0 0 1-4.953-1.358l-.355-.211-3.677.95.982-3.582-.23-.368A9.726 9.726 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
+</a>
+
+<script>
+// NAV scroll
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 20);
+}, { passive: true });
+
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.05, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Forzar visibilidad si ya están en viewport al cargar
+setTimeout(() => {
+  document.querySelectorAll('.reveal').forEach(el => {
+    const rect = el.getBoundingClientRect();
+    if(rect.top < window.innerHeight) el.classList.add('visible');
+  });
+}, 100);
+
+// VS tabs
+function showTab(tab) {
+  const bad = document.getElementById('panel-bad');
+  const good = document.getElementById('panel-good');
+  const tabBad = document.getElementById('tab-bad');
+  const tabGood = document.getElementById('tab-good');
+  if(tab === 'bad') {
+    bad.classList.add('shown'); good.classList.remove('shown');
+    tabBad.classList.add('active-bad'); tabBad.classList.remove('active-good');
+    tabGood.classList.remove('active-good'); tabGood.classList.remove('active-bad');
+  } else {
+    good.classList.add('shown'); bad.classList.remove('shown');
+    tabGood.classList.add('active-good'); tabGood.classList.remove('active-bad');
+    tabBad.classList.remove('active-bad'); tabBad.classList.remove('active-good');
+  }
+}
+
+// Expandir servicios
+function toggleCard(btn) {
+  const card = btn.closest('.svc-card');
+  const isOpen = card.classList.contains('open');
+  document.querySelectorAll('.svc-card.open').forEach(c => c.classList.remove('open'));
+  if(!isOpen) card.classList.add('open');
+}
+
+// Pain items activos al scrollear
+const painItems = document.querySelectorAll('.pain-item');
+const painObs = new IntersectionObserver(entries => {
+  entries.forEach(e => e.target.classList.toggle('active', e.isIntersecting));
+}, { threshold: 0.3 });
+painItems.forEach(el => painObs.observe(el));
+
+// Contador animado para números
+function animateCount(el, target, suffix='', prefix='') {
+  let start = 0; const duration = 1400;
+  const isFloat = String(target).includes('.');
+  const step = timestamp => {
+    if(!start) start = timestamp;
+    const progress = Math.min((timestamp - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+    const val = isFloat ? (ease * target).toFixed(1) : Math.round(ease * target);
+    el.textContent = prefix + val + suffix;
+    if(progress < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+const numObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(e.isIntersecting) {
+      const el = e.target;
+      const val = el.dataset.val;
+      const suffix = el.dataset.suffix || '';
+      const prefix = el.dataset.prefix || '';
+      animateCount(el, parseFloat(val), suffix, prefix);
+      numObs.unobserve(el);
+    }
+  });
+}, { threshold: 0.5 });
+
+// Setear data attrs en números
+const nums = [
+  { sel: '.numero-card:nth-child(1) .numero-val', val: '4.7', suffix: '×' },
+  { sel: '.numero-card:nth-child(3) .numero-val', val: '127', suffix: '' },
+];
+// Simple approach: animate opacity counters
+document.querySelectorAll('.numero-card').forEach((card, i) => {
+  card.style.cursor = 'default';
+});
+</script>
+</body>
+</html>
