@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="es" data-resolution="portrait" data-composition-variables='[{"id":"cta","type":"enum","label":"CTA","default":"organico","options":[{"value":"organico","label":"Orgánico (comentario)"},{"value":"pauta","label":"Pauta (Escribinos)"}]}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Reel 01 · 10k seguidores no pagan sueldos</title>
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "DM Sans"; src: url("assets/fonts/DMSans-Regular.woff2") format("woff2"); font-weight: 400; font-display: block; }
+      @font-face { font-family: "DM Sans"; src: url("assets/fonts/DMSans-Medium.woff2") format("woff2"); font-weight: 500; font-display: block; }
+      @font-face { font-family: "DM Sans"; src: url("assets/fonts/DMSans-ExtraBold.woff2") format("woff2"); font-weight: 800; font-display: block; }
+      @font-face { font-family: "Space Mono"; src: url("assets/fonts/SpaceMono-Regular.woff2") format("woff2"); font-weight: 400; font-display: block; }
+      @font-face { font-family: "Space Mono"; src: url("assets/fonts/SpaceMono-Bold.woff2") format("woff2"); font-weight: 700; font-display: block; }
+    </style>
+    <link rel="stylesheet" href="assets/reel.css" />
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="17" data-width="1080" data-height="1920">
+      <div id="stage">
+        <!-- 1 · perfil que suma seguidores (frame 0 = miniatura) -->
+        <section id="s1" class="clip" data-start="0" data-duration="2.6" data-track-index="1">
+          <div id="phone">
+            <div class="notch"></div>
+            <div class="avatar">L</div>
+            <div class="name">Cafetería Lumbre</div>
+            <div class="handle">@cafeteria.lumbre</div>
+            <div id="count">1.204</div>
+            <div class="label" id="count-label">SEGUIDORES</div>
+            <div id="tiles"></div>
+          </div>
+          <div id="parts"></div>
+        </section>
+
+        <!-- el contador estalla en partículas que forman el "10k" -->
+        <section id="sdots" class="clip" data-start="1.9" data-duration="1.2" data-track-index="2">
+          <div id="dots"></div>
+        </section>
+
+        <!-- 2 · 10k seguidores no pagan sueldos -->
+        <section id="s2" class="clip" data-start="2.4" data-duration="4.6" data-track-index="1">
+          <div id="h10k" class="abs h">10k</div>
+          <div id="hseg" class="abs h"><span class="w">seguidores</span></div>
+          <div id="hno" class="abs h"><span class="w">no</span> <span class="w">pagan</span></div>
+          <div id="hsue" class="abs h"><span class="w acc">sueldos</span> <span class="w dot" id="hdot"></span></div>
+        </section>
+
+        <!-- 3 · likes, alcance, seguidores: tachados -->
+        <section id="s3" class="clip" data-start="7" data-duration="3" data-track-index="1">
+          <div id="list"></div>
+        </section>
+
+        <!-- 4 · lo que importa: gente en tu local -->
+        <section id="s4" class="clip" data-start="10" data-duration="3" data-track-index="1">
+          <img id="photo" class="photo" src="assets/photos/pago-celular.jpg" alt="" />
+          <div class="veil"></div>
+          <div id="s4text"></div>
+          <img id="ic-store" class="icon" src="assets/icons/store.svg" alt="" />
+          <img id="ic-bank" class="icon" src="assets/icons/banknote.svg" alt="" />
+        </section>
+
+        <!-- 5 · CTA (orgánico o pauta, según la variable cta) -->
+        <section id="s5" class="clip" data-start="13" data-duration="4" data-track-index="1">
+          <div id="ctaA"></div>
+          <div id="ctaB"></div>
+          <div id="wm" class="wordmark"><span class="dot" id="wmdot"></span> MIRADA DIGITAL</div>
+        </section>
+      </div>
+
+      <div id="flash"></div>
+      <div id="grain"></div>
+      <div id="vignette"></div>
+      <div id="cornerL" class="corner"><span class="dot"></span>MIRADA DIGITAL</div>
+      <div id="cornerR" class="corner">REF · 10·26</div>
+    </div>
+    <script>
+// Reel 01 · "10k seguidores no pagan sueldos". Una sola timeline pausada; todo sembrado y seekable.
+(function () {
+  const root = document.getElementById("root");
+  const W = +root.dataset.width, H = +root.dataset.height, DUR = +root.dataset.duration;
+  const V = H > 1500; // 9:16 (true) o 4:5 (false)
+  const vars = (window.__hyperframes && window.__hyperframes.getVariables && window.__hyperframes.getVariables()) || {};
+  const CTA = vars.cta === "pauta" ? "pauta" : "organico";
+
+  // Zona segura 9:16: nada importante en 250 px arriba, 340 px abajo, 140 px a la derecha.
+  const L = V
+    ? { x: 80, maxW: 860, corner: 268, cornerR: 140,
+        phone: { x: 240, y: 330, w: 600, h: 1080 },
+        h10k: 520, hSeg: 880, hNo: 1060, hSue: 1220, list: 600, listGap: 210,
+        s4: 720, icons: 1250, ctaA: 640, ctaB: 600, wm: 1430 }
+    : { x: 80, maxW: 920, corner: 64, cornerR: 64,
+        phone: { x: 300, y: 150, w: 480, h: 860 },
+        h10k: 250, hSeg: 590, hNo: 760, hSue: 920, list: 330, listGap: 200,
+        s4: 420, icons: 960, ctaA: 330, ctaB: 300, wm: 1150 };
+
+  const $ = (s) => document.querySelector(s);
+  const el = (tag, cls, parent, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; parent.appendChild(e); return e; };
+  const place = (e, x, y, w, h) => Object.assign(e.style, { left: x + "px", top: y + "px", ...(w != null && { width: w + "px" }), ...(h != null && { height: h + "px" }) });
+
+  function mulberry32(a) { return function () { a |= 0; a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+  const rnd = mulberry32(1026);
+
+  const cvs = document.createElement("canvas");
+  const c2d = cvs.getContext("2d");
+  function measure(text, size, weight = 800, family = "DM Sans", spacingEm = -0.045) {
+    c2d.font = `${weight} ${size}px "${family}"`;
+    c2d.letterSpacing = `${spacingEm * size}px`;
+    return c2d.measureText(text).width;
+  }
+  const fitSize = (text, maxW, maxS, weight, family, sp) => Math.min(maxS, Math.floor((maxW / measure(text, 100, weight, family, sp)) * 100));
+  const fmt = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+  // párrafo palabra por palabra; acc = palabras en cyan; dot = cierra con el punto ●
+  function para(parent, text, size, top, acc = [], dot = false) {
+    const p = el("div", "abs para", parent);
+    place(p, L.x, top, L.maxW);
+    p.style.fontSize = size + "px";
+    const words = text.split(" ");
+    const spans = words.map((w) => el("span", "w" + (acc.includes(w) ? " acc" : ""), p, w));
+    if (dot) spans.push(el("span", "w dot", p));
+    return { p, spans };
+  }
+
+  function build() {
+    const tl = gsap.timeline({ paused: true });
+
+    // ---------- marco fijo: esquinas, grano, micro-zoom ----------
+    place($("#cornerL"), L.x, L.corner);
+    Object.assign($("#cornerR").style, { right: L.cornerR + "px", top: L.corner + "px" });
+    tl.fromTo("#stage", { scale: 1 }, { scale: 1.04, duration: DUR, ease: "none" }, 0);
+    tl.fromTo("#grain", { x: 0, y: 0 }, { x: 288, y: 160, duration: DUR, ease: `steps(${Math.round(DUR * 15)})` }, 0);
+
+    // ---------- 1 · teléfono con el contador (frame 0) ----------
+    const P = L.phone, k = P.w / 600;
+    const phone = $("#phone");
+    place(phone, P.x, P.y, P.w, P.h);
+    place($("#phone .avatar"), 40 * k, 90 * k, 150 * k, 150 * k);
+    $("#phone .avatar").style.fontSize = 72 * k + "px";
+    place($("#phone .name"), 215 * k, 112 * k); $("#phone .name").style.fontSize = 46 * k + "px";
+    place($("#phone .handle"), 217 * k, 178 * k); $("#phone .handle").style.fontSize = 24 * k + "px";
+    const countEl = $("#count");
+    const countSize = 132 * k;
+    countEl.style.fontSize = countSize + "px";
+    place(countEl, 40 * k, 300 * k);
+    place($("#count-label"), 44 * k, 470 * k); $("#count-label").style.fontSize = 24 * k + "px";
+    const tiles = $("#tiles");
+    for (let i = 0; i < 6; i++) {
+      const t = el("div", "tile", tiles, '<img src="assets/icons/image-light.svg" alt="">');
+      const tw = 166 * k;
+      place(t, (40 + (i % 3) * 180) * k, (560 + Math.floor(i / 3) * 180) * k, tw, tw);
+    }
+
+    // contador: 1.204 → 4.870 → 9.311 → 10.000
+    const o = { v: 1204 };
+    const upd = () => { countEl.textContent = fmt(Math.round(o.v)); };
+    [[4870, 0.0, 0.6], [9311, 0.6, 0.6], [10000, 1.2, 0.6]].forEach(([to, at, d]) => tl.to(o, { v: to, duration: d, ease: "power2.inOut", onUpdate: upd }, at));
+    tl.set(countEl, { color: "#00bfff" }, 1.8);
+    tl.fromTo(phone, { scale: 1 }, { scale: 1.07, duration: 0.08, ease: "power2.out" }, 1.8).to(phone, { scale: 1, duration: 0.35, ease: "back.out(3)" }, 1.88);
+    tl.fromTo("#flash", { opacity: 0 }, { opacity: 0.45, duration: 0.05 }, 1.8).to("#flash", { opacity: 0, duration: 0.3, ease: "power2.out" }, 1.85);
+    tl.to(phone, { scale: 0.86, opacity: 0, duration: 0.3, ease: "power2.in" }, 2.05);
+
+    // partículas de corazones y user-plus subiendo (ya en vuelo en el frame 0)
+    const parts = $("#parts");
+    for (let i = 0; i < 26; i++) {
+      const img = el("img", "part", parts);
+      img.src = "assets/icons/" + (i % 3 === 0 ? "user-plus" : "heart") + ".svg";
+      const x0 = P.x + 40 + rnd() * (P.w - 120), y0 = P.y + P.h * (0.55 + rnd() * 0.35);
+      const s = 0.55 + rnd() * 0.6, at = (i / 26) * 1.7 - 0.25;
+      place(img, x0, y0);
+      const start = Math.max(0, at), pre = Math.max(0, -at); // las primeras ya arrancan a mitad de camino
+      const dy = -(520 + rnd() * 420), dx = (rnd() - 0.5) * 240, dur = 1.25;
+      const f = pre / dur;
+      tl.fromTo(img, { x: dx * f, y: dy * f, scale: s, opacity: 1 - f * 0.6, rotation: (rnd() - 0.5) * 40 * f },
+        { x: dx, y: dy, opacity: 0, rotation: (rnd() - 0.5) * 40, duration: dur - pre, ease: "power1.out" }, start);
+    }
+
+    // ---------- el contador explota y las partículas forman el "10k" ----------
+    const s10 = fitSize("10k", L.maxW * 0.62, V ? 340 : 300);
+    const h10 = $("#h10k");
+    h10.style.fontSize = s10 + "px";
+    place(h10, L.x, L.h10k);
+    // objetivo: muestrear los píxeles del "10k" dibujado en canvas con la misma fuente
+    const cw = Math.ceil(measure("10k", s10)) + 20, ch = Math.ceil(s10 * 1.1);
+    cvs.width = cw; cvs.height = ch;
+    c2d.font = `800 ${s10}px "DM Sans"`; c2d.letterSpacing = `${-0.045 * s10}px`;
+    c2d.textBaseline = "alphabetic"; c2d.fillStyle = "#fff";
+    const m = c2d.measureText("10k");
+    const asc = m.fontBoundingBoxAscent, desc = m.fontBoundingBoxDescent;
+    const baseline = (s10 * 0.95 - (asc + desc)) / 2 + asc; // line-height 0.95 en el DOM
+    c2d.fillText("10k", 0, baseline);
+    const img = c2d.getImageData(0, 0, cw, ch).data;
+    const pts = [];
+    const step = Math.round(s10 / 26);
+    for (let y = 0; y < ch; y += step) for (let x = 0; x < cw; x += step) if (img[(y * cw + x) * 4 + 3] > 140) pts.push([x, y]);
+    const cx = P.x + 40 * k + measure(fmt(10000), countSize, 700, "Space Mono", -0.02) / 2;
+    const cy = P.y + 300 * k + countSize * 0.55;
+    const dots = $("#dots");
+    pts.forEach(([px, py], i) => {
+      const d = el("div", "ddot", dots);
+      place(d, cx, cy);
+      const a = rnd() * Math.PI * 2, r = 120 + rnd() * 420;
+      tl.fromTo(d, { x: 0, y: 0, scale: 0.4, opacity: 1 },
+        { x: Math.cos(a) * r, y: Math.sin(a) * r, scale: 1, duration: 0.32, ease: "expo.out" }, 1.95 + (i % 7) * 0.008);
+      tl.to(d, { x: L.x + px - cx, y: L.h10k + py - cy, duration: 0.5, ease: "expo.inOut" }, 2.27 + (i % 11) * 0.006);
+      tl.to(d, { opacity: 0, scale: 0.4, duration: 0.18 }, 2.86);
+    });
+    tl.fromTo(h10, { opacity: 0 }, { opacity: 1, duration: 0.16, ease: "none" }, 2.74);
+    tl.fromTo(h10, { scale: 1.06 }, { scale: 1, duration: 0.5, ease: "back.out(2)", transformOrigin: "0% 50%" }, 2.74);
+
+    // ---------- 2 · "seguidores" / "no pagan" / "sueldos ●" ----------
+    const sz = fitSize("seguidores", L.maxW, 168);
+    ["#hseg", "#hno", "#hsue"].forEach((s, i) => { $(s).style.fontSize = sz + "px"; place($(s), L.x, [L.hSeg, L.hNo, L.hSue][i]); });
+    tl.fromTo("#hseg .w", { y: 90, opacity: 0 }, { y: 0, opacity: 1, duration: 0.55, ease: "expo.out" }, 2.8);
+    tl.fromTo("#hno .w", { y: 90, opacity: 0 }, { y: 0, opacity: 1, duration: 0.55, ease: "expo.out", stagger: 0.24 }, 4.5);
+    tl.fromTo("#hsue .w.acc", { y: 90, opacity: 0 }, { y: 0, opacity: 1, duration: 0.55, ease: "expo.out" }, 5.0);
+    tl.fromTo("#hdot", { scale: 0 }, { scale: 1, duration: 0.45, ease: "back.out(3)" }, 5.35);
+
+    // ---------- 3 · likes / alcance / seguidores, tachados ----------
+    const words = ["likes", "alcance", "seguidores"];
+    const ls = fitSize("seguidores", L.maxW - 190, 170);
+    const list = $("#list");
+    words.forEach((w, i) => {
+      const y = L.list + i * L.listGap;
+      const t = el("div", "abs h", list, w);
+      t.style.fontSize = ls + "px";
+      place(t, L.x, y);
+      const ww = measure(w, ls);
+      const st = el("div", "strike", list);
+      place(st, L.x - 14, y + ls * 0.5, ww + 28);
+      const x = el("img", "icon", list); x.src = "assets/icons/x.svg";
+      place(x, L.x + ww + 50, y + ls * 0.5 - 60, 120, 120);
+      tl.fromTo(t, { y: 80, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "expo.out" }, 7.0 + i * 0.16);
+      const at = 7.75 + i * 0.7;
+      tl.fromTo(st, { scaleX: 0 }, { scaleX: 1, duration: 0.38, ease: "expo.out" }, at);
+      tl.to(t, { color: "#8b909a", duration: 0.2 }, at + 0.15);
+      tl.fromTo(x, { scale: 0, rotation: -40 }, { scale: 1, rotation: 0, duration: 0.45, ease: "back.out(3)" }, at + 0.2);
+    });
+
+    // ---------- 4 · foto + "Lo que importa: gente en tu local." ----------
+    tl.fromTo("#photo", { scale: 1.14 }, { scale: 1.02, duration: 3, ease: "none" }, 10);
+    const s4a = para($("#s4text"), "Lo que importa:", fitSize("Lo que importa:", L.maxW, 100), L.s4);
+    const big = fitSize("gente en tu", L.maxW, 170);
+    const s4b = para($("#s4text"), "gente en tu local.", big, L.s4 + 150, ["gente", "en", "tu", "local."]);
+    tl.fromTo(s4a.spans, { y: 70, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "expo.out", stagger: 0.12 }, 10.05);
+    tl.fromTo(s4b.spans, { y: 90, opacity: 0 }, { y: 0, opacity: 1, duration: 0.55, ease: "expo.out", stagger: 0.14 }, 10.45);
+    place($("#ic-store"), L.x, L.icons, 150, 150);
+    place($("#ic-bank"), L.x + 190, L.icons, 150, 150);
+    tl.fromTo("#ic-store", { scale: 0, y: 40 }, { scale: 1, y: 0, duration: 0.5, ease: "back.out(2.5)" }, 11.1);
+    tl.fromTo("#ic-bank", { scale: 0, y: 40 }, { scale: 1, y: 0, duration: 0.5, ease: "back.out(2.5)" }, 11.28);
+
+    // ---------- 5 · CTA ----------
+    if (CTA === "organico") {
+      const a = para($("#ctaA"), "¿Cuántos de tus seguidores te compraron este mes?", V ? 104 : 96, L.ctaA, ["te", "compraron"]);
+      tl.fromTo(a.spans, { y: 70, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "expo.out", stagger: 0.07 }, 13.0);
+      tl.to(a.p, { y: -60, opacity: 0, duration: 0.22, ease: "power2.in" }, 14.85);
+      const b = para($("#ctaB"), "Comentá VENTAS y te mandamos qué miramos primero", V ? 100 : 92, L.ctaB, ["VENTAS"], true);
+      tl.fromTo(b.spans, { y: 70, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "expo.out", stagger: 0.06 }, 15.05);
+      tl.fromTo(b.spans[b.spans.length - 1], { scale: 0 }, { scale: 1, duration: 0.4, ease: "back.out(3)" }, 15.6);
+    } else {
+      const a = para($("#ctaA"), "Armamos redes que venden.", V ? 150 : 132, L.ctaA, ["venden."]);
+      tl.fromTo(a.spans, { y: 80, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "expo.out", stagger: 0.12 }, 13.0);
+      const b = para($("#ctaB"), "Escribinos", V ? 150 : 132, L.ctaA + (V ? 390 : 340), ["Escribinos"], true);
+      tl.fromTo(b.spans, { y: 80, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "expo.out", stagger: 0.2 }, 13.9);
+    }
+    const wm = $("#wm");
+    wm.style.fontSize = (V ? 34 : 30) + "px";
+    place(wm, L.x, L.wm);
+    tl.fromTo(wm, { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "expo.out" }, CTA === "organico" ? 15.5 : 14.5);
+    tl.fromTo("#wmdot", { scale: 0 }, { scale: 1, duration: 0.45, ease: "back.out(3)" }, CTA === "organico" ? 15.6 : 14.6);
+
+    window.__timelines["main"] = tl;
+  }
+
+  Promise.all([
+    document.fonts.load('800 100px "DM Sans"'),
+    document.fonts.load('400 100px "DM Sans"'),
+    document.fonts.load('700 100px "Space Mono"'),
+    document.fonts.load('400 100px "Space Mono"'),
+  ]).then(build);
+})();
+    </script>
+  </body>
+</html>

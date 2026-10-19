@@ -18,3 +18,4 @@
 | photos/pago-tarjeta.jpg | Pexels 6684769 — https://www.pexels.com/photo/6684769/ | Pexels License | ok |
 | photos/pago-mostrador.jpg | Pexels 8422732 — https://www.pexels.com/photo/8422732/ | Pexels License | ok |
 | photos/puerta-abierto.jpg | Unsplash, Artem Beliaikin — https://unsplash.com/photos/open-signage-on-door-N35J0N8ZglQ | Unsplash License (uso comercial libre) | ok |
+| photos/medialunas.jpg | Enviada por Valen (Mirada Digital) | **A confirmar: fuente y licencia de uso comercial** | ok |
