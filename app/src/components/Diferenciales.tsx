@@ -22,8 +22,8 @@ const CARDS = [
   },
   {
     className: styles.cardOutline,
-    title: 'Zona Oeste, de cerca',
-    text: 'Castelar y alrededores. Conocemos el comercio local porque caminamos la zona, no porque lo leímos en un informe.',
+    title: 'Buenos Aires, de cerca',
+    text: 'Conocemos el comercio local porque caminamos la zona, no porque lo leímos en un informe.',
     span: styles.wide,
   },
 ];

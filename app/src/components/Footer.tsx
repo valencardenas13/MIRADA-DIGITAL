@@ -4,7 +4,7 @@ export default function Footer() {
   return (
     <footer className={styles.footer}>
       <p>
-        Mirada Digital — Castelar, Buenos Aires
+        Mirada Digital — Buenos Aires, Argentina
         <br />
         <a href="https://instagram.com/somosmiradadigital" target="_blank" rel="noopener noreferrer">
           @somosmiradadigital
