@@ -12,7 +12,7 @@ export default function ScrollProgress() {
         left: 0,
         right: 0,
         height: 2,
-        background: 'var(--accent)',
+        background: 'var(--cyan)',
         transformOrigin: '0% 50%',
         scaleX,
         zIndex: 100,

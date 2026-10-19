@@ -1,12 +1,12 @@
 import ScrollProgress from './components/ScrollProgress';
 import Nav from './components/Nav';
 import Hero from './components/Hero';
-import Banner from './components/Banner';
-import Nosotros from './components/Nosotros';
-import Diferenciales from './components/Diferenciales';
-import Services from './components/Services';
+import Intro from './components/Intro';
+import Channels from './components/Channels';
+import BeforeAfter from './components/BeforeAfter';
+import Funnel from './components/Funnel';
 import Steps from './components/Steps';
-import FinalCta from './components/FinalCta';
+import Faq from './components/Faq';
 import Footer from './components/Footer';
 
 export default function App() {
@@ -16,12 +16,12 @@ export default function App() {
       <Nav />
       <main>
         <Hero />
-        <Banner />
-        <Nosotros />
-        <Diferenciales />
-        <Services />
+        <Intro />
+        <Channels />
+        <BeforeAfter />
+        <Funnel />
         <Steps />
-        <FinalCta />
+        <Faq />
       </main>
       <Footer />
     </>

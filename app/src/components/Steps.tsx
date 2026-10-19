@@ -1,67 +1,52 @@
-import { motion, useReducedMotion } from 'motion/react';
 import styles from './Steps.module.css';
-
-const STEPS = [
-  { num: '01', title: 'Nos conocemos', text: 'Pasamos por tu local o hablamos por WhatsApp. Vos contás cómo es tu negocio hoy.' },
-  { num: '02', title: 'Armamos el plan', text: 'Definimos qué tiene sentido para vos: redes, publicidad, web, o las tres cosas.' },
-  { num: '03', title: 'Ejecutamos y ajustamos', text: 'Trato directo con quien hace el trabajo, siempre. Sin cadena de mando en el medio.' },
-];
-
-const NUM_VARIANT_MOTION = {
-  hidden: { opacity: 0, scale: 0.6 },
-  show: { opacity: 1, scale: 1, transition: { type: 'spring' as const, stiffness: 260, damping: 18 } },
-};
-
-const NUM_VARIANT_REDUCED = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { duration: 0.4 } },
-};
-
-const TEXT_VARIANT = {
-  hidden: { opacity: 0, y: 16 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-};
+import Reveal from './Reveal';
+import { INSTAGRAM_URL } from '../content';
+import { IconEye, IconRocket } from './Icons';
 
 export default function Steps() {
-  const prefersReducedMotion = useReducedMotion();
-
-  const numVariant = prefersReducedMotion ? NUM_VARIANT_REDUCED : NUM_VARIANT_MOTION;
-  const textVariant = TEXT_VARIANT;
-
   return (
-    <section className="dark" id="como-trabajamos">
-      <div className="glow" />
+    <section className="section" id="pasos">
       <div className="container">
-        <div className={styles.sectionHead}>
-          <div className="eyebrow">Cómo trabajamos</div>
-          <h2>Sin intermediarios. Sin vueltas.</h2>
+        <Reveal className="section-head">
+          <div className="badge"><IconRocket /></div>
+          <h2>Arrancamos en 3 pasos simples</h2>
+          <p>Sin vueltas ni contratos largos. Trato directo con quien hace el trabajo, siempre.</p>
+        </Reveal>
+
+        <div className={styles.grid}>
+          <Reveal className={styles.step}>
+            <div className={`${styles.visual} ${styles.v1}`}>
+              <span className={styles.fakeBtn}>Escribinos</span>
+            </div>
+            <h3>Paso 1: Nos conocemos</h3>
+            <p>Hablamos por Instagram o WhatsApp. Vos contás cómo es tu negocio hoy.</p>
+          </Reveal>
+
+          <Reveal className={styles.step} delay={0.08}>
+            <div className={`${styles.visual} ${styles.v2}`}>
+              <span className={styles.mark}><IconEye /></span>
+            </div>
+            <h3>Paso 2: Armamos el plan</h3>
+            <p>Definimos qué tiene sentido para vos: redes, publicidad, web, o las tres cosas.</p>
+          </Reveal>
+
+          <Reveal className={styles.step} delay={0.16}>
+            <div className={`${styles.visual} ${styles.v3}`}>
+              <span className={styles.msg}>¿Cómo vienen las campañas?</span>
+              <span className={`${styles.msg} ${styles.msgUs}`}>Te paso el reporte del mes.</span>
+            </div>
+            <h3>Paso 3: Ejecutamos y ajustamos</h3>
+            <p>Lanzamos, medimos y mejoramos todos los meses, con reportes claros.</p>
+          </Reveal>
         </div>
 
-        <div className={styles.steps}>
-          {STEPS.map((step, i) => (
-            <div className={styles.step} key={step.num}>
-              <motion.div
-                className={styles.stepNum}
-                variants={numVariant}
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true, amount: 0.6 }}
-                transition={{ delay: i * 0.15 }}
-              >
-                {step.num}
-              </motion.div>
-              <motion.div
-                variants={textVariant}
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true, amount: 0.6 }}
-                transition={{ delay: i * 0.15 + 0.1 }}
-              >
-                <h3>{step.title}</h3>
-                <p>{step.text}</p>
-              </motion.div>
-            </div>
-          ))}
+        <div className={styles.ctas}>
+          <a className="btn btn-cyan" href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">
+            Empezar ahora
+          </a>
+          <a className="btn btn-outline" href="#faq">
+            Tengo dudas
+          </a>
         </div>
       </div>
     </section>

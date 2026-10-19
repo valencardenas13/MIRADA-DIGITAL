@@ -1,97 +1,64 @@
 .nav {
   position: sticky;
-  top: env(safe-area-inset-top, 0px);
+  top: 0;
   z-index: 50;
-  background: var(--nav-bg);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  border-bottom: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: saturate(180%) blur(16px);
+  -webkit-backdrop-filter: saturate(180%) blur(16px);
+  border-bottom: 1px solid var(--line);
 }
 
-.navInner {
-  max-width: 1120px;
+.inner {
+  max-width: 1200px;
   margin-inline: auto;
-  padding-inline: 24px;
+  padding: 12px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 24px;
 }
 
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  white-space: nowrap;
-  font-family: 'Bricolage Grotesque', sans-serif;
-}
-
-.brandLogo {
-  height: 26px;
+.brand img {
+  height: 30px;
   width: auto;
   display: block;
 }
 
-.brandWordmark {
-  display: none;
+.links {
+  display: flex;
+  gap: 32px;
+  font-size: 15px;
+  font-weight: 500;
 }
 
-:global(:root[data-theme='dark']) .brandLogo {
-  display: none;
-}
-:global(:root[data-theme='dark']) .brandWordmark {
-  display: inline;
+.links a {
+  color: var(--navy);
+  opacity: 0.8;
+  transition: opacity 0.2s;
 }
 
-@media (prefers-color-scheme: dark) {
-  :global(:root:not([data-theme='light'])) .brandLogo {
+.links a:hover {
+  opacity: 1;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.small {
+  padding: 10px 20px;
+  font-size: 14px;
+}
+
+@media (max-width: 900px) {
+  .links {
     display: none;
   }
-  :global(:root:not([data-theme='light'])) .brandWordmark {
-    display: inline;
-  }
 }
 
-.navLinks {
-  display: flex;
-  align-items: center;
-  gap: 32px;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text);
-}
-
-.navLinks a {
-  color: var(--text-secondary);
-  transition: color 0.2s;
-}
-
-.navLinks a:hover {
-  color: var(--accent);
-}
-
-.navCta {
-  background: var(--accent);
-  color: var(--accent-contrast);
-  padding: 9px 18px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
-  display: inline-block;
-}
-
-.navCta:hover {
-  background: var(--accent-hover);
-}
-
-@media (max-width: 700px) {
-  .navLinks a:not(.navCta) {
+@media (max-width: 480px) {
+  .hideMobile {
     display: none;
   }
 }
