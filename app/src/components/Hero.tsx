@@ -1,6 +1,7 @@
 import { motion, useReducedMotion } from 'motion/react';
 import styles from './Hero.module.css';
-import { INSTAGRAM_URL } from '../content';
+import { EXTERNAL, INSTAGRAM_URL, WHATSAPP_URL } from '../content';
+import heroImg from '../assets/hero-team.jpg';
 import { IconInstagram, IconMeta, IconSearch, IconWhatsApp } from './Icons';
 
 const CONTAINER = { hidden: {}, show: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } } };
@@ -21,9 +22,7 @@ export default function Hero() {
 
   return (
     <section className={styles.hero} id="top">
-      <div className={`photo-slot ${styles.bg}`} aria-hidden="true">
-        <span className={styles.slotLabel}>Foto principal (persona / equipo trabajando)</span>
-      </div>
+      <img className={styles.bg} src={heroImg} alt="" aria-hidden="true" fetchPriority="high" />
       <div className={styles.shade} aria-hidden="true" />
 
       <motion.div className={`container ${styles.inner}`} variants={CONTAINER} initial="hidden" animate="show">
@@ -33,9 +32,12 @@ export default function Hero() {
             Manejamos tus redes, tu publicidad en Meta y Google, y tu web — con el criterio de una marca grande,
             aplicado a tu negocio.
           </motion.p>
-          <motion.div variants={item}>
-            <a className="btn btn-cyan" href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">
-              Escribinos por Instagram
+          <motion.div variants={item} className={styles.ctas}>
+            <a className="btn btn-cyan" href={WHATSAPP_URL} {...EXTERNAL}>
+              Escribinos por WhatsApp
+            </a>
+            <a className={`btn btn-outline ${styles.ghost}`} href={INSTAGRAM_URL} {...EXTERNAL}>
+              Ver Instagram
             </a>
           </motion.div>
           <motion.ul variants={item} className={styles.platforms} aria-label="Canales que manejamos">

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import styles from './BeforeAfter.module.css';
 import Reveal from './Reveal';
-import { INSTAGRAM_URL } from '../content';
+import { WHATSAPP_URL } from '../content';
 import { IconCheck, IconSwap, IconX } from './Icons';
 
 const BEFORE = [
@@ -67,7 +67,7 @@ export default function BeforeAfter() {
             </motion.ul>
           </AnimatePresence>
 
-          <a className="btn btn-cyan btn-block" href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">
+          <a className="btn btn-cyan btn-block" href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
             Quiero el después
           </a>
         </Reveal>

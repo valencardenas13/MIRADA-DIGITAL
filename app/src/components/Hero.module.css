@@ -10,26 +10,33 @@
 
 .bg {
   position: absolute;
-  inset: 0;
-  background:
-    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0 2px, transparent 2px 16px),
-    linear-gradient(120deg, #1f2638 0%, #23324a 55%, #0f5f7c 100%);
-  color: rgba(238, 235, 228, 0.5);
-  align-items: end;
-  justify-items: end;
-}
-
-.slotLabel {
-  margin: 0 32px 120px 0;
-  border: 1px dashed rgba(238, 235, 228, 0.35);
-  border-radius: 8px;
-  padding: 8px 12px;
+  inset: -24px;
+  width: calc(100% + 48px);
+  height: calc(100% + 48px);
+  object-fit: cover;
+  object-position: center 40%;
+  filter: grayscale(1) blur(4px);
 }
 
 .shade {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(14, 16, 23, 0.85) 0%, rgba(14, 16, 23, 0.4) 55%, transparent 100%);
+  background: linear-gradient(90deg, rgba(14, 16, 23, 0.88) 0%, rgba(14, 16, 23, 0.55) 55%, rgba(14, 16, 23, 0.3) 100%);
+}
+
+.ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.ghost {
+  color: var(--white);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.ghost:hover {
+  border-color: var(--white);
 }
 
 .inner {
@@ -153,8 +160,5 @@
   }
   .us {
     align-self: flex-end;
-  }
-  .slotLabel {
-    display: none;
   }
 }

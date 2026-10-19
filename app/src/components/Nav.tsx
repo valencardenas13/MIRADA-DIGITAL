@@ -1,6 +1,6 @@
 import styles from './Nav.module.css';
 import logo from '../assets/logo.png';
-import { INSTAGRAM_URL } from '../content';
+import { WHATSAPP_URL } from '../content';
 
 export default function Nav() {
   return (
@@ -19,7 +19,7 @@ export default function Nav() {
           <a className={`btn btn-outline ${styles.small} ${styles.hideMobile}`} href="#faq">
             Dudas
           </a>
-          <a className={`btn btn-cyan ${styles.small}`} href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">
+          <a className={`btn btn-cyan ${styles.small}`} href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
             Escribinos
           </a>
         </div>

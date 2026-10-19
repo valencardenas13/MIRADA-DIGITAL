@@ -1,5 +1,13 @@
 import styles from './Footer.module.css';
-import { INSTAGRAM_HANDLE, INSTAGRAM_URL } from '../content';
+import {
+  EMAIL,
+  EMAIL_URL,
+  EXTERNAL,
+  INSTAGRAM_HANDLE,
+  INSTAGRAM_URL,
+  WHATSAPP_DISPLAY,
+  WHATSAPP_URL,
+} from '../content';
 
 const YEAR = new Date().getFullYear();
 
@@ -31,9 +39,9 @@ export default function Footer() {
           <div>
             <h4>Contacto</h4>
             <ul>
-              <li>
-                <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">{INSTAGRAM_HANDLE}</a>
-              </li>
+              <li><a className={styles.nowrap} href={WHATSAPP_URL} {...EXTERNAL}>WhatsApp {WHATSAPP_DISPLAY}</a></li>
+              <li><a href={EMAIL_URL}>{EMAIL}</a></li>
+              <li><a href={INSTAGRAM_URL} {...EXTERNAL}>{INSTAGRAM_HANDLE}</a></li>
             </ul>
           </div>
         </div>
@@ -53,8 +61,8 @@ export default function Footer() {
       </div>
 
       <div className={styles.bar}>
-        <a className="btn btn-navy" href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">
-          Escribinos por Instagram
+        <a className="btn btn-navy" href={WHATSAPP_URL} {...EXTERNAL}>
+          Escribinos por WhatsApp
         </a>
       </div>
     </footer>

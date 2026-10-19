@@ -1,6 +1,6 @@
 import styles from './Steps.module.css';
 import Reveal from './Reveal';
-import { INSTAGRAM_URL } from '../content';
+import { WHATSAPP_URL } from '../content';
 import { IconEye, IconRocket } from './Icons';
 
 export default function Steps() {
@@ -41,7 +41,7 @@ export default function Steps() {
         </div>
 
         <div className={styles.ctas}>
-          <a className="btn btn-cyan" href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">
+          <a className="btn btn-cyan" href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
             Empezar ahora
           </a>
           <a className="btn btn-outline" href="#faq">

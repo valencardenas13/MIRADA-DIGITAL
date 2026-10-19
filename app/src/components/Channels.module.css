@@ -35,11 +35,11 @@
 }
 
 .photo {
+  display: block;
+  width: 100%;
   aspect-ratio: 4 / 5;
+  object-fit: cover;
   border-radius: var(--radius-card);
-  background:
-    repeating-linear-gradient(135deg, rgba(25, 29, 41, 0.08) 0 2px, transparent 2px 14px),
-    var(--white);
   box-shadow: 0 24px 60px rgba(25, 29, 41, 0.25);
 }
 

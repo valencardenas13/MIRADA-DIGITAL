@@ -1,6 +1,7 @@
 import styles from './Channels.module.css';
 import Reveal from './Reveal';
-import { INSTAGRAM_URL } from '../content';
+import { WHATSAPP_URL } from '../content';
+import verticalImg from '../assets/vertical.jpg';
 import { IconArrow, IconInstagram, IconMeta, IconSearch } from './Icons';
 
 const CHANNELS = [
@@ -31,13 +32,13 @@ export default function Channels() {
             No alcanza con estar en redes. Armamos una presencia digital completa — contenido, anuncios y web — que
             trabaja todos los días para traerte clientes nuevos.
           </p>
-          <a className="btn btn-navy" href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">
+          <a className="btn btn-navy" href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
             Quiero empezar
           </a>
         </Reveal>
 
         <Reveal className={styles.expandMedia} delay={0.1}>
-          <div className={`photo-slot ${styles.photo}`}>Foto vertical (cliente / producto / equipo)</div>
+          <img className={styles.photo} src={verticalImg} alt="Persona en un viaje de trabajo cargando sus bolsos" loading="lazy" />
           <div className={`${styles.chip} ${styles.chipTop}`}>Nuevo mensaje: “¿Hacen envíos?”</div>
           <div className={`${styles.chip} ${styles.chipBottom}`}>Campaña activa en Instagram</div>
         </Reveal>

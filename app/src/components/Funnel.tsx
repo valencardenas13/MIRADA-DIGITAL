@@ -1,6 +1,6 @@
 import styles from './Funnel.module.css';
 import Reveal from './Reveal';
-import { INSTAGRAM_URL } from '../content';
+import { WHATSAPP_URL } from '../content';
 import { IconChart } from './Icons';
 
 const STAGES = [
@@ -34,7 +34,7 @@ export default function Funnel() {
                 </li>
               ))}
             </ol>
-            <a className="btn btn-navy btn-block" href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">
+            <a className="btn btn-navy btn-block" href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
               Armemos el tuyo
             </a>
           </div>
