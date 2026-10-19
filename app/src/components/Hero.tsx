@@ -30,7 +30,8 @@ export default function Hero() {
     : { hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: spring } };
 
   return (
-    <section className={styles.hero}>
+    <section className={`${styles.hero} dark`}>
+      <div className="glow" />
       <motion.div className="container" variants={container} initial="hidden" animate="show">
         <motion.div className="eyebrow" variants={fadeUp}>
           Mirada Digital · Agencia de Marketing Digital
@@ -50,7 +51,7 @@ export default function Hero() {
         </motion.p>
 
         <motion.div className={styles.ctas} variants={fadeUp}>
-          <MagneticButton className="btn btn-primary" href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">
+          <MagneticButton className="btn btn-light" href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">
             Escribinos por Instagram
           </MagneticButton>
           <MagneticButton className="btn btn-secondary" href="#servicios">

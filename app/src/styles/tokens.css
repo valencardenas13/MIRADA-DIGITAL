@@ -9,6 +9,9 @@
   --accent-contrast: #191d29;
   --border: #dbd6c9;
   --nav-bg: rgba(238, 235, 228, 0.78);
+  --ink-bg: #14161f;
+  --ink-text-secondary: #9a9eb0;
+  --ink-border: rgba(238, 235, 228, 0.14);
 }
 
 :root[data-theme='dark'] {

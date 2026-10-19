@@ -29,7 +29,8 @@ export default function Steps() {
   const textVariant = TEXT_VARIANT;
 
   return (
-    <section id="como-trabajamos">
+    <section className="dark" id="como-trabajamos">
+      <div className="glow" />
       <div className="container">
         <div className={styles.sectionHead}>
           <div className="eyebrow">Cómo trabajamos</div>

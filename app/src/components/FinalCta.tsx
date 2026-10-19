@@ -19,7 +19,8 @@ export default function FinalCta() {
   const h2Variant = prefersReducedMotion ? H2_VARIANT_REDUCED : H2_VARIANT_MOTION;
 
   return (
-    <section className={styles.section}>
+    <section className={`${styles.section} dark`}>
+      <div className="glow" />
       <div className="container">
         <motion.h2
           className={styles.h2}
@@ -31,7 +32,7 @@ export default function FinalCta() {
           Empecemos.
         </motion.h2>
         <div className={styles.ctas}>
-          <MagneticButton className="btn btn-primary" href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">
+          <MagneticButton className="btn btn-light" href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">
             Escribinos por Instagram
           </MagneticButton>
         </div>
