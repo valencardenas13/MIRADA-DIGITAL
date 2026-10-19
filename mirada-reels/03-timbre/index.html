@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="es" data-resolution="portrait" data-composition-variables='[{"id":"cta","type":"enum","label":"CTA","default":"organico","options":[{"value":"organico","label":"Orgánico (comentario)"},{"value":"pauta","label":"Pauta (Escribinos)"}]}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Reel 03 · Nosotros tocamos el timbre</title>
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "DM Sans"; src: url("assets/fonts/DMSans-Regular.woff2") format("woff2"); font-weight: 400; font-display: block; }
+      @font-face { font-family: "DM Sans"; src: url("assets/fonts/DMSans-Medium.woff2") format("woff2"); font-weight: 500; font-display: block; }
+      @font-face { font-family: "DM Sans"; src: url("assets/fonts/DMSans-ExtraBold.woff2") format("woff2"); font-weight: 800; font-display: block; }
+      @font-face { font-family: "Space Mono"; src: url("assets/fonts/SpaceMono-Regular.woff2") format("woff2"); font-weight: 400; font-display: block; }
+      @font-face { font-family: "Space Mono"; src: url("assets/fonts/SpaceMono-Bold.woff2") format("woff2"); font-weight: 700; font-display: block; }
+    </style>
+    <link rel="stylesheet" href="assets/reel.css" />
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="16" data-width="1080" data-height="1920">
+      <div id="stage">
+        <!-- 1 · el formulario que se completa solo (frame 0) -->
+        <section id="s1" class="clip" data-start="0" data-duration="3" data-track-index="1">
+          <div id="kick"></div>
+          <div id="form" class="form">
+            <div class="lb" id="lb1">NOMBRE</div><div class="in" id="in1"></div>
+            <div class="lb" id="lb2">TELÉFONO</div><div class="in" id="in2"></div>
+            <div class="lb" id="lb3">CONTANOS TU NEGOCIO</div><div class="in" id="in3"></div>
+            <div class="send" id="send">Enviar</div>
+          </div>
+          <img id="cursor" src="assets/icons/mouse-pointer-click-light.svg" alt="" />
+        </section>
+
+        <!-- 2 · y después… esperás -->
+        <section id="s2" class="clip" data-start="3" data-duration="3" data-track-index="1">
+          <div id="s2t"></div>
+          <img id="loader" class="icon" src="assets/icons/loader.svg" alt="" />
+          <img id="clock" class="icon" src="assets/icons/clock-light.svg" alt="" />
+          <div id="waitc" class="abs mono"></div>
+        </section>
+
+        <!-- 3 · el timbre -->
+        <section id="s3" class="clip" data-start="6.2" data-duration="1.8" data-track-index="1">
+          <div id="waves"></div>
+          <img id="bell" class="icon" src="assets/icons/bell-ring.svg" alt="" />
+        </section>
+
+        <!-- 4 · puerta + "Nosotros tocamos el timbre ●" -->
+        <section id="s4" class="clip" data-start="8" data-duration="3" data-track-index="1">
+          <img id="photo" class="photo" src="assets/photos/puerta-abierto.jpg" alt="" />
+          <div class="veil"></div>
+          <div id="s4t"></div>
+        </section>
+
+        <!-- 5 · te visitamos / te conocemos / charlamos -->
+        <section id="s5" class="clip" data-start="11" data-duration="3" data-track-index="1"><div id="rows"></div></section>
+
+        <!-- 6 · CTA -->
+        <section id="s6" class="clip" data-start="14" data-duration="2" data-track-index="1">
+          <div id="ctaA"></div>
+          <div id="wm" class="wordmark"><span class="dot" id="wmdot"></span> MIRADA DIGITAL</div>
+        </section>
+      </div>
+
+      <div id="flash"></div>
+      <div id="grain"></div>
+      <div id="vignette"></div>
+      <div id="cornerL" class="corner"><span class="dot"></span>MIRADA DIGITAL</div>
+      <div id="cornerR" class="corner">REF · 10·26</div>
+      <!-- negro total: 6 frames -->
+      <div id="black" class="clip" data-start="6" data-duration="0.2" data-track-index="3"></div>
+    </div>
+    <script>
+(function () {
+  const root = document.getElementById("root");
+  const W = +root.dataset.width, H = +root.dataset.height, DUR = +root.dataset.duration;
+  const V = H > 1500;
+  const vars = (window.__hyperframes && window.__hyperframes.getVariables && window.__hyperframes.getVariables()) || {};
+  const CTA = vars.cta === "pauta" ? "pauta" : "organico";
+
+  const L = V
+    ? { x: 80, maxW: 860, corner: 268, cornerR: 140, kick: 370, form: { y: 560, h: 900 }, s2: 400, loaderY: 820, waitY: 1290,
+        cy: 920, s4: 760, rows: 640, rowGap: 230, cta: 620, wm: 1430 }
+    : { x: 80, maxW: 920, corner: 64, cornerR: 64, kick: 140, form: { y: 250, h: 900 }, s2: 150, loaderY: 470, waitY: 930,
+        cy: 640, s4: 420, rows: 300, rowGap: 210, cta: 330, wm: 1150 };
+
+  const $ = (s) => document.querySelector(s);
+  const el = (tag, cls, parent, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; parent.appendChild(e); return e; };
+  const place = (e, x, y, w, h) => Object.assign(e.style, { left: x + "px", top: y + "px", ...(w != null && { width: w + "px" }), ...(h != null && { height: h + "px" }) });
+  const cvs = document.createElement("canvas"), c2d = cvs.getContext("2d");
+  const measure = (text, size, weight = 800, fam = "DM Sans", sp = -0.035) => { c2d.font = `${weight} ${size}px "${fam}"`; c2d.letterSpacing = `${sp * size}px`; return c2d.measureText(text).width; };
+  const fitSize = (text, maxW, maxS, weight, fam, sp) => Math.min(maxS, Math.floor((maxW / measure(text, 100, weight, fam, sp)) * 100));
+  function para(parent, text, size, top, acc = [], dot = false, width = L.maxW, left = L.x) {
+    const p = el("div", "abs para", parent);
+    place(p, left, top, width);
+    p.style.fontSize = size + "px";
+    const spans = text.split(" ").map((w) => el("span", "w" + (acc.includes(w) ? " acc" : ""), p, w));
+    if (dot) spans.push(el("span", "w dot", p));
+    return { p, spans };
+  }
+  const wordsIn = (tl, spans, at, st = 0.08, d = 0.5) => tl.fromTo(spans, { y: 70, opacity: 0 }, { y: 0, opacity: 1, duration: d, ease: "expo.out", stagger: st }, at);
+
+  // tipeo seekable: el texto visible depende solo del progreso del tween
+  function typeInto(tl, node, text, at, dur, from = 0) {
+    const o = { n: from };
+    // el cursor de texto solo aparece en el campo que se está escribiendo
+    const render = () => { const n = Math.round(o.n); node.innerHTML = text.slice(0, n).replace(/ /g, "&nbsp;") + (n > 0 && n < text.length ? '<span class="caret"></span>' : ""); };
+    render();
+    tl.fromTo(o, { n: from }, { n: text.length, duration: dur, ease: "none", onUpdate: render, immediateRender: false }, at);
+  }
+
+  function build() {
+    const tl = gsap.timeline({ paused: true });
+    place($("#cornerL"), L.x, L.corner);
+    Object.assign($("#cornerR").style, { right: L.cornerR + "px", top: L.corner + "px" });
+    tl.fromTo("#stage", { scale: 1 }, { scale: 1.04, duration: DUR, ease: "none" }, 0);
+    tl.fromTo("#grain", { x: 0, y: 0 }, { x: 288, y: 160, duration: DUR, ease: `steps(${Math.round(DUR * 15)})` }, 0);
+
+    // ---------- 1 · formulario ----------
+    const k = para($("#kick"), "Así te atiende una agencia:", fitSize("Así te atiende una agencia:", L.maxW - 120, 72), L.kick, ["agencia:"]);
+    tl.fromTo(k.spans, { y: 16, opacity: 1 }, { y: 0, opacity: 1, duration: 0.4, ease: "expo.out", stagger: 0.04 }, 0);
+    const F = L.form, fw = L.maxW;
+    const form = $("#form"); place(form, L.x, F.y, fw, F.h);
+    const ix = 44, iw = fw - 88;
+    place($("#lb1"), ix, 56); place($("#in1"), ix, 96, iw, 104);
+    place($("#lb2"), ix, 246); place($("#in2"), ix, 286, iw, 104);
+    place($("#lb3"), ix, 436); place($("#in3"), ix, 476, iw, 200);
+    $("#in3").style.whiteSpace = "normal";
+    place($("#send"), ix, 726, iw, 120);
+    tl.fromTo(form, { y: 30 }, { y: 0, duration: 0.6, ease: "expo.out" }, 0);
+    typeInto(tl, $("#in1"), "Martina", 0, 0.6, 1);
+    tl.set("#in1", { className: "in on" }, 0).set("#in1", { className: "in" }, 0.85).set("#in2", { className: "in on" }, 0.85).set("#in2", { className: "in" }, 1.65).set("#in3", { className: "in on" }, 1.65).set("#in3", { className: "in" }, 2.45);
+    typeInto(tl, $("#in2"), "11 2345 6789", 0.95, 0.6);
+    typeInto(tl, $("#in3"), "Panadería en Castelar", 1.75, 0.6);
+    // cursor: recorre los campos y presiona Enviar
+    const cur = $("#cursor");
+    const fx = (dx, dy) => [L.x + dx, F.y + dy];
+    const path = [[0, fx(iw * 0.7, 150)], [0.85, fx(iw * 0.75, 340)], [1.65, fx(iw * 0.8, 560)], [2.4, fx(iw * 0.55, 790)]];
+    gsap.set(cur, { x: path[0][1][0], y: path[0][1][1] });
+    for (let i = 1; i < path.length; i++) tl.to(cur, { x: path[i][1][0], y: path[i][1][1], duration: 0.3, ease: "power2.inOut" }, path[i][0] - 0.3);
+    tl.to(cur, { scale: 0.82, duration: 0.07 }, 2.52).to(cur, { scale: 1, duration: 0.15, ease: "back.out(3)" }, 2.6);
+    tl.to("#send", { scale: 0.95, duration: 0.07 }, 2.52).to("#send", { scale: 1, duration: 0.2, ease: "back.out(3)" }, 2.6);
+    tl.set("#send", { innerHTML: "Enviado ✓" }, 2.62);
+
+    // ---------- 2 · la espera: loader, contador, se desatura ----------
+    const a = para($("#s2t"), "Y después…", fitSize("Y después…", L.maxW, 140), L.s2);
+    const b = para($("#s2t"), "esperás.", fitSize("Y después…", L.maxW, 140), L.s2 + (V ? 160 : 150), ["esperás."]);
+    wordsIn(tl, a.spans, 3.0, 0.1); wordsIn(tl, b.spans, 3.35, 0.1);
+    const ls = V ? 300 : 240;
+    place($("#loader"), (W - ls) / 2, L.loaderY, ls, ls);
+    tl.fromTo("#loader", { rotation: 0, scale: 0 }, { scale: 1, duration: 0.4, ease: "back.out(2)" }, 3.2);
+    tl.to("#loader", { rotation: 720, duration: 2.8, ease: "none" }, 3.2);
+    const wc = $("#waitc");
+    Object.assign(wc.style, { fontSize: (V ? 96 : 84) + "px", fontWeight: 700, width: W + "px", textAlign: "center", left: "0px", top: L.waitY + "px", letterSpacing: "-0.02em" });
+    place($("#clock"), (W - 80) / 2, L.waitY - 110, 80, 80);
+    tl.fromTo("#clock", { opacity: 0 }, { opacity: 0.8, duration: 0.3 }, 3.6);
+    [["1 día", 3.9], ["3 días", 4.6], ["1 semana", 5.3]].forEach(([txt, at]) => {
+      tl.set(wc, { textContent: txt }, at);
+      tl.fromTo(wc, { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, ease: "expo.out" }, at);
+    });
+    tl.fromTo("#s2", { filter: "grayscale(0) brightness(1)" }, { filter: "grayscale(1) brightness(0.62)", duration: 2.7, ease: "power1.in" }, 3.2);
+
+    // ---------- 3 · ding: onda cyan + campana ----------
+    const waves = $("#waves");
+    for (let i = 0; i < 4; i++) {
+      const w = el("div", "wave", waves);
+      const r0 = 60;
+      place(w, W / 2 - r0, L.cy - r0, r0 * 2, r0 * 2);
+      tl.fromTo(w, { scale: 0.4, opacity: 1 }, { scale: 9 + i * 1.5, opacity: 0, duration: 1.3, ease: "expo.out" }, 6.2 + i * 0.16);
+    }
+    const bs = V ? 280 : 240;
+    place($("#bell"), (W - bs) / 2, L.cy - bs / 2, bs, bs);
+    tl.fromTo("#bell", { scale: 0 }, { scale: 1, duration: 0.45, ease: "back.out(3)" }, 6.2);
+    tl.fromTo("#bell", { rotation: -18 }, { rotation: 18, duration: 0.09, ease: "sine.inOut", yoyo: true, repeat: 7 }, 6.3);
+    tl.fromTo("#flash", { opacity: 0 }, { opacity: 0.18, duration: 0.04 }, 6.2).to("#flash", { opacity: 0, duration: 0.35 }, 6.24);
+
+    // ---------- 4 · puerta + frase ----------
+    tl.fromTo("#photo", { scale: 1.14 }, { scale: 1.02, duration: 3, ease: "none" }, 8);
+    const sz = fitSize("tocamos el", L.maxW, 170);
+    const p1 = para($("#s4t"), "Nosotros", sz, L.s4);
+    const p2 = para($("#s4t"), "tocamos el timbre", sz, L.s4 + sz * 1.0, ["tocamos", "el", "timbre"], true, L.maxW - 30);
+    wordsIn(tl, p1.spans, 8.1, 0.1); wordsIn(tl, p2.spans, 8.4, 0.14);
+    tl.fromTo(p2.spans[p2.spans.length - 1], { scale: 0 }, { scale: 1, duration: 0.4, ease: "back.out(3)" }, 9.0);
+
+    // ---------- 5 · tres líneas, una por beat ----------
+    const rows = [["door-open", "Te visitamos."], ["eye", "Te conocemos."], ["message-circle", "Charlamos."]];
+    const rs = fitSize("Te conocemos.", L.maxW - 160, 116);
+    rows.forEach(([ic, txt], i) => {
+      const r = el("div", "row", $("#rows"), `<img src="assets/icons/${ic}.svg" alt=""><div class="h" style="font-size:${rs}px">${txt}</div>`);
+      place(r, L.x, L.rows + i * L.rowGap);
+      const at = 11 + i;
+      tl.fromTo(r.children[0], { scale: 0, rotation: -30 }, { scale: 1, rotation: 0, duration: 0.45, ease: "back.out(3)" }, at);
+      tl.fromTo(r.children[1], { x: 60, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5, ease: "expo.out" }, at + 0.05);
+    });
+
+    // ---------- 6 · CTA ----------
+    if (CTA === "organico") {
+      const c = para($("#ctaA"), "Comentá TIMBRE y coordinamos una visita", V ? 108 : 100, L.cta, ["TIMBRE"], true);
+      wordsIn(tl, c.spans, 14.0, 0.07);
+    } else {
+      const c1 = para($("#ctaA"), "Sin formularios.", fitSize("Sin formularios.", L.maxW, 130), L.cta);
+      const c2 = para($("#ctaA"), "Escribinos", fitSize("Escribinos", L.maxW - 170, 150), L.cta + (V ? 190 : 170), ["Escribinos"], true);
+      wordsIn(tl, c1.spans, 14.0, 0.1); wordsIn(tl, c2.spans, 14.35, 0.12);
+    }
+    const wm = $("#wm");
+    wm.style.fontSize = (V ? 34 : 30) + "px";
+    place(wm, L.x, L.wm);
+    tl.fromTo(wm, { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "expo.out" }, 14.4);
+    tl.fromTo("#wmdot", { scale: 0 }, { scale: 1, duration: 0.45, ease: "back.out(3)" }, 14.6);
+
+    window.__timelines["main"] = tl;
+  }
+
+  Promise.all([
+    document.fonts.load('800 100px "DM Sans"'), document.fonts.load('500 100px "DM Sans"'),
+    document.fonts.load('700 100px "Space Mono"'), document.fonts.load('400 100px "Space Mono"'),
+  ]).then(build);
+})();
+    </script>
+  </body>
+</html>

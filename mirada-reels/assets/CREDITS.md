@@ -19,3 +19,8 @@
 | photos/pago-mostrador.jpg | Pexels 8422732 — https://www.pexels.com/photo/8422732/ | Pexels License | ok |
 | photos/puerta-abierto.jpg | Unsplash, Artem Beliaikin — https://unsplash.com/photos/open-signage-on-door-N35J0N8ZglQ | Unsplash License (uso comercial libre) | ok |
 | photos/medialunas.jpg | Enviada por Valen (Mirada Digital) | **A confirmar: fuente y licencia de uso comercial** | ok |
+
+## Música y efectos
+| Archivo | Fuente | Licencia |
+| --- | --- | --- |
+| Pistas de audio de todos los MP4 (música + efectos) | Sintetizadas en código por Mirada Digital (`sfx/audio.py`, librería `motion-studio/lib/dsp.py`): 120 BPM, sin samples ni loops de terceros | Propia, sin derechos de terceros |
