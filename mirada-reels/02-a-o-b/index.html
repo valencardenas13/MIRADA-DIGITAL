@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="es" data-resolution="portrait" data-composition-variables='[{"id":"cta","type":"enum","label":"CTA","default":"organico","options":[{"value":"organico","label":"Orgánico (comentario)"},{"value":"pauta","label":"Pauta (Escribinos)"}]}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Reel 02 · ¿A o B?</title>
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "DM Sans"; src: url("assets/fonts/DMSans-Regular.woff2") format("woff2"); font-weight: 400; font-display: block; }
+      @font-face { font-family: "DM Sans"; src: url("assets/fonts/DMSans-Medium.woff2") format("woff2"); font-weight: 500; font-display: block; }
+      @font-face { font-family: "DM Sans"; src: url("assets/fonts/DMSans-ExtraBold.woff2") format("woff2"); font-weight: 800; font-display: block; }
+      @font-face { font-family: "Space Mono"; src: url("assets/fonts/SpaceMono-Regular.woff2") format("woff2"); font-weight: 400; font-display: block; }
+      @font-face { font-family: "Space Mono"; src: url("assets/fonts/SpaceMono-Bold.woff2") format("woff2"); font-weight: 700; font-display: block; }
+    </style>
+    <link rel="stylesheet" href="assets/reel.css" />
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="18" data-width="1080" data-height="1920">
+      <div id="stage">
+        <!-- 1–3 · el juego: pregunta, tarjetas A/B, cuenta regresiva, reveal -->
+        <section id="game" class="clip" data-start="0" data-duration="13.5" data-track-index="1">
+          <div id="titles"></div>
+          <div id="cardA" class="ad">
+            <div class="hd"><div class="av">LE</div><div><div class="nm">La Esquina</div><div class="sp">ANUNCIO</div></div></div>
+            <img class="ph" src="assets/photos/medialunas.jpg" alt="" />
+            <div class="clutter" data-layout-allow-overlap>
+              <div class="stk" style="left:-10px;top:30px;font-size:58px;background:#f0ede6;color:#1a1d23;transform:rotate(-8deg)">SUPER OFERTAS!!</div>
+              <div class="stk" style="left:40px;top:150px;font-size:50px;background:#00bfff;color:#1a1d23;transform:rotate(5deg)">VISITANOS!!</div>
+              <div class="stk" style="left:-6px;top:262px;font-size:54px;background:#1a1d23;color:#f0ede6;transform:rotate(-4deg)">SEGUINOS!!</div>
+              <div class="stk" style="left:200px;top:360px;font-size:34px;background:#f0ede6;color:#1a1d23;transform:rotate(9deg)">2x1 HOY!!!</div>
+              <div class="stk" style="left:250px;top:96px;font-size:30px;background:#8b909a;color:#1a1d23;transform:rotate(-12deg)">ENVIOS!!</div>
+            </div>
+            <div class="cap">SUPER OFERTAS!! VISITANOS!! SEGUINOS!! Y MUCHO MAS!!! 🡆 LINK EN BIO</div>
+            <div class="shade"></div>
+          </div>
+          <div id="cardB" class="ad">
+            <div class="hd"><div class="av">LE</div><div><div class="nm">La Esquina</div><div class="sp">ANUNCIO</div></div></div>
+            <img class="ph" src="assets/photos/medialunas.jpg" alt="" />
+            <div class="cap">Medialunas recién salidas, todos los días desde las 7</div>
+            <div class="btn"><img src="assets/icons/send.svg" alt="" style="filter:brightness(0) saturate(100%) invert(9%)" />Pedí por mensaje</div>
+          </div>
+          <div id="tagA" class="tag">A</div>
+          <div id="tagB" class="tag b">B</div>
+          <img id="xA" class="icon" src="assets/icons/x.svg" alt="" />
+          <div id="countdown" data-layout-allow-overlap>
+            <svg id="ring" viewBox="0 0 520 520"><circle cx="260" cy="260" r="250" fill="#1a1d23" fill-opacity="0.88"/><circle id="ringArc" cx="260" cy="260" r="232" fill="none" stroke="#00bfff" stroke-width="18" stroke-linecap="round" transform="rotate(-90 260 260)"/></svg>
+            <div id="cd3" class="cdn">3</div><div id="cd2" class="cdn">2</div><div id="cd1" class="cdn">1</div>
+          </div>
+          <svg id="lines" class="abs" style="left:0;top:0;overflow:visible" width="1080" height="1920"></svg>
+          <div id="annos"></div>
+        </section>
+
+        <!-- 4 · No es el presupuesto. Es cómo lo armás ● -->
+        <section id="s4" class="clip" data-start="13.5" data-duration="2" data-track-index="1"><div id="s4t"></div></section>
+
+        <!-- 5 · CTA -->
+        <section id="s5" class="clip" data-start="15.5" data-duration="2.5" data-track-index="1">
+          <div id="ctaA"></div>
+          <div id="wm" class="wordmark"><span class="dot" id="wmdot"></span> MIRADA DIGITAL</div>
+        </section>
+      </div>
+
+      <div id="flash"></div>
+      <div id="grain"></div>
+      <div id="vignette"></div>
+      <div id="cornerL" class="corner"><span class="dot"></span>MIRADA DIGITAL</div>
+      <div id="cornerR" class="corner">REF · 10·26</div>
+    </div>
+    <script>
+(function () {
+  const root = document.getElementById("root");
+  const W = +root.dataset.width, H = +root.dataset.height, DUR = +root.dataset.duration;
+  const V = H > 1500;
+  const vars = (window.__hyperframes && window.__hyperframes.getVariables && window.__hyperframes.getVariables()) || {};
+  const CTA = vars.cta === "pauta" ? "pauta" : "organico";
+
+  // sS: escala de las tarjetas lado a lado; sF: escala final de B; cards: arriba de las tarjetas
+  const L = V
+    ? { x: 80, maxW: 860, corner: 268, cornerR: 140, title: 370, tSize: 78, cards: 640, sS: 0.872, sF: 1, gap: 30, anX: 600, anW: 340, s4: 640, cta: 640, wm: 1430 }
+    : { x: 80, maxW: 920, corner: 64, cornerR: 64, title: 120, tSize: 64, cards: 330, sS: 0.82, sF: 1.0, gap: 40, anX: 610, anW: 400, s4: 360, cta: 360, wm: 1150 };
+
+  const $ = (s) => document.querySelector(s);
+  const el = (tag, cls, parent, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; parent.appendChild(e); return e; };
+  const place = (e, x, y, w, h) => Object.assign(e.style, { left: x + "px", top: y + "px", ...(w != null && { width: w + "px" }), ...(h != null && { height: h + "px" }) });
+  const cvs = document.createElement("canvas"), c2d = cvs.getContext("2d");
+  const measure = (text, size, weight = 800, fam = "DM Sans", sp = -0.035) => { c2d.font = `${weight} ${size}px "${fam}"`; c2d.letterSpacing = `${sp * size}px`; return c2d.measureText(text).width; };
+  const fitSize = (text, maxW, maxS, weight, fam, sp) => Math.min(maxS, Math.floor((maxW / measure(text, 100, weight, fam, sp)) * 100));
+
+  function para(parent, text, size, top, acc = [], dot = false, width = L.maxW, left = L.x) {
+    const p = el("div", "abs para", parent);
+    place(p, left, top, width);
+    p.style.fontSize = size + "px";
+    const spans = text.split(" ").map((w) => el("span", "w" + (acc.includes(w) ? " acc" : ""), p, w));
+    if (dot) spans.push(el("span", "w dot", p));
+    return { p, spans };
+  }
+  // apila un párrafo debajo de otro según su altura real (no una distancia fija)
+  const below = (prev, gap = 24) => parseFloat(prev.p.style.top) + prev.p.offsetHeight + gap;
+  const wordsIn = (tl, spans, at, st = 0.08, d = 0.5) => tl.fromTo(spans, { y: 70, opacity: 0 }, { y: 0, opacity: 1, duration: d, ease: "expo.out", stagger: st }, at);
+  const out = (tl, e, at) => tl.to(e, { y: -50, opacity: 0, duration: 0.22, ease: "power2.in" }, at);
+
+  function build() {
+    const tl = gsap.timeline({ paused: true });
+    place($("#cornerL"), L.x, L.corner);
+    Object.assign($("#cornerR").style, { right: L.cornerR + "px", top: L.corner + "px" });
+    tl.fromTo("#stage", { scale: 1 }, { scale: 1.04, duration: DUR, ease: "none" }, 0);
+    tl.fromTo("#grain", { x: 0, y: 0 }, { x: 288, y: 160, duration: DUR, ease: `steps(${Math.round(DUR * 15)})` }, 0);
+
+    // ---------- tarjetas ----------
+    const cw = 470 * L.sS, ch = 840 * L.sS;
+    const ax = L.x - 10, bx = ax + cw + L.gap, cy = L.cards;
+    const A = $("#cardA"), B = $("#cardB");
+    gsap.set(A, { x: ax, y: cy, scale: L.sS });
+    // B vive en su posición final (izquierda, escala sF); arranca en el slot derecho
+    const bFinalX = L.x - 10, bFinalY = cy;
+    gsap.set(B, { x: bx, y: cy, scale: L.sS, transformPerspective: 1600 });
+    const tA = $("#tagA"), tB = $("#tagB");
+    gsap.set(tA, { x: ax - 18, y: cy - 34 }); gsap.set(tB, { x: bx - 18, y: cy - 34 });
+
+    // flotado leve + entrada desde el frame 0 (ya visibles)
+    tl.fromTo([A], { rotation: -1.2 }, { rotation: 1.2, duration: 2, ease: "sine.inOut", yoyo: true, repeat: 2 }, 0);
+    tl.fromTo([B], { rotation: 1.2 }, { rotation: -1.2, duration: 2, ease: "sine.inOut", yoyo: true, repeat: 2 }, 0);
+    tl.fromTo([tA, tB], { scale: 0.7 }, { scale: 1, duration: 0.6, ease: "back.out(3)", stagger: 0.12 }, 0);
+
+    // ---------- títulos ----------
+    const T = $("#titles");
+    const t1 = para(T, "¿Cuál de estos anuncios vende más?", L.tSize, L.title, ["vende", "más?"]);
+    tl.fromTo(t1.spans, { y: 18, opacity: 1 }, { y: 0, opacity: 1, duration: 0.45, ease: "expo.out", stagger: 0.05 }, 0); // legible en el frame 0
+    out(tl, t1.p, 1.9);
+    const t2 = para(T, "Pausá y elegí.", fitSize("Pausá y elegí.", L.maxW, 120), L.title, ["elegí."]);
+    wordsIn(tl, t2.spans, 2.05, 0.12);
+    out(tl, t2.p, 5.85);
+    const t3 = para(T, "Comentá A o B antes de ver la respuesta", L.tSize, L.title, ["A", "B"]);
+    wordsIn(tl, t3.spans, 6.0, 0.06);
+    const arrow = el("div", "abs", T, '<svg width="70" height="90" viewBox="0 0 70 90"><path d="M35 4 V78 M8 52 L35 82 L62 52" stroke="#00bfff" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+    place(arrow, L.x + L.maxW - 70, L.title + L.tSize * 2.2);
+    tl.fromTo(arrow, { y: -20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "back.out(3)" }, 6.5);
+    tl.to(arrow, { y: 16, duration: 0.35, ease: "sine.inOut", yoyo: true, repeat: 3 }, 6.9);
+    out(tl, t3.p, 7.85); out(tl, arrow, 7.85);
+    const t4 = para(T, "Es la B.", fitSize("Es la B.", L.maxW, 130), L.title, ["B."], true);
+    wordsIn(tl, t4.spans, 8.5, 0.12);
+
+    // ---------- cuenta regresiva gigante con anillo ----------
+    const R = V ? 520 : 440;
+    const ccx = ax + (cw * 2 + L.gap) / 2, ccy = cy + ch / 2;
+    const ring = $("#ring"); place(ring, ccx - R / 2, ccy - R / 2, R, R);
+    const arc = $("#ringArc"); const circ = 2 * Math.PI * 232;
+    arc.setAttribute("stroke-dasharray", circ);
+    tl.fromTo(ring, { scale: 0, opacity: 1 }, { scale: 1, duration: 0.45, ease: "back.out(2)" }, 2.25);
+    tl.fromTo(arc, { attr: { "stroke-dashoffset": 0 } }, { attr: { "stroke-dashoffset": circ }, duration: 3.0, ease: "none" }, 2.5);
+    tl.to(ring, { scale: 0, opacity: 0, duration: 0.3, ease: "power2.in" }, 5.6);
+    tl.to([A, B, tA, tB], { opacity: 0.4, duration: 0.25 }, 2.25);
+    tl.to([A, B, tA, tB], { opacity: 1, duration: 0.25 }, 5.6);
+    ["#cd3", "#cd2", "#cd1"].forEach((s, i) => {
+      const n = $(s);
+      Object.assign(n.style, { fontSize: (V ? 300 : 250) + "px", width: R + "px", left: ccx - R / 2 + "px", top: ccy - (V ? 300 : 250) * 0.56 + "px" });
+      const at = 2.5 + i;
+      tl.fromTo(n, { scale: 1.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.35, ease: "expo.out" }, at);
+      tl.to(n, { scale: 0.6, opacity: 0, duration: 0.2, ease: "power2.in" }, at + 0.78);
+    });
+
+    // ---------- reveal: A se apaga con una x; B gira y pasa al frente ----------
+    tl.to("#cardA .shade", { opacity: 0.62, duration: 0.25 }, 8.0);
+    const xA = $("#xA");
+    place(xA, ax + cw / 2 - 130, cy + ch / 2 - 130, 260, 260);
+    tl.fromTo(xA, { scale: 0, rotation: -60 }, { scale: 1, rotation: 0, duration: 0.45, ease: "back.out(3)" }, 8.35);
+    tl.to([A, xA, tA], { x: "-=700", opacity: 0, duration: 0.45, ease: "power3.in" }, 8.9);
+    tl.to(tB, { x: bFinalX - 18, duration: 0.6, ease: "expo.inOut" }, 8.75);
+    tl.to(B, { x: bFinalX, y: bFinalY, scale: L.sF, rotation: 0, duration: 0.7, ease: "expo.inOut" }, 8.75);
+    tl.fromTo(B, { rotationY: 0 }, { rotationY: 360, duration: 0.7, ease: "power2.inOut" }, 8.75);
+    tl.fromTo("#flash", { opacity: 0 }, { opacity: 0.25, duration: 0.05 }, 9.4).to("#flash", { opacity: 0, duration: 0.3 }, 9.45);
+
+    // anotaciones con líneas cyan desde B
+    const s = L.sF;
+    const anchors = [ // [y local en la tarjeta, texto, palabras clave]
+      [650, "un mensaje, no cinco", ["un", "mensaje,"]],
+      [330, "una foto que muestra lo que vendés", ["foto"]],
+      [772, "un paso claro: escribir", ["escribir"]],
+    ];
+    const svg = $("#lines");
+    const annos = $("#annos");
+    const fs = V ? 44 : 46;
+    const slotsY = V ? [1110, 720, 1380] : [790, 440, 1010];
+    anchors.forEach(([ly, text, keys], i) => {
+      const axp = bFinalX + 470 * s - 16, ayp = bFinalY + ly * s;
+      const tx = L.anX, ty = slotsY[i];
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      const midx = (axp + tx) / 2;
+      path.setAttribute("d", `M${axp} ${ayp} C ${midx} ${ayp}, ${midx} ${ty}, ${tx - 14} ${ty}`);
+      Object.assign(path.style, { fill: "none", stroke: "#00bfff", strokeWidth: 6, strokeLinecap: "round" });
+      svg.appendChild(path);
+      const len = path.getTotalLength();
+      path.setAttribute("stroke-dasharray", len);
+      const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      dot.setAttribute("cx", axp); dot.setAttribute("cy", ayp); dot.setAttribute("r", 13); dot.setAttribute("fill", "#00bfff");
+      svg.appendChild(dot);
+      const a = el("div", "anno", annos);
+      place(a, tx, ty - fs * 0.62, L.anW);
+      a.style.fontSize = fs + "px";
+      a.innerHTML = text.split(" ").map((w) => `<span class="w${keys.includes(w) ? " k" : ""}" style="margin-right:.22em">${w}</span>`).join("");
+      const at = 10.0 + i * 0.8;
+      tl.fromTo(dot, { attr: { r: 0 } }, { attr: { r: 13 }, duration: 0.3, ease: "back.out(3)" }, at);
+      tl.fromTo(path, { attr: { "stroke-dashoffset": len } }, { attr: { "stroke-dashoffset": 0 }, duration: 0.45, ease: "expo.out" }, at + 0.05);
+      tl.fromTo(a.children, { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "expo.out", stagger: 0.05 }, at + 0.25);
+    });
+
+    // ---------- 4 · tagline ----------
+    const s4a = para($("#s4t"), "No es el presupuesto.", fitSize("No es el presupuesto.", L.maxW, 110), L.s4);
+    const s4b = para($("#s4t"), "Es cómo lo armás", fitSize("Es cómo lo armás", L.maxW - 170, 128), below(s4a), ["cómo", "lo", "armás"], true);
+    wordsIn(tl, s4a.spans, 13.5, 0.08);
+    wordsIn(tl, s4b.spans, 14.1, 0.1);
+    tl.fromTo(s4b.spans[s4b.spans.length - 1], { scale: 0 }, { scale: 1, duration: 0.4, ease: "back.out(3)" }, 14.6);
+
+    // ---------- 5 · CTA ----------
+    if (CTA === "organico") {
+      const a = para($("#ctaA"), "¿Acertaste?", fitSize("¿Acertaste?", L.maxW, 150), L.cta);
+      const b = para($("#ctaA"), "Contanos abajo", fitSize("Contanos abajo", L.maxW - 170, 150), below(a), ["Contanos", "abajo"], true);
+      wordsIn(tl, a.spans, 15.5, 0.1); wordsIn(tl, b.spans, 15.85, 0.12);
+    } else {
+      const a = para($("#ctaA"), "Te armamos los tuyos.", fitSize("Te armamos los tuyos.", L.maxW, 120), L.cta);
+      const b = para($("#ctaA"), "Escribinos", fitSize("Escribinos", L.maxW - 170, 150), below(a), ["Escribinos"], true);
+      wordsIn(tl, a.spans, 15.5, 0.08); wordsIn(tl, b.spans, 15.95, 0.12);
+    }
+    const wm = $("#wm");
+    wm.style.fontSize = (V ? 34 : 30) + "px";
+    place(wm, L.x, L.wm);
+    tl.fromTo(wm, { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "expo.out" }, 16.1);
+    tl.fromTo("#wmdot", { scale: 0 }, { scale: 1, duration: 0.45, ease: "back.out(3)" }, 16.2);
+
+    window.__timelines["main"] = tl;
+  }
+
+  Promise.all([
+    document.fonts.load('800 100px "DM Sans"'), document.fonts.load('500 100px "DM Sans"'),
+    document.fonts.load('700 100px "Space Mono"'), document.fonts.load('400 100px "Space Mono"'),
+  ]).then(build);
+})();
+    </script>
+  </body>
+</html>

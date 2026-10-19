@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Mirada Digital × Tasker</title>
+<style>
+  @font-face { font-family: "Montserrat"; src: url("../../assets/fonts/Montserrat-500.woff2"); font-weight: 500; font-display: block; }
+  @font-face { font-family: "Montserrat"; src: url("../../assets/fonts/Montserrat-700.woff2"); font-weight: 700; font-display: block; }
+  @font-face { font-family: "Montserrat"; src: url("../../assets/fonts/Montserrat-800.woff2"); font-weight: 800; font-display: block; }
+  @font-face { font-family: "Montserrat"; src: url("../../assets/fonts/Montserrat-900.woff2"); font-weight: 900; font-display: block; }
+  @font-face { font-family: "JetBrains Mono"; src: url("../../assets/fonts/JetBrainsMono-400.woff2"); font-weight: 400; font-display: block; }
+  @font-face { font-family: "JetBrains Mono"; src: url("../../assets/fonts/JetBrainsMono-500.woff2"); font-weight: 500; font-display: block; }
+  @font-face { font-family: "JetBrains Mono"; src: url("../../assets/fonts/JetBrainsMono-700.woff2"); font-weight: 700; font-display: block; }
+  * { margin: 0; padding: 0; }
+  html, body { background: #0a0c10; overflow: hidden; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<div id="stage"><canvas id="c"></canvas></div>
+
+<script src="../../lib/film.js"></script>
+<script src="beats.js"></script>
+<script src="timeline.js"></script>
+<script>
+  // Pitch Mirada Digital × Tasker. 30 s, 120 BPM. Formatos: ?fmt=916 (default) | 11 | 169.
+  // Todo el contenido vive en un cuadrado de 1080 centrado; fondo, HUD y cinta se adaptan al formato.
+
+  const FMTS = { 916: [1080, 1920], 11: [1080, 1080], 169: [1920, 1080] };
+  const fmt = new URLSearchParams(location.search).get("fmt") || "916";
+  const [W, H] = FMTS[fmt];
+  const SQ = { x: (W - 1080) / 2, y: (H - 1080) / 2 };
+  window.FILM = { fps: 30, width: W, height: H, duration: 30 };
+  document.getElementById("stage").style.cssText = `width:${W}px;height:${H}px`;
+
+  const cv = document.getElementById("c");
+  cv.width = W; cv.height = H;
+  const ctx = cv.getContext("2d");
+
+  const C = { bg: "#0a0c10", card: "#12161e", line: "#232a36", wh: "#ffffff", gr: "#8a93a3", blue: "#3b82f6", cyan: "#22d3ee", coral: "#f0705f", blueTxt: "#5b9bff", ink: "#0a1020" };
+  const M = '"Montserrat"', J = '"JetBrains Mono"';
+  const { span: sp, ease: E, hit, clamp, lerp, hash, noise1 } = F;
+  const TAU = Math.PI * 2;
+
+  // tiempo de un beat fraccionario sobre la grilla medida
+  const bt = (x) => { const i = Math.floor(x); return F.beatTime(i) + (x - i) * (F.beatTime(i + 1) - F.beatTime(i)); };
+
+  // ---------- assets ----------
+
+  const ASSET = "../../../assets/tasker/";
+  const IMG = {};
+  function load(key, file) {
+    const im = new Image();
+    IMG[key] = { im, ok: false };
+    return new Promise((res) => {
+      im.onload = () => { IMG[key].ok = true; res(); };
+      im.onerror = () => res();
+      im.src = ASSET + file;
+    });
+  }
+
+  const font = (w, s, f = M) => `${w} ${s}px ${f}`;
+  window.ready = Promise.all([
+    ...[500, 700, 800, 900].map((w) => document.fonts.load(font(w, 60))),
+    ...[400, 500, 700].map((w) => document.fonts.load(font(w, 30, J))),
+    load("logoW", "logo-tasker-blanco-borde.png"),
+    load("logoB", "logo-tasker-azul.png"),
+  ]);
+
+  // ---------- helpers ----------
+
+  function setFont(w, s, f = M, spacing = 0) {
+    ctx.font = font(w, s, f);
+    ctx.letterSpacing = `${spacing}px`;
+  }
+  function textW(str, w, s, f = M, spacing = 0) { setFont(w, s, f, spacing); return ctx.measureText(str).width; }
+
+  // etiqueta mono en mayúscula espaciada
+  function label(str, x, y, { size = 20, color = C.gr, w = 500, align = "left" } = {}) {
+    setFont(w, size, J, size * 0.22);
+    ctx.fillStyle = color; ctx.textAlign = align;
+    ctx.fillText(str.toUpperCase(), x, y);
+    ctx.textAlign = "left"; ctx.letterSpacing = "0px";
+  }
+
+  function rrect(x, y, w, h, r) {
+    ctx.beginPath(); ctx.roundRect(x, y, w, h, r);
+  }
+
+  function card(x, y, w, h) {
+    const g = ctx.createLinearGradient(x, y, x, y + h);
+    g.addColorStop(0, "#141924"); g.addColorStop(1, "#10141c");
+    ctx.fillStyle = g; ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = C.line; ctx.lineWidth = 2; ctx.strokeRect(x + 1, y + 1, w - 2, h - 2);
+  }
+
+  // etiqueta de sección del deck: línea corta + texto mono azul
+  function eyebrow(str, x, y, p = 1, size = 20) {
+    if (p <= 0) return;
+    ctx.fillStyle = C.blue; ctx.fillRect(x, y - size * 0.35, 36 * p, 2);
+    const n = Math.floor(str.length * p);
+    label(str.slice(0, n), x + 52, y, { size, color: C.blueTxt });
+  }
+
+  function iconBox(x, y, glyph, p = 1) {
+    if (p <= 0) return;
+    ctx.strokeStyle = C.line; ctx.lineWidth = 2; ctx.strokeRect(x, y, 64, 64);
+    ctx.save(); ctx.translate(x + 32, y + 32); ctx.scale(p, p);
+    ctx.strokeStyle = C.wh; ctx.lineWidth = 3; ctx.lineCap = "round";
+    ctx.beginPath();
+    if (glyph === "ban") { ctx.arc(0, 0, 11, 0, TAU); ctx.moveTo(-8, 8); ctx.lineTo(8, -8); }
+    if (glyph === "up") { ctx.moveTo(-9, 9); ctx.lineTo(9, -9); ctx.moveTo(-2, -9); ctx.lineTo(9, -9); ctx.lineTo(9, 2); }
+    if (glyph === "ring") { ctx.arc(0, 0, 6, 0, TAU); }
+    if (glyph === "inf") { ctx.ellipse(-7, 0, 7, 5, 0, 0, TAU); ctx.moveTo(14, 0); ctx.ellipse(7, 0, 7, 5, 0, 0, TAU); ctx.strokeStyle = C.blueTxt; }
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // botón del deck: rectángulo azul, texto mono oscuro subrayado y flecha larga
+  function deckButton(str, x, y, w, h, size, scale, nudge = 0) {
+    ctx.save();
+    ctx.translate(x + w / 2, y + h / 2); ctx.scale(scale, scale); ctx.translate(-(x + w / 2), -(y + h / 2));
+    ctx.fillStyle = C.blue; ctx.fillRect(x, y, w, h);
+    setFont(700, size, J, size * 0.2);
+    const tw = ctx.measureText(str.toUpperCase()).width;
+    const aw = size * 1.6, gap = size * 0.8;
+    const x0 = x + (w - tw - gap - aw) / 2, by = y + h / 2 + size * 0.36;
+    ctx.fillStyle = C.ink; ctx.fillText(str.toUpperCase(), x0, by);
+    ctx.fillRect(x0, by + size * 0.22, tw, 2);
+    const ax = x0 + tw + gap + nudge, ay = y + h / 2;
+    ctx.strokeStyle = C.ink; ctx.lineWidth = 2.5; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ax + aw, ay);
+    ctx.moveTo(ax + aw - size * 0.4, ay - size * 0.3); ctx.lineTo(ax + aw, ay); ctx.lineTo(ax + aw - size * 0.4, ay + size * 0.3);
+    ctx.stroke();
+    ctx.letterSpacing = "0px";
+    ctx.restore();
+  }
+
+  function wrap(str, maxW, w, s, f = M) {
+    setFont(w, s, f);
+    const words = str.split(" "), lines = [];
+    let cur = "";
+    for (const wd of words) {
+      const test = cur ? cur + " " + wd : wd;
+      if (ctx.measureText(test).width > maxW && cur) { lines.push(cur); cur = wd; } else cur = test;
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+
+  // tamaño máximo para que el texto entre en maxW
+  function fit(str, maxW, w, maxS, f = M) {
+    const s = textW(str, w, 100, f);
+    return Math.min(maxS, (maxW / s) * 100);
+  }
+
+  // texto que entra por máscara desde abajo: p 0 oculto, 1 en su lugar, 2 salió por arriba
+  function mtext(str, x, y, s, p, { w = 800, f = M, color = C.wh, parts = null } = {}) {
+    if (p <= 0 || p >= 2) return;
+    setFont(w, s, f);
+    const m = ctx.measureText(str).width;
+    ctx.save();
+    ctx.beginPath(); ctx.rect(x - 20, y - s * 1.0, m + 40, s * 1.32); ctx.clip();
+    const yy = y + (1 - p) * s * 1.32;
+    if (parts) {
+      let xx = x;
+      for (const [txt, col] of parts) { ctx.fillStyle = col; ctx.fillText(txt, xx, yy); xx += ctx.measureText(txt).width; }
+    } else { ctx.fillStyle = color; ctx.fillText(str, x, yy); }
+    ctx.restore();
+  }
+
+  // barrido de máscara de izquierda a derecha
+  function sweepText(parts, x, y, s, p, w = 800) {
+    if (p <= 0) return;
+    setFont(w, s);
+    const total = parts.reduce((a, [t]) => a + ctx.measureText(t).width, 0);
+    ctx.save();
+    ctx.beginPath(); ctx.rect(x - 10, y - s * 1.05, (total + 20) * p, s * 1.4); ctx.clip();
+    let xx = x;
+    for (const [t, col] of parts) { ctx.fillStyle = col; ctx.fillText(t, xx, y); xx += ctx.measureText(t).width; }
+    ctx.restore();
+    // borde del barrido
+    if (p < 1) { ctx.fillStyle = C.cyan; ctx.fillRect(x - 10 + (total + 20) * p, y - s * 0.95, 4, s * 1.2); }
+  }
+
+  // marcador cian detrás de un texto (resaltado del cursor)
+  function marker(x, y, wpx, s, p) {
+    if (p <= 0) return;
+    ctx.fillStyle = "rgba(34,211,238,0.22)";
+    ctx.fillRect(x - 10, y - s * 0.85, (wpx + 20) * p, s * 1.15);
+    ctx.fillStyle = C.cyan;
+    ctx.fillRect(x - 10, y + s * 0.3, (wpx + 20) * p, 6);
+  }
+
+  function imgCover(key, x, y, w, h) {
+    const it = IMG[key];
+    if (!it || !it.ok) { pending(key, x, y, w, h); return; }
+    const im = it.im, s = Math.max(w / im.width, h / im.height);
+    const dw = im.width * s, dh = im.height * s;
+    ctx.drawImage(im, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
+  }
+
+  // marca visible mientras falte una captura real (nunca se entrega así)
+  function pending(key, x, y, w, h) {
+    ctx.save();
+    ctx.fillStyle = "#151a24"; ctx.fillRect(x, y, w, h);
+    ctx.setLineDash([14, 10]); ctx.strokeStyle = "#ff5c5c"; ctx.lineWidth = 3; ctx.strokeRect(x + 6, y + 6, w - 12, h - 12);
+    label(`captura pendiente: ${key}`, x + w / 2, y + h / 2, { size: 22, color: "#ff8a8a", align: "center" });
+    ctx.restore();
+  }
+
+  function logo(key, x, y, h) {
+    const it = IMG[key];
+    if (!it.ok) return 0;
+    const w = (it.im.width / it.im.height) * h;
+    ctx.drawImage(it.im, x, y, w, h);
+    return w;
+  }
+
+  // ---------- cursor ----------
+
+  const CLICKS = TL.clicks;
+  // keyframes del cursor en coordenadas del cuadrado: [beat, x, y]
+  // destinos que dependen del ancho real del texto (se calculan con las fuentes ya cargadas)
+  const endOf = (str, w, size, f = M) => textW(str, w, size, f) + 18;
+  const T = {
+    c1: () => [FD.x + 44 + endOf("Solo 9 creativos en 2026", 500, TS), FD.y + 190 + 2 * TL_ - 22],
+    c2: () => [FD.x + 44 + endOf("Medición", 500, TS), FD.y + 190 - 22],
+    sv: () => { const it = "Search en Google Ads para demanda activa"; return [184 + endOf(it, 500, fit(it, 790, 500, 31)) - 4, 812]; },
+    ck: () => { const c = CHECKS[2]; return [166 + endOf(c, 500, fit(c, 820, 500, 25, J), J), 836]; },
+  };
+  // keyframes del cursor en coordenadas del cuadrado: [beat, x, y] o [beat, destino]
+  const CUR = [
+    [6.5, 1180, 760], [7.1, 560, 300], [8.6, 560, 300], [9.6, 900, 760], [10.1, 1180, 1000],
+    [14.2, 1180, 1000], [14.8, 560, 896], [15.4, 560, 896], [16.1, 1180, 1060],
+    [19.6, 1180, 1060], [20.5, "c1"], [20.95, "c1"], [21.45, 1180, 300],
+    [27.6, 1180, 1100], [28.5, "c2"], [28.95, "c2"], [29.45, 1180, 300],
+    [35.6, 1180, 1100], [36.5, "sv"], [36.95, "sv"], [37.45, 1180, 1000],
+    [45, 1180, 1100], [45.9, "ck"], [46.4, "ck"], [47.3, 1180, 1100],
+    [54, 1180, 1100], [54.9, 700, 792], [55.4, 700, 792], [56.4, 1180, 1100],
+  ];
+  function cursorPos(t) {
+    const k = CUR.map((e) => (typeof e[1] === "string" ? [bt(e[0]), ...T[e[1]]()] : [bt(e[0]), e[1], e[2]]));
+    if (t <= k[0][0]) return [k[0][1], k[0][2]];
+    for (let i = 0; i < k.length - 1; i++) {
+      if (t <= k[i + 1][0]) {
+        const u = E.inOut(sp(t, k[i][0], k[i + 1][0]));
+        return [lerp(k[i][1], k[i + 1][1], u), lerp(k[i][2], k[i + 1][2], u)];
+      }
+    }
+    return [k[k.length - 1][1], k[k.length - 1][2]];
+  }
+  function drawCursor(t) {
+    if (t < bt(6.4)) return;
+    const [x, y] = cursorPos(t);
+    let press = 0, ring = -1;
+    for (const c of CLICKS) {
+      const tc = bt(c);
+      press = Math.max(press, t >= tc - 0.06 && t < tc + 0.12 ? 1 - Math.abs(t - tc) / 0.12 : 0);
+      if (t >= tc && t < tc + 0.45) ring = (t - tc) / 0.45;
+    }
+    if (ring >= 0) {
+      ctx.strokeStyle = C.cyan; ctx.lineWidth = 4 * (1 - ring);
+      ctx.beginPath(); ctx.arc(x, y, 16 + 50 * E.out(ring), 0, TAU); ctx.stroke();
+    }
+    ctx.save();
+    ctx.translate(x, y); ctx.scale(1.5 * (1 - 0.18 * press), 1.5 * (1 - 0.18 * press));
+    ctx.beginPath();
+    ctx.moveTo(0, 0); ctx.lineTo(0, 30); ctx.lineTo(7.5, 23); ctx.lineTo(12.5, 34);
+    ctx.lineTo(17.5, 31.5); ctx.lineTo(12.5, 21); ctx.lineTo(22, 21); ctx.closePath();
+    ctx.fillStyle = C.wh; ctx.fill();
+    ctx.strokeStyle = C.bg; ctx.lineWidth = 2; ctx.lineJoin = "round"; ctx.stroke();
+    ctx.restore();
+  }
+  const clickAt = (c) => bt(c);
+
+  // ---------- fondo, HUD y cinta ----------
+
+  function background(t) {
+    ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+    // glow azul que deriva lento
+    const gx = W * (0.3 + 0.4 * noise1(t * 0.12, 3)), gy = H * (0.3 + 0.4 * noise1(t * 0.1, 7));
+    const g = ctx.createRadialGradient(gx, gy, 0, gx, gy, Math.max(W, H) * 0.55);
+    g.addColorStop(0, "rgba(59,130,246,0.20)"); g.addColorStop(1, "rgba(59,130,246,0)");
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    // grilla sutil con deriva
+    const step = 60, off = (t * 8) % step;
+    ctx.strokeStyle = "rgba(255,255,255,0.035)"; ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let x = -off; x < W; x += step) { ctx.moveTo(x, 0); ctx.lineTo(x, H); }
+    for (let y = -off; y < H; y += step) { ctx.moveTo(0, y); ctx.lineTo(W, y); }
+    ctx.stroke();
+  }
+
+  function hud() {
+    const y = fmt === "916" ? 318 : 62;
+    const xl = fmt === "169" ? 64 : 48, xr = W - xl;
+    ctx.fillStyle = C.blue; ctx.beginPath(); ctx.arc(xl + 7, y - 8, 7, 0, TAU); ctx.fill();
+    setFont(500, 27); ctx.fillStyle = C.wh; ctx.fillText("Mirada Digital", xl + 24, y);
+    label("Propuesta · Tasker", xr, y, { size: 20, align: "right" });
+  }
+
+  const RIBBON = ["Redes", "Meta & Google Ads", "Contenido", "Medición", "Estrategia", "Reportes"];
+  function ribbon(t) {
+    if (fmt !== "916") return;
+    const y0 = 1528, h = 68;
+    ctx.fillStyle = C.card; ctx.fillRect(0, y0, W, h);
+    ctx.fillStyle = C.line; ctx.fillRect(0, y0, W, 2); ctx.fillRect(0, y0 + h - 2, W, 2);
+    setFont(500, 22, J, 22 * 0.22);
+    // ancho del bloque = suma de lo que realmente se dibuja, para que las repeticiones empalmen
+    const sepW = ctx.measureText("   ·   ").width;
+    const uw = RIBBON.reduce((acc, w) => acc + ctx.measureText(w.toUpperCase()).width + sepW, 0);
+    let x = -((t * 90) % uw);
+    ctx.save(); ctx.beginPath(); ctx.rect(0, y0, W, h); ctx.clip();
+    for (; x < W; x += uw) {
+      let xx = x;
+      for (const s of RIBBON) {
+        const word = s.toUpperCase();
+        ctx.fillStyle = C.wh; ctx.fillText(word, xx, y0 + 43); xx += ctx.measureText(word).width;
+        ctx.fillStyle = C.blue; ctx.fillText("   ·   ", xx, y0 + 43); xx += ctx.measureText("   ·   ").width;
+      }
+    }
+    ctx.restore(); ctx.letterSpacing = "0px";
+  }
+
+  // ---------- 1 · gancho (0–3 s) ----------
+
+  function s1(t) {
+    if (t >= bt(6)) return;
+    // hero real de Tasker, desenfocado y oscurecido, con empuje lento (en coordenadas del lienzo)
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    const z = 1.08 + 0.06 * sp(t, 0, 3);
+    const whip = E.in(sp(t, bt(5.5), bt(6)));
+    ctx.translate(-whip * W * 1.2, 0);
+    ctx.translate(W / 2, H / 2); ctx.scale(z, z); ctx.translate(-W / 2, -H / 2);
+    ctx.filter = "blur(26px) brightness(0.55)";
+    const lw = W * 1.5;
+    ctx.translate(W / 2, H / 2); ctx.rotate(-0.12); ctx.translate(-W / 2, -H / 2);
+    logo("logoB", (W - lw) / 2, H / 2 - (lw * 147 / 480) / 2, lw * 147 / 480);
+    ctx.filter = "none";
+    ctx.fillStyle = "rgba(10,12,16,0.45)"; ctx.fillRect(-40, -40, W + 80, H + 80);
+    ctx.restore();
+
+    // whip lateral: el contenido sale a la izquierda con estela
+    const copies = whip > 0 ? 5 : 1;
+    for (let k = copies - 1; k >= 0; k--) {
+      ctx.save();
+      ctx.globalAlpha = k === 0 ? 1 : 0.18;
+      ctx.translate(SQ.x - whip * 1500 + k * whip * 70, SQ.y);
+      hookText(t);
+      ctx.restore();
+    }
+  }
+
+  function hookText(t) {
+    const first = t < bt(3);
+    if (first) {
+      const words = [["Referentes", 0], ["del", 1], ["rubro.", 2]];
+      const s1 = fit("Referentes", 920, 900, 170);
+      words.forEach(([wd, i], n) => {
+        const p = E.expoOut(sp(t, bt(i), bt(i) + 0.32));
+        const y = n === 0 ? 470 : 470 + s1 * 1.05;
+        const x = n === 2 ? 80 + textW("del ", 900, s1) : 80;
+        const sc = 1 + 0.25 * (1 - p);
+        ctx.save(); ctx.translate(x, y); ctx.scale(sc, sc); ctx.translate(-x, -y);
+        mtext(wd, x, y, s1, p, { w: 900 });
+        ctx.restore();
+      });
+      label("tasker · insumos y máquinas para helado soft", 82, 300, { size: 20, color: C.gr });
+    } else {
+      // corte: ¿Y en digital?
+      const p1 = E.expoOut(sp(t, bt(3) - 0.07, bt(3) + 0.2));
+      mtext("¿Y en", 80, 420, 120, p1, { w: 800 });
+      const s2 = fit("digital?", 920, 900, 260);
+      const p2 = E.expoOut(sp(t, bt(4), bt(4) + 0.3));
+      const sc = 1 + 0.35 * (1 - E.out(sp(t, bt(4), bt(4) + 0.35)));
+      ctx.save(); ctx.translate(80, 420 + s2); ctx.scale(sc, sc); ctx.translate(-80, -(420 + s2));
+      mtext("digital?", 80, 420 + s2, s2, p2, { w: 900, color: C.blue });
+      ctx.restore();
+    }
+  }
+
+  // ---------- 2 · la propuesta (3–8 s) ----------
+
+  // ventana de navegador dibujada en código: URL tipeada, logo real y la frase real del hero de Tasker
+  const BW = { x: 70, y: 220, w: 940, h: 650 };
+  function browser(t) {
+    if (t < bt(6) || t >= bt(11)) return;
+    const { x, y, w, h } = BW;
+    const up = E.spring(sp(t, bt(6), bt(6) + 0.9), 6, 11);
+    const out = E.in(sp(t, bt(10), bt(10) + 0.45));
+    ctx.save();
+    ctx.translate(-out * 1100, (1 - up) * 1100 + out * 100);
+    ctx.translate(x + w / 2, y + h / 2);
+    ctx.rotate(-0.05 * (1 - up) - out * 0.1); ctx.scale(1 - out * 0.25, 1 - out * 0.25);
+    ctx.translate(-(x + w / 2), -(y + h / 2));
+    ctx.shadowColor = "rgba(0,0,0,0.6)"; ctx.shadowBlur = 60; ctx.shadowOffsetY = 24;
+    card(x, y, w, h);
+    ctx.shadowColor = "transparent";
+    // barra
+    ctx.fillStyle = "#0e1219"; ctx.fillRect(x + 2, y + 2, w - 4, 76);
+    ctx.fillStyle = C.line; ctx.fillRect(x + 2, y + 78, w - 4, 2);
+    ["#3a4150", "#3a4150", "#3a4150"].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x + 40 + i * 30, y + 40, 8, 0, TAU); ctx.fill(); });
+    ctx.fillStyle = "#171d29"; ctx.fillRect(x + 150, y + 18, w - 190, 44);
+    const url = "tasker.com.ar";
+    const n = Math.floor(url.length * sp(t, bt(6.6), bt(6.6) + 0.5));
+    setFont(500, 24, J); ctx.fillStyle = C.wh; ctx.fillText(url.slice(0, n), x + 174, y + 48);
+    const cw = ctx.measureText(url.slice(0, n)).width;
+    if (t < bt(8) && Math.floor(t * 3) % 2 === 0) { ctx.fillStyle = C.cyan; ctx.fillRect(x + 178 + cw, y + 28, 3, 26); }
+    // contenido
+    const lp = E.expoOut(sp(t, bt(7.5), bt(7.5) + 0.4));
+    if (lp > 0) {
+      ctx.save(); ctx.beginPath(); ctx.rect(x, y + 100, w, 150); ctx.clip(); ctx.translate(0, (1 - lp) * 140);
+      logo("logoW", x + 48, y + 130, 84);
+      ctx.restore();
+    }
+    const hs = fit("Tenemos todo lo que necesitás…", w - 96, 500, 62);
+    mtext("Tenemos todo lo que necesitás…", x + 48, y + 360, hs, E.expoOut(sp(t, bt(8), bt(8) + 0.4)), { w: 500 });
+    mtext("para comenzar tu negocio", x + 48, y + 360 + hs * 1.2, hs, E.expoOut(sp(t, bt(8.5), bt(8.5) + 0.4)), { w: 500, color: C.blue });
+    label("Insumos y máquinas para helado soft", x + 48, y + h - 60, { size: 20, color: C.gr });
+    ctx.restore();
+
+    const pl = E.expoOut(sp(t, bt(9), bt(9) + 0.3)) + E.in(sp(t, bt(10), bt(10) + 0.2));
+    eyebrow("Su sitio hoy", 72, 960, clamp(pl > 1 ? 2 - pl : pl), 20);
+  }
+
+  const COV = { x: 50, y: 140, w: 980, h: 820 };
+  function cover(t) {
+    if (t < bt(10) || t >= bt(16)) return;
+    const { x, y, w, h } = COV;
+    const open = E.expoOut(sp(t, bt(10), bt(10) + 0.45));
+    ctx.save();
+    ctx.beginPath(); ctx.rect(x - 4, y + h / 2 - (h / 2 + 4) * open, w + 8, (h + 8) * open); ctx.clip();
+    card(x, y, w, h);
+
+    eyebrow("Propuesta comercial · Marketing digital", x + 48, y + 74, sp(t, bt(10.5), bt(10.5) + 0.45), 18);
+    const lp = E.expoOut(sp(t, bt(10.6), bt(10.6) + 0.35));
+    if (lp > 0) {
+      ctx.save(); ctx.beginPath(); ctx.rect(x, y + 100, w, 80); ctx.clip(); ctx.translate(0, (1 - lp) * 70);
+      label("para", x + 50, y + 150, { size: 18 });
+      logo("logoW", x + 140, y + 118, 44);
+      label("rubro · insumos y equipos para helados soft", x + w - 48, y + 150, { size: 15, align: "right" });
+      ctx.restore();
+    }
+
+    // título con barrido de máscara (blanco y liviano, como la portada del deck)
+    const ts = fit("De referentes del rubro", w - 96, 500, 86);
+    sweepText([["De referentes del rubro", C.wh]], x + 48, y + 330, ts, E.inOut(sp(t, bt(11), bt(11) + 0.55)), 500);
+    sweepText([["a referentes en digital", C.wh]], x + 48, y + 330 + ts * 1.2, ts, E.inOut(sp(t, bt(12), bt(12) + 0.55)), 500);
+
+    // fila de servicios: mono azul en chips oscuros (2x2)
+    const svc = ["Redes sociales", "Meta Ads", "Contenido & fotografía", "Estrategia & consultoría"];
+    svc.forEach((sv, i) => {
+      const st = bt(13) + i * 0.125;
+      const p = E.back(sp(t, st, st + 0.35));
+      if (p <= 0) return;
+      const cx = x + 48 + (i % 2) * 448, cy = y + 520 + Math.floor(i / 2) * 92;
+      ctx.save();
+      ctx.translate(cx + 214, cy + 38); ctx.scale(p, p); ctx.translate(-(cx + 214), -(cy + 38));
+      ctx.fillStyle = "#171d29"; ctx.fillRect(cx, cy, 428, 76);
+      const txt = `0${i + 1} ${sv}`;
+      setFont(500, fit(txt, 390, 500, 25, J), J); ctx.fillStyle = C.blueTxt; ctx.fillText(txt, cx + 20, cy + 47);
+      ctx.restore();
+    });
+
+    // botón con rebote y click
+    const bp = E.spring(sp(t, bt(14), bt(14) + 0.7), 5, 14);
+    if (bp > 0) {
+      const tc = clickAt(15);
+      const press = t > tc - 0.06 ? clamp(1 - Math.abs(t - tc) / 0.12) : 0;
+      deckButton("Empezar el recorrido", x + 48, y + 718, 500, 76, 22, bp * (1 - 0.05 * press), 8 * E.out(sp(t, tc, tc + 0.2)));
+    }
+    ctx.restore();
+  }
+
+  // ---------- 3 · tres hallazgos (8–20 s) ----------
+
+  const FD = { x: 60, y: 230, w: 960, h: 820 };
+  const FINDINGS = [
+    { n: "01", tag: "Urgente", glyph: "ban", title: ["Redes activas,", "sin rotación de pauta.", "Solo 9 creativos en 2026"],
+      body: "Marca activa en Instagram, Facebook y TikTok: gran oportunidad para sumar pauta a los creativos publicados, a modo de boosteo." },
+    { n: "02", tag: "Clave", glyph: "up", title: ["Medición", "sin confirmar"],
+      body: "Tienen Google Tag Manager instalado, pero no podemos confirmar si los píxeles de conversión están activos." },
+    { n: "03", tag: "Oportunidad", glyph: "ring", title: ["Pauta", "activa detectada"],
+      body: "Encontramos anuncios activos en Meta: gran oportunidad para crear nueva pauta en Google Ads y TikTok Ads." },
+  ];
+  const TS = 66, TL_ = 80; // tamaño y paso de línea de los títulos de tarjeta
+
+  function finding(k, t) {
+    const st = bt(16 + k * 8);
+    const side = k % 2 ? 1 : -1;
+    const ent = E.spring(sp(t, st, st + 0.75), 6, 11);
+    const f = FINDINGS[k];
+    const { x, y, w, h } = FD;
+
+    eyebrow("El punto de partida", 62, 122, sp(t, st, st + 0.35), 20);
+    mtext("Esto es lo que encontramos.", 60, 190, 52, E.expoOut(sp(t, st + 0.05, st + 0.35)), { w: 500 });
+
+    ctx.save();
+    ctx.translate((1 - ent) * side * 1250, 0);
+    ctx.translate(x + w / 2, y + h / 2); ctx.rotate((1 - ent) * side * 0.08); ctx.translate(-(x + w / 2), -(y + h / 2));
+    card(x, y, w, h);
+    label(`Problema / ${f.n}`, x + 44, y + 64, { size: 20 });
+    iconBox(x + w - 44 - 64, y + 34, f.glyph, E.back(sp(t, st + 0.2, st + 0.55)));
+
+    // título como en el deck, línea por línea
+    f.title.forEach((ln, i) => {
+      const ly = y + 190 + i * TL_;
+      const p = E.expoOut(sp(t, st + 0.3 + i * 0.08, st + 0.65 + i * 0.08));
+      if (k === 1) marker(x + 44, ly, textW(ln, 500, TS), TS, E.inOut(sp(t, clickAt(28.6) + i * 0.08, clickAt(28.6) + 0.35 + i * 0.08)));
+      if (k === 0 && i === 2) {
+        const n = Math.round(9 * E.out(sp(t, st + 0.6, st + 1.4)));
+        marker(x + 44, ly, textW("Solo 9 creativos en 2026", 500, TS), TS, E.inOut(sp(t, clickAt(20.6), clickAt(20.6) + 0.35)));
+        mtext(`Solo ${n} creativos en 2026`, x + 44, ly, TS, p, { w: 500, parts: [["Solo ", C.wh], [String(n), C.blue], [" creativos en 2026", C.wh]] });
+      } else mtext(ln, x + 44, ly, TS, p, { w: 500 });
+    });
+    const ty = y + 190 + (f.title.length - 1) * TL_;
+
+    if (k === 1) {
+      const rows = [["Google Tag Manager", "Instalado", C.cyan, "✓"], ["Píxeles de conversión", "Sin confirmar", C.gr, "?"]];
+      rows.forEach(([a, b, col, g], i) => {
+        const p = E.expoOut(sp(t, st + 0.6 + i * 0.12, st + 0.95 + i * 0.12));
+        if (p <= 0) return;
+        const ry = ty + 110 + i * 70;
+        ctx.save(); ctx.beginPath(); ctx.rect(x + 40, ry - 44, w - 80, 64); ctx.clip();
+        ctx.translate(0, (1 - p) * 64);
+        ctx.fillStyle = C.line; ctx.fillRect(x + 44, ry + 18, w - 88, 1);
+        label(a, x + 44, ry, { size: 22, color: C.wh });
+        ctx.globalAlpha = g === "?" ? 0.6 + 0.4 * Math.abs(Math.sin(t * 5)) : 1;
+        label(`${g}  ${b}`, x + w - 44, ry, { size: 22, color: col, w: 700, align: "right" });
+        ctx.restore();
+      });
+    }
+    if (k === 2) {
+      const ch = [["Meta", "Activa", C.cyan], ["Google Ads", "Oportunidad", C.gr], ["TikTok Ads", "Oportunidad", C.gr]];
+      ch.forEach(([a, b, col], i) => {
+        const p = E.back(sp(t, st + 0.6 + i * 0.1, st + 0.95 + i * 0.1));
+        if (p <= 0) return;
+        const cx = x + 44 + i * 296, cy = ty + 60;
+        ctx.save(); ctx.translate(cx + 140, cy + 48); ctx.scale(p, p); ctx.translate(-(cx + 140), -(cy + 48));
+        ctx.fillStyle = "#171d29"; ctx.fillRect(cx, cy, 280, 96);
+        ctx.strokeStyle = i === 0 ? C.cyan : C.line; ctx.lineWidth = 2; ctx.strokeRect(cx + 1, cy + 1, 278, 94);
+        label(a, cx + 20, cy + 40, { size: 21, color: C.wh, w: 700 });
+        label(b, cx + 20, cy + 74, { size: 18, color: col });
+        ctx.restore();
+      });
+    }
+
+    // cuerpo
+    const by = ty + (k === 0 ? 90 : k === 1 ? 260 : 220);
+    wrap(f.body, w - 88, 500, 33).forEach((ln, i) => {
+      mtext(ln, x + 44, by + i * 46, 33, E.expoOut(sp(t, st + 0.75 + i * 0.06, st + 1.1 + i * 0.06)), { w: 500, color: C.gr });
+    });
+    // tag coral abajo, como en el deck
+    label(f.tag, x + 44, y + h - 48, { size: 20, color: C.coral, w: 700 });
+    ctx.restore();
+  }
+
+  function serviceCard(t) {
+    const st = bt(33);
+    if (t < st) return;
+    const ent = E.spring(sp(t, st, st + 0.7), 6, 11);
+    const x = 100, y = 600, w = 940, h = 450;
+    ctx.save();
+    ctx.translate((1 - ent) * 1200, 0);
+    ctx.translate(x + w / 2, y + h / 2); ctx.rotate(-0.02 + (1 - ent) * 0.1); ctx.translate(-(x + w / 2), -(y + h / 2));
+    ctx.shadowColor = "rgba(0,0,0,0.65)"; ctx.shadowBlur = 50; ctx.shadowOffsetY = 20;
+    card(x, y, w, h);
+    ctx.shadowColor = "transparent";
+    label("Servicio / 02  |  Meta & Google Ads", x + 44, y + 66, { size: 22, color: C.wh, w: 700 });
+    iconBox(x + w - 44 - 64, y + 30, "inf", E.back(sp(t, st + 0.2, st + 0.5)));
+    const items = ["Campañas de leads por rubro: cafés, heladerías, hoteles", "Search en Google Ads para demanda activa",
+      "Remarketing a visitantes del sitio", "Optimización semanal de presupuesto"];
+    items.forEach((it, i) => {
+      const iy = y + 160 + i * 76;
+      const p = E.expoOut(sp(t, st + 0.3 + i * 0.09, st + 0.65 + i * 0.09));
+      const s = fit(it, w - 150, 500, 31);
+      if (i === 1) marker(x + 84, iy, textW(it, 500, s), s, E.inOut(sp(t, clickAt(36.6), clickAt(36.6) + 0.35)));
+      if (p > 0) { ctx.fillStyle = C.blue; ctx.fillRect(x + 44, iy - 11, 22, 3); }
+      mtext(it, x + 84, iy, s, p, { w: 500 });
+    });
+    ctx.restore();
+  }
+
+  function s3(t) {
+    if (t < bt(16) || t >= bt(40)) return;
+    const k = t < bt(24) ? 0 : t < bt(32) ? 1 : 2;
+    const out = E.in(sp(t, bt(39.5), bt(40)));
+    ctx.save();
+    ctx.translate(0, -out * 1300);
+    finding(k, t);
+    if (k === 2) serviceCard(t);
+    ctx.restore();
+  }
+
+  // ---------- 4 · el número (20–24 s) ----------
+
+  const CHECKS = [
+    "Sin contrato de permanencia · el servicio es tuyo",
+    "Acceso total a todas las cuentas desde el día 1",
+    "Primeras conversiones medibles en los primeros 30 días",
+  ];
+  function s4(t) {
+    if (t < bt(40) || t >= bt(48)) return;
+    const st = bt(40);
+    const out = E.in(sp(t, bt(47.5), bt(48)));
+    ctx.save();
+    ctx.translate(-out * 1300, 0);
+    const n = Math.round(30 * E.out(sp(t, st + 0.05, bt(43))));
+    const sc = 1 + 0.3 * (1 - E.expoOut(sp(t, st, st + 0.35)));
+    ctx.save();
+    ctx.translate(80, 420); ctx.scale(sc, sc); ctx.translate(-80, -420);
+    setFont(900, 330); ctx.fillStyle = C.blue; ctx.fillText(String(n), 72, 420);
+    const nw = textW("30", 900, 330);
+    mtext("días", 72 + nw + 30, 420, 130, E.expoOut(sp(t, st + 0.15, st + 0.5)), { w: 900 });
+    ctx.restore();
+    mtext("para las primeras conversiones medibles", 80, 510, fit("para las primeras conversiones medibles", 920, 700, 44),
+      E.expoOut(sp(t, bt(41), bt(41) + 0.35)), { w: 700, color: C.gr });
+
+    CHECKS.forEach((c, i) => {
+      const at = bt(43 + i * 0.5);
+      const p = E.expoOut(sp(t, at, at + 0.35));
+      if (p <= 0) return;
+      const ry = 600 + i * 98;
+      ctx.save();
+      ctx.beginPath(); ctx.rect(60, ry - 6, 960, 92); ctx.clip();
+      ctx.translate(0, (1 - p) * 92);
+      ctx.fillStyle = "#10141c"; ctx.fillRect(80, ry, 920, 80);
+      ctx.strokeStyle = i === 2 ? "rgba(34,211,238,0.6)" : C.line; ctx.lineWidth = 2; ctx.strokeRect(81, ry + 1, 918, 78);
+      ctx.strokeStyle = C.blue; ctx.lineWidth = 2.5; ctx.strokeRect(104, ry + 22, 36, 36);
+      // tilde: los dos primeros ya vienen tildados, el de 30 días lo tilda el cursor
+      const ck = i < 2 ? E.out(sp(t, at + 0.15, at + 0.4)) : E.out(sp(t, clickAt(46), clickAt(46) + 0.3));
+      if (ck > 0) {
+        ctx.strokeStyle = i === 2 ? C.cyan : C.blueTxt; ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.lineJoin = "round";
+        const pts = [[112, ry + 40], [120, ry + 49], [134, ry + 30]];
+        const a = clamp(ck * 2), b2 = clamp(ck * 2 - 1);
+        ctx.beginPath(); ctx.moveTo(...pts[0]);
+        ctx.lineTo(lerp(pts[0][0], pts[1][0], a), lerp(pts[0][1], pts[1][1], a));
+        if (b2 > 0) ctx.lineTo(lerp(pts[1][0], pts[2][0], b2), lerp(pts[1][1], pts[2][1], b2));
+        ctx.stroke();
+      }
+      const s = fit(c, 820, 500, 25, J);
+      if (i === 2) marker(166, ry + 49, textW(c, 500, s, J), s, E.inOut(sp(t, clickAt(46) + 0.1, clickAt(46) + 0.45)));
+      setFont(500, s, J); ctx.fillStyle = C.wh; ctx.fillText(c, 166, ry + 49);
+      ctx.restore();
+    });
+    ctx.restore();
+  }
+
+  // ---------- 5 · cierre (24–30 s) ----------
+
+  const EMAIL = "agenciamiradadigital@gmail.com";
+  function s5(t) {
+    if (t < bt(48)) return;
+    const st = bt(48);
+    // lockup
+    const lp = E.expoOut(sp(t, st, st + 0.4));
+    const sc = 1 + 0.25 * (1 - lp);
+    ctx.save();
+    ctx.translate(80, 250); ctx.scale(sc, sc); ctx.translate(-80, -250);
+    if (lp > 0) {
+      ctx.save(); ctx.beginPath(); ctx.rect(40, 170, 1000, 120); ctx.clip(); ctx.translate(0, (1 - lp) * 110);
+      ctx.fillStyle = C.blue; ctx.beginPath(); ctx.arc(92, 236, 12, 0, TAU); ctx.fill();
+      setFont(500, 58); ctx.fillStyle = C.wh; ctx.fillText("Mirada Digital", 120, 255);
+      const mw = textW("Mirada Digital", 500, 58);
+      label("×", 120 + mw + 30, 252, { size: 40, color: C.gr });
+      logo("logoW", 120 + mw + 90, 200, 72);
+      ctx.restore();
+    }
+    ctx.restore();
+
+    const fs = fit("De referentes del rubro", 920, 500, 92);
+    mtext("De referentes del rubro", 80, 480, fs, E.expoOut(sp(t, bt(50), bt(50) + 0.4)), { w: 500 });
+    mtext("a referentes en digital.", 80, 480 + fs * 1.18, fs, E.expoOut(sp(t, bt(51), bt(51) + 0.4)), { w: 500, color: C.blue });
+
+    // botón
+    const bp = E.spring(sp(t, bt(53), bt(53) + 0.7), 5, 14);
+    if (bp > 0) {
+      const tc = clickAt(55);
+      const press = t > tc - 0.06 ? clamp(1 - Math.abs(t - tc) / 0.12) : 0;
+      const nudge = 10 * E.out(sp(t, tc, tc + 0.2)) * (1 - E.in(sp(t, tc + 0.3, tc + 0.6)));
+      deckButton("Hablemos esta semana", 80, 740, 700, 100, 30, bp * (1 - 0.05 * press), nudge);
+    }
+
+    // mail tipeado
+    const n = Math.floor(EMAIL.length * sp(t, bt(56), bt(56) + EMAIL.length * 0.03));
+    if (n > 0) {
+      setFont(500, 32, J);
+      ctx.fillStyle = C.gr; ctx.fillText(EMAIL.slice(0, n), 82, 920);
+      const cw = ctx.measureText(EMAIL.slice(0, n)).width;
+      if (n < EMAIL.length || Math.floor(t * 2.5) % 2 === 0) { ctx.fillStyle = C.cyan; ctx.fillRect(86 + cw, 894, 4, 34); }
+    }
+  }
+
+  // ---------- frame ----------
+
+  window.seek = function (t) {
+    ctx.reset();
+    background(t);
+
+    // flash en cada corte de los hallazgos
+    let flash = 0;
+    for (const f of TL.flashes) { const tf = bt(f); if (t >= tf) flash = Math.max(flash, Math.exp(-(t - tf) / 0.07)); }
+
+    // golpe de cámara en los cortes de bloque
+    let z = 1;
+    for (const b of [0, 6, 16, 24, 32, 40, 48]) z += 0.025 * hit(t, bt(b), 0.3);
+
+    s1(t);
+    ctx.save();
+    ctx.translate(SQ.x, SQ.y);
+    ctx.translate(540, 540); ctx.scale(z, z); ctx.translate(-540, -540);
+    browser(t); cover(t); s3(t); s4(t); s5(t);
+    drawCursor(t);
+    ctx.restore();
+
+    if (flash > 0.01) { ctx.fillStyle = `rgba(200,225,255,${0.75 * flash})`; ctx.fillRect(0, 0, W, H); }
+    ribbon(t);
+    hud();
+  };
+</script>
+<script src="../../lib/preview.js"></script>
+</body>
+</html>

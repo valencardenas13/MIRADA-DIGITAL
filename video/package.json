@@ -1,0 +1,21 @@
+{
+  "name": "mirada-digital-video",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Videos programáticos de Mirada Digital con Remotion",
+  "scripts": {
+    "dev": "remotion studio",
+    "render": "remotion render Intro out/intro.mp4",
+    "upgrade": "remotion upgrade"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.535",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "remotion": "^4.0.535"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "typescript": "^7.0.2"
+  }
+}

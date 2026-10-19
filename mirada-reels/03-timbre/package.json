@@ -1,0 +1,11 @@
+{
+  "name": "03-timbre",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx --yes hyperframes@0.8.178 preview",
+    "check": "npx --yes hyperframes@0.8.178 check",
+    "render": "npx --yes hyperframes@0.8.178 render",
+    "publish": "npx --yes hyperframes@0.8.178 publish"
+  }
+}

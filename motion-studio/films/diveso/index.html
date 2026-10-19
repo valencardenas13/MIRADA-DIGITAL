@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Diveso · Mirada Digital</title>
+<style>
+  @font-face { font-family: "Inter"; src: url("../../assets/fonts/Inter.woff2"); font-weight: 100 900; font-display: block; }
+  * { margin: 0; padding: 0; }
+  html, body { background: #0d0d0d; overflow: hidden; }
+  #stage { width: 1080px; height: 1920px; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<div id="stage"><canvas id="c"></canvas></div>
+
+<script src="../../lib/film.js"></script>
+<script src="beats.js"></script>
+<script src="timeline.js"></script>
+<script>
+  // Diveso · "calendario de fechas". 37 s, 9:16, pensado para verse sin sonido.
+  const W = 1080, H = 1920;
+  window.FILM = { fps: 30, width: W, height: H, duration: 37 };
+  const cv = document.getElementById("c");
+  cv.width = W; cv.height = H;
+  const ctx = cv.getContext("2d");
+
+  const C = { bg: "#0d0d0d", card: "#141417", card2: "#0f0f12", line: "rgba(255,255,255,0.08)", line2: "rgba(255,255,255,0.16)",
+              wh: "#f4f5f7", mu: "rgba(244,245,247,0.55)", hint: "rgba(244,245,247,0.3)", blue: "#1b7cf4" };
+  const I = '"Inter"';
+  const { span: sp, ease: E, hit, clamp, lerp, noise1 } = F;
+  const TAU = Math.PI * 2;
+  const bt = (x) => { const i = Math.floor(x); return F.beatTime(i) + (x - i) * (F.beatTime(i + 1) - F.beatTime(i)); };
+
+  const logoImg = new Image();
+  let logoOk = false;
+  const font = (w, s) => `${w} ${s}px ${I}`;
+  window.ready = Promise.all([
+    ...[400, 500, 600, 700, 800].map((w) => document.fonts.load(font(w, 60))),
+    new Promise((res) => { logoImg.onload = () => { logoOk = true; res(); }; logoImg.onerror = res; logoImg.src = "../../../assets/diveso/logo-diveso-blanco.png"; }),
+  ]);
+
+  // ---------- helpers ----------
+
+  function setFont(w, s, spacing = 0) { ctx.font = font(w, s); ctx.letterSpacing = `${spacing}px`; }
+  function textW(str, w, s, spacing = 0) { setFont(w, s, spacing); return ctx.measureText(str).width; }
+  function fit(str, maxW, w, maxS) { return Math.min(maxS, (maxW / textW(str, w, 100)) * 100); }
+
+  function label(str, x, y, { size = 26, color = C.mu, w = 600, align = "left" } = {}) {
+    setFont(w, size, size * 0.18);
+    ctx.fillStyle = color; ctx.textAlign = align;
+    ctx.fillText(str.toUpperCase(), x, y);
+    ctx.textAlign = "left"; ctx.letterSpacing = "0px";
+  }
+
+  // texto que entra por máscara desde abajo: p 0 oculto, 1 en su lugar, 2 salió por arriba
+  function mtext(parts, x, y, s, p, w = 700) {
+    if (p <= 0 || p >= 2) return;
+    if (typeof parts === "string") parts = [[parts, C.wh]];
+    setFont(w, s, -s * 0.02);
+    const total = parts.reduce((a, [t]) => a + ctx.measureText(t).width, 0);
+    ctx.save();
+    ctx.beginPath(); ctx.rect(x - 20, y - s * 1.02, total + 40, s * 1.34); ctx.clip();
+    let xx = x;
+    const yy = y + (1 - p) * s * 1.34;
+    for (const [t, col] of parts) { ctx.fillStyle = col; ctx.fillText(t, xx, yy); xx += ctx.measureText(t).width; }
+    ctx.restore();
+    ctx.letterSpacing = "0px";
+  }
+  const io = (t, a, z, d = 0.4, dz = 0.25) => E.expoOut(sp(t, a, a + d)) + (z == null ? 0 : E.in(sp(t, z, z + dz)));
+
+  function card(x, y, w, h, r = 22, accent = false) {
+    const g = ctx.createLinearGradient(x, y, x, y + h);
+    g.addColorStop(0, C.card); g.addColorStop(1, C.card2);
+    ctx.beginPath(); ctx.roundRect(x, y, w, h, r);
+    ctx.fillStyle = g; ctx.fill();
+    ctx.strokeStyle = accent ? "rgba(27,124,244,0.55)" : C.line2; ctx.lineWidth = 2; ctx.stroke();
+  }
+
+  function logo(x, y, h) {
+    if (!logoOk) return 0;
+    const w = (logoImg.width / logoImg.height) * h;
+    ctx.drawImage(logoImg, x, y, w, h);
+    return w;
+  }
+
+  // íconos de trazo (equivalentes a SVG de 24px escalados)
+  function icon(name, cx, cy, s, color = C.wh, p = 1) {
+    if (p <= 0) return;
+    ctx.save();
+    ctx.translate(cx, cy); ctx.scale((s / 24) * p, (s / 24) * p);
+    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 1.8; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    ctx.beginPath();
+    switch (name) {
+      case "user": ctx.arc(0, -4, 4, 0, TAU); ctx.moveTo(-7, 9); ctx.bezierCurveTo(-7, 2, 7, 2, 7, 9); break;
+      case "clock": ctx.arc(0, 0, 9, 0, TAU); ctx.moveTo(0, -5); ctx.lineTo(0, 0); ctx.lineTo(4, 3); break;
+      case "pin": ctx.moveTo(0, 10); ctx.bezierCurveTo(-8, 1, -7, -9, 0, -9); ctx.bezierCurveTo(7, -9, 8, 1, 0, 10); ctx.moveTo(2.5, -2); ctx.arc(0, -2, 2.5, 0, TAU); break;
+      case "bottle": ctx.rect(-3, -10, 6, 4); ctx.moveTo(-6, -6); ctx.lineTo(6, -6); ctx.lineTo(7, 9); ctx.lineTo(-7, 9); ctx.closePath(); ctx.moveTo(-7, 1); ctx.lineTo(7, 1); break;
+      case "spark": ctx.moveTo(0, -9); ctx.quadraticCurveTo(1, -1, 9, 0); ctx.quadraticCurveTo(1, 1, 0, 9); ctx.quadraticCurveTo(-1, 1, -9, 0); ctx.quadraticCurveTo(-1, -1, 0, -9); break;
+      case "gift": ctx.rect(-8, -3, 16, 12); ctx.rect(-9, -6, 18, 3); ctx.moveTo(0, -6); ctx.lineTo(0, 9); ctx.moveTo(0, -6); ctx.bezierCurveTo(-6, -12, -8, -6, 0, -6); ctx.bezierCurveTo(6, -12, 8, -6, 0, -6); break;
+    }
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function background(t) {
+    ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+    const gx = W * (0.25 + 0.5 * noise1(t * 0.1, 3)), gy = H * (0.2 + 0.5 * noise1(t * 0.08, 9));
+    const g = ctx.createRadialGradient(gx, gy, 0, gx, gy, 1100);
+    g.addColorStop(0, "rgba(27,124,244,0.10)"); g.addColorStop(1, "rgba(27,124,244,0)");
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    // grilla sutil con máscara radial
+    const m = ctx.createRadialGradient(W * 0.3, H * 0.35, 0, W * 0.3, H * 0.35, 1300);
+    m.addColorStop(0, "rgba(255,255,255,0.03)"); m.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.strokeStyle = m; ctx.lineWidth = 1;
+    const step = 62, off = (t * 6) % step;
+    ctx.beginPath();
+    for (let x = -off; x < W; x += step) { ctx.moveTo(x, 0); ctx.lineTo(x, H); }
+    for (let y = -off; y < H; y += step) { ctx.moveTo(0, y); ctx.lineTo(W, y); }
+    ctx.stroke();
+  }
+
+  // ---------- 1 · gancho: el calendario (0–6 s) ----------
+
+  const MESES = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"];
+  const DIAS = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+  const PAGES = ["2026-10-14", "2026-10-23", "2026-11-02", "2026-11-11", "2026-11-20", "2026-11-27",
+                 "2026-12-08", "2026-12-15", "2026-12-20", "2026-12-23", "2026-12-25"].map((s) => {
+    const [y, m, d] = s.split("-").map(Number);
+    const wd = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+    return { m: MESES[m - 1], d, wd: DIAS[wd], tag: s === "2026-11-02" ? "Cyber Monday" : s === "2026-12-25" ? "Navidad" : null };
+  });
+  const CAL = { x: 250, y: 300, w: 580, h: 620 };
+
+  function drawPage(pg, x, y, w, h, last) {
+    ctx.beginPath(); ctx.roundRect(x, y, w, h, 28);
+    ctx.fillStyle = "#16171b"; ctx.fill();
+    ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke();
+    ctx.save(); ctx.beginPath(); ctx.roundRect(x, y, w, h, 28); ctx.clip();
+    ctx.fillStyle = last ? C.blue : "#202227"; ctx.fillRect(x, y, w, 130);
+    ctx.restore();
+    label(pg.m, x + w / 2, y + 88, { size: 56, color: C.wh, w: 800, align: "center" });
+    setFont(800, 330, -10); ctx.fillStyle = last ? C.blue : C.wh; ctx.textAlign = "center";
+    ctx.fillText(String(pg.d), x + w / 2, y + 470);
+    ctx.textAlign = "left"; ctx.letterSpacing = "0px";
+    label(pg.wd, x + w / 2, y + 560, { size: 30, color: C.mu, align: "center" });
+    if (pg.tag) {
+      setFont(700, 26, 4); const tw = ctx.measureText(pg.tag.toUpperCase()).width;
+      ctx.beginPath(); ctx.roundRect(x + w / 2 - tw / 2 - 22, y + 150, tw + 44, 48, 24);
+      ctx.fillStyle = "rgba(27,124,244,0.16)"; ctx.fill();
+      label(pg.tag, x + w / 2, y + 183, { size: 26, color: C.wh, w: 700, align: "center" });
+    }
+  }
+
+  function s1(t) {
+    if (t >= bt(12)) return;
+    const out = E.in(sp(t, bt(11.4), bt(12)));
+    ctx.save();
+    ctx.translate(0, -out * 1400);
+
+    // calendario de taco: aparece de golpe en el frame 0
+    const pop = E.back(sp(t, -0.12, 0.35));
+    const { x, y, w, h } = CAL;
+    ctx.save();
+    ctx.translate(x + w / 2, y + h / 2); ctx.scale(pop, pop); ctx.rotate((1 - pop) * -0.15); ctx.translate(-(x + w / 2), -(y + h / 2));
+    // espiral de arriba
+    const torn = TL.pages.filter((p) => t >= bt(p)).length;
+    // hoja de abajo (la que queda) y la que se está arrancando
+    drawPage(PAGES[Math.min(torn, PAGES.length - 1)], x, y, w, h, torn === PAGES.length - 1);
+    for (let k = Math.max(0, torn - 2); k < torn; k++) {
+      const tk = bt(TL.pages[k]);
+      const u = sp(t, tk, tk + 0.38);
+      if (u >= 1) continue;
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(-0.9 * E.in(u));
+      ctx.translate(380 * u, -900 * E.in(u) - 60 * u);
+      drawPage(PAGES[k], 0, 0, w, h, false);
+      ctx.restore();
+    }
+    for (let i = 0; i < 6; i++) {
+      ctx.fillStyle = "#2a2c32"; ctx.beginPath(); ctx.roundRect(x + 70 + i * 88, y - 22, 26, 50, 13); ctx.fill();
+    }
+    ctx.restore();
+
+    // textos
+    mtext("Hoy es miércoles", 90, 1110, 84, io(t, bt(1), bt(3.6)));
+    mtext("14 de octubre.", 90, 1210, 84, io(t, bt(1.3), bt(3.7)));
+    mtext("Navidad es el", 90, 1110, 84, io(t, bt(7), null));
+    mtext([["viernes ", C.wh], ["25 de diciembre.", C.blue]], 90, 1210, fit("viernes 25 de diciembre.", 900, 700, 84), io(t, bt(7.3), null));
+    const n = Math.round(72 * E.out(sp(t, bt(8), bt(9.5))));
+    mtext([["Faltan ", C.wh], [String(n), C.blue], [" días.", C.wh]], 90, 1420, 150, io(t, bt(8), null), 800);
+    ctx.restore();
+  }
+
+  // ---------- 2 · la pauta y el calendario (6–17 s) ----------
+
+  function adCard(t) {
+    const st = bt(12);
+    const ent = E.spring(sp(t, st, st + 0.9), 6, 11);
+    const out = E.in(sp(t, bt(19.6), bt(20.1)));
+    const x = 150, y = 640, w = 780, h = 840;
+    ctx.save();
+    ctx.translate(-out * 1200, (1 - ent) * 1300);
+    ctx.translate(x + w / 2, y + h / 2); ctx.rotate((1 - ent) * 0.08 - out * 0.1); ctx.translate(-(x + w / 2), -(y + h / 2));
+    ctx.shadowColor = "rgba(0,0,0,0.6)"; ctx.shadowBlur = 60; ctx.shadowOffsetY = 24;
+    card(x, y, w, h, 28);
+    ctx.shadowColor = "transparent";
+    // encabezado del anuncio
+    ctx.beginPath(); ctx.arc(x + 70, y + 72, 32, 0, TAU); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke();
+    ctx.beginPath(); ctx.arc(x + 70, y + 72, 30, 0, TAU); ctx.fillStyle = "#1c1d21"; ctx.fill();
+    logo(x + 122, y + 52, 22);
+    label("Publicidad", x + 122, y + 106, { size: 20, color: C.hint });
+    // pieza: placeholder neutro con el nombre de la fecha (no reproduce su creativo)
+    const mx = x + 30, my = y + 140, mw = w - 60, mh = 520;
+    ctx.beginPath(); ctx.roundRect(mx, my, mw, mh, 16);
+    const g = ctx.createLinearGradient(mx, my, mx, my + mh);
+    g.addColorStop(0, "#1b1c21"); g.addColorStop(1, "#121316"); ctx.fillStyle = g; ctx.fill();
+    icon("gift", mx + mw / 2, my + 190, 120, C.mu, E.back(sp(t, st + 0.35, st + 0.7)));
+    setFont(800, 76, -2); ctx.fillStyle = C.wh; ctx.textAlign = "center";
+    ctx.fillText("Día del Padre", mx + mw / 2, my + 380);
+    ctx.textAlign = "left"; ctx.letterSpacing = "0px";
+    label("creativo", mx + mw / 2, my + 440, { size: 22, color: C.hint, align: "center" });
+    // estado
+    const pulse = 0.55 + 0.45 * Math.abs(Math.sin(t * 3));
+    ctx.fillStyle = C.blue; ctx.globalAlpha = pulse;
+    ctx.beginPath(); ctx.arc(x + 52, y + h - 70, 10, 0, TAU); ctx.fill();
+    ctx.globalAlpha = 1;
+    label("Activo en Meta", x + 76, y + h - 61, { size: 26, color: C.wh, w: 700 });
+    ctx.restore();
+  }
+
+  const TLX = 150;
+  const NODES = [
+    { y: 640, name: "Hoy", date: "mié 14/10", idea: null, at: 22.3 },
+    { y: 980, name: "Cyber Monday", date: "lun 2 al mié 4/11", idea: "Cajas de decants", at: 23 },
+    { y: 1420, name: "Navidad", date: "vie 25/12", idea: "Probar antes de regalar", at: 27 },
+  ];
+
+  function timeline(t) {
+    const st = bt(22);
+    const draw = E.inOut(sp(t, st, st + 0.6));
+    const y0 = 600, y1 = 1780;
+    label("Ideas para testear", 92, 330, { size: 26, color: C.blue, w: 700 });
+    mtext("Un creativo por fecha.", 90, 430, 76, io(t, st, null));
+    // línea
+    ctx.fillStyle = C.line2; ctx.fillRect(TLX - 2, y0, 4, (y1 - y0) * draw);
+    // cabezal que avanza por el calendario
+    const head = lerp(NODES[0].y, NODES[2].y, E.inOut(sp(t, bt(22.6), bt(31))));
+    ctx.fillStyle = C.blue; ctx.fillRect(TLX - 2, NODES[0].y, 4, Math.max(0, head - NODES[0].y));
+    if (t > bt(22.6)) { ctx.beginPath(); ctx.arc(TLX, head, 12, 0, TAU); ctx.fill(); }
+
+    NODES.forEach((n, i) => {
+      const p = E.back(sp(t, bt(n.at), bt(n.at) + 0.35));
+      if (p <= 0) return;
+      ctx.beginPath(); ctx.arc(TLX, n.y, 22 * p, 0, TAU);
+      ctx.fillStyle = i === 0 ? C.bg : C.blue; ctx.fill();
+      ctx.strokeStyle = i === 0 ? C.mu : C.blue; ctx.lineWidth = 4; ctx.stroke();
+      const tp = io(t, bt(n.at), null);
+      mtext(n.name, 210, n.y + 20, i === 0 ? 56 : 72, tp, 800);
+      mtext([[n.date, C.mu]], 210, n.y + (i === 0 ? 86 : 100), 40, io(t, bt(n.at) + 0.1, null), 500);
+      if (n.idea) {
+        const cp = E.spring(sp(t, bt(n.at + 1), bt(n.at + 1) + 0.8), 6, 12);
+        if (cp > 0) {
+          const cx = 210, cy = n.y + 140, cw = 780, ch = 170;
+          ctx.save();
+          ctx.translate((1 - cp) * 900, 0);
+          card(cx, cy, cw, ch, 20, true);
+          ctx.fillStyle = C.blue; ctx.fillRect(cx + 2, cy + 24, 5, ch - 48);
+          label("1 creativo", cx + 40, cy + 58, { size: 22, color: C.blue, w: 700 });
+          setFont(700, fit(n.idea, cw - 80, 700, 58), -1); ctx.fillStyle = C.wh; ctx.fillText(n.idea, cx + 40, cy + 128);
+          ctx.letterSpacing = "0px";
+          ctx.restore();
+        }
+      }
+    });
+  }
+
+  function s2(t) {
+    if (t < bt(12) || t >= bt(34)) return;
+    const out = E.in(sp(t, bt(33.4), bt(34)));
+    ctx.save();
+    ctx.translate(0, -out * 1500);
+    if (t < bt(20.2)) {
+      mtext("Vi que en Meta sigue", 90, 360, 70, io(t, bt(12.2), bt(19.6)));
+      mtext("corriendo un creativo", 90, 448, 70, io(t, bt(12.4), bt(19.65)));
+      mtext([["del ", C.wh], ["Día del Padre.", C.blue]], 90, 536, 70, io(t, bt(12.6), bt(19.7)));
+      adCard(t);
+    }
+    if (t >= bt(20) && t < bt(22.2)) {
+      const z = bt(21.6);
+      mtext("¿Y si la pauta", 90, 820, 112, io(t, bt(20), z, 0.4, 0.3), 800);
+      mtext("siguiera el", 90, 950, 112, io(t, bt(20.3), z + 0.04, 0.4, 0.3), 800);
+      mtext([["calendario?", C.blue]], 90, 1080, 112, io(t, bt(20.6), z + 0.08, 0.4, 0.3), 800);
+    }
+    if (t >= bt(22)) timeline(t);
+    ctx.restore();
+  }
+
+  // ---------- 3 · la cata (17–27 s) ----------
+
+  const FACTS = [
+    { icon: "spark", parts: [["Personalizada", C.wh]], at: 36 },
+    { icon: "clock", parts: [["45 minutos", C.wh]], at: 37.5 },
+    { icon: "pin", parts: [["San Isidro", C.wh]], at: 39 },
+    { icon: "bottle", parts: null, at: 40.5 },
+  ];
+
+  function s3(t) {
+    if (t < bt(34) || t >= bt(54)) return;
+    const st = bt(34);
+    const out = E.in(sp(t, bt(53.4), bt(54)));
+    ctx.save();
+    ctx.translate(0, -out * 1500);
+
+    const lp = E.expoOut(sp(t, st, st + 0.4));
+    if (lp > 0) { ctx.save(); ctx.beginPath(); ctx.rect(80, 230, 900, 70); ctx.clip(); ctx.translate(0, (1 - lp) * 70); logo(92, 248, 40); ctx.restore(); }
+    // "La cata" con barrido de máscara
+    const sw = E.inOut(sp(t, st + 0.1, st + 0.7));
+    if (sw > 0) {
+      setFont(800, 250, -9);
+      const tw = ctx.measureText("La cata").width;
+      ctx.save(); ctx.beginPath(); ctx.rect(70, 300, (tw + 40) * sw, 300); ctx.clip();
+      ctx.fillStyle = C.wh; ctx.fillText("La cata", 80, 540);
+      ctx.restore();
+      if (sw < 1) { ctx.fillStyle = C.blue; ctx.fillRect(70 + (tw + 40) * sw, 330, 8, 240); }
+      ctx.letterSpacing = "0px";
+    }
+
+    FACTS.forEach((f, i) => {
+      const at = bt(f.at);
+      const p = E.expoOut(sp(t, at, at + 0.4));
+      if (p <= 0) return;
+      const y = 700 + i * 112;
+      const ip = E.back(sp(t, at, at + 0.4));
+      ctx.beginPath(); ctx.roundRect(90, y - 52, 84, 84, 18); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.globalAlpha = clamp(ip); ctx.stroke(); ctx.globalAlpha = 1;
+      icon(f.icon, 132, y - 10, 48, i === 3 ? C.blue : C.wh, ip);
+      let parts = f.parts;
+      if (!parts) {
+        const n = Math.round(300 * E.out(sp(t, at, bt(42.3))));
+        parts = [["+" + n, C.blue], [" perfumes de nicho", C.wh]];
+      }
+      mtext(parts, 204, y + 12, 60, p, 700);
+    });
+
+    // turno con tres lugares
+    const tp = E.spring(sp(t, bt(44), bt(44) + 0.8), 6, 11);
+    if (tp > 0) {
+      const x = 90, y = 1150, w = 900, h = 420;
+      ctx.save();
+      ctx.translate(0, (1 - tp) * 900);
+      card(x, y, w, h, 28, true);
+      label("Un turno", x + 50, y + 76, { size: 26, color: C.blue, w: 700 });
+      setFont(800, 72, -2); ctx.fillStyle = C.wh;
+      ctx.fillText("Un turno.", x + 50, y + 168);
+      const p2 = E.expoOut(sp(t, bt(45), bt(45) + 0.4));
+      ctx.letterSpacing = "0px";
+      if (p2 > 0) mtext([["Tres lugares.", C.blue]], x + 50 + textW("Un turno. ", 800, 72, -2), y + 168, 72, p2, 800);
+      for (let i = 0; i < 3; i++) {
+        const cx = x + 170 + i * 280, cy = y + 300;
+        const f = E.back(sp(t, bt(45 + i), bt(45 + i) + 0.35));
+        ctx.beginPath(); ctx.arc(cx, cy, 78, 0, TAU);
+        ctx.strokeStyle = C.line2; ctx.lineWidth = 3; ctx.stroke();
+        if (f > 0) { ctx.beginPath(); ctx.arc(cx, cy, 78 * f, 0, TAU); ctx.fillStyle = C.blue; ctx.fill(); }
+        icon("user", cx, cy, 80, f > 0.5 ? C.wh : C.hint);
+      }
+      ctx.restore();
+    }
+    mtext("Cuando se completa,", 90, 1680, 52, io(t, bt(49), null), 600);
+    mtext([["hay que esperar al próximo.", C.mu]], 90, 1750, 52, io(t, bt(49.3), null), 600);
+    ctx.restore();
+  }
+
+  // ---------- 3b · lo que te propuse (27–31 s) ----------
+
+  function sProp(t) {
+    if (t < bt(54) || t >= bt(62)) return;
+    const out = E.in(sp(t, bt(61.4), bt(62)));
+    ctx.save();
+    ctx.translate(0, -out * 1500);
+    label("Lo que te propuse", 92, 380, { size: 26, color: C.blue, w: 700 });
+    mtext("Dos frentes para", 90, 490, 84, io(t, bt(54), null), 800);
+    mtext("la cata.", 90, 590, 84, io(t, bt(54.3), null), 800);
+
+    // Meta: reservas de cata como objetivo
+    const p1 = E.spring(sp(t, bt(55), bt(55) + 0.8), 6, 12);
+    if (p1 > 0) {
+      const x = 90, y = 700, w = 900, h = 300;
+      ctx.save(); ctx.translate((1 - p1) * -1100, 0);
+      card(x, y, w, h, 24, true);
+      label("Meta Ads", x + 50, y + 74, { size: 26, color: C.blue, w: 700 });
+      setFont(800, 58, -1); ctx.fillStyle = C.wh;
+      ctx.fillText("Reservas de cata", x + 50, y + 160);
+      ctx.fillText("como objetivo.", x + 50, y + 236);
+      ctx.letterSpacing = "0px";
+      ctx.restore();
+    }
+    // Google: Search desde la semana 1, con la búsqueda tipeándose
+    const p2 = E.spring(sp(t, bt(57), bt(57) + 0.8), 6, 12);
+    if (p2 > 0) {
+      const x = 90, y = 1050, w = 900, h = 470;
+      ctx.save(); ctx.translate((1 - p2) * 1100, 0);
+      card(x, y, w, h, 24, true);
+      label("Google Search", x + 50, y + 74, { size: 26, color: C.blue, w: 700 });
+      setFont(800, 58, -1); ctx.fillStyle = C.wh;
+      ctx.fillText("Desde la semana 1.", x + 50, y + 160);
+      ctx.letterSpacing = "0px";
+      // barra de búsqueda
+      const bx = x + 50, by = y + 210, bw = w - 100, bh = 96;
+      ctx.beginPath(); ctx.roundRect(bx, by, bw, bh, 48);
+      ctx.fillStyle = "#1b1c21"; ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke();
+      ctx.save(); ctx.translate(bx + 52, by + bh / 2); ctx.strokeStyle = C.mu; ctx.lineWidth = 4; ctx.lineCap = "round";
+      ctx.beginPath(); ctx.arc(-4, -4, 14, 0, TAU); ctx.moveTo(7, 7); ctx.lineTo(16, 16); ctx.stroke(); ctx.restore();
+      const q = "cata de perfumes buenos aires";
+      const n = Math.floor(q.length * sp(t, bt(57.6), bt(57.6) + q.length * 0.05));
+      setFont(500, fit(q, bw - 150, 500, 40)); ctx.fillStyle = C.wh;
+      ctx.fillText(q.slice(0, n), bx + 100, by + bh / 2 + 14);
+      const cw = ctx.measureText(q.slice(0, n)).width;
+      if (Math.floor(t * 2.5) % 2 === 0 || n < q.length) { ctx.fillStyle = C.blue; ctx.fillRect(bx + 104 + cw, by + 28, 4, 40); }
+      mtext([["Para quien ya está buscando una cata.", C.mu]], x + 50, y + 400, fit("Para quien ya está buscando una cata.", w - 100, 600, 42), io(t, bt(59.5), null), 600);
+      ctx.restore();
+    }
+    ctx.restore();
+  }
+
+  // ---------- 4 · cierre (31–37 s) ----------
+
+  function s4(t) {
+    if (t < bt(62)) return;
+    mtext("Tengo algunas ideas", 90, 640, fit("Tengo algunas ideas", 900, 700, 92), io(t, bt(62), bt(65.6)), 700);
+    mtext("para estas fechas.", 90, 750, fit("Tengo algunas ideas", 900, 700, 92), io(t, bt(62.3), bt(65.7)), 700);
+    const s = fit("esta semana?", 900, 800, 170);
+    const sc = 1 + 0.12 * (1 - E.expoOut(sp(t, bt(66), bt(66) + 0.4)));
+    ctx.save();
+    ctx.translate(90, 900); ctx.scale(sc, sc); ctx.translate(-90, -900);
+    mtext("¿Charlamos", 90, 860, s, io(t, bt(66), null), 800);
+    mtext([["esta semana", C.wh], ["?", C.blue]], 90, 860 + s * 1.08, s, io(t, bt(66.3), null), 800);
+    ctx.restore();
+
+    // firma
+    const fp = io(t, bt(68), null);
+    if (fp > 0) {
+      ctx.save(); ctx.beginPath(); ctx.rect(70, 1380, 940, 220); ctx.clip(); ctx.translate(0, (1 - Math.min(fp, 1)) * 200);
+      ctx.fillStyle = C.line2; ctx.fillRect(90, 1400, 900, 2);
+      ctx.fillStyle = C.blue; ctx.beginPath(); ctx.arc(102, 1470, 10, 0, TAU); ctx.fill();
+      setFont(700, 46); ctx.fillStyle = C.wh; ctx.fillText("Mirada Digital", 128, 1486);
+      label("para", 92, 1566, { size: 26, color: C.hint });
+      logo(190, 1536, 34);
+      ctx.restore();
+    }
+  }
+
+  // ---------- frame ----------
+
+  window.seek = function (t) {
+    ctx.reset();
+    background(t);
+    let z = 1;
+    for (const b of [0, 12, 20, 22, 34, 44, 54, 62, 66]) z += 0.02 * hit(t, bt(b), 0.3);
+    ctx.translate(W / 2, H / 2); ctx.scale(z, z); ctx.translate(-W / 2, -H / 2);
+    s1(t); s2(t); s3(t); sProp(t); s4(t);
+  };
+</script>
+<script src="../../lib/preview.js"></script>
+</body>
+</html>
