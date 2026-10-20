@@ -1,5 +1,6 @@
 import ScrollProgress from './components/ScrollProgress';
 import Nav from './components/Nav';
+import ScrollIntro from './components/ScrollIntro';
 import Hero from './components/Hero';
 import Intro from './components/Intro';
 import Channels from './components/Channels';
@@ -15,6 +16,7 @@ export default function App() {
       <ScrollProgress />
       <Nav />
       <main>
+        <ScrollIntro />
         <Hero />
         <Intro />
         <Channels />
